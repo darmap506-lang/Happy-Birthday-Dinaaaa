@@ -458,8 +458,7 @@
     <div id="envelopeWrapper" class="envelope-wrapper" title="Ketuk untuk membuka amplop">
       <div class="envelope-flap"></div>
       <div class="letter">
-        <h3>Untuk Dina 🌸</h3>
-        <p>Spesial Hari Bahagia</p>
+        <h3 style="font-size: 16px;">from Darto to Wita 🌸</h3>
       </div>
       <div class="envelope-pocket"></div>
     </div>
@@ -468,10 +467,9 @@
   <!-- Main Greeting Card -->
   <main id="mainCard" class="card-container">
     <div class="card-subtitle">✨ Selamat Ulang Tahun ✨</div>
-    <h1 class="card-title">Dina 🎉</h1>
-    <p class="card-message">
-      Semoga di usia yang baru ini, hari-harimu dipenuhi dengan kebahagiaan, senyuman, kesuksesan, dan tercapainya semua impian indahmu. Tetap jadi pribadi yang inspiratif ya! 🌸✨
-    </p>
+    <h1 class="card-title">Dina Perwitasari 🎉</h1>
+    <p class="card-message" style="white-space: pre-line;">Happy birthday!!!Dinaaaa.  I hope this year brings u new opportunities and plenty of happiness. Sehat terus yaa dan sukses selaluuuu, semoga segala harapan yang belum tercapai segera tercapaii.
+Be happy, be awesome. May peace be upon u!!!🤲✌☺️✌</p>
 
     <!-- Primary Action Button -->
     <div>
@@ -483,7 +481,7 @@
     <!-- Close Envelope Button -->
     <div>
       <button id="btnCloseEnvelope" class="btn-close-envelope" type="button">
-        <span>✉️ Tutup Amplop</span>
+        <span>✉️ Tutup</span>
       </button>
     </div>
   </main>
@@ -504,17 +502,33 @@
 
         <div id="candleActionArea">
           <button id="btnTiupLilin" class="action-btn-tiup" type="button">
-            🌬️ Ketuk untuk Tiup Lilin
+            🌬️ Tiup Lilin
           </button>
         </div>
       </div>
 
-      <!-- Photo Revealed After Blowing Candles -->
+      <!-- 3-Photo Slider Revealed After Blowing Candles -->
       <div id="photoFrame" class="photo-frame">
-        <!-- Ganti src di bawah dengan path atau nama file foto kamu (contoh: dina.jpg) -->
-        <img id="dinaImg" src="assets/aistudio/IMG-20261110-WA0692_a3015910.jpg" alt="Foto Dina" class="photo-img">
-        <div class="photo-name">Dina 🌸✨</div>
-        <div class="photo-caption">Happy Birthday!!! 😋</div>
+        <div style="position: relative; overflow: hidden; border-radius: 12px;">
+          <img id="dinaImg" src="assets/images/photo1.jpg" alt="Foto Dina" class="photo-img">
+          
+          <!-- Prev / Next arrows -->
+          <button id="btnPrevSlide" type="button" style="position: absolute; left: 6px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.45); color: white; border: none; border-radius: 50%; width: 28px; height: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px;">❮</button>
+          <button id="btnNextSlide" type="button" style="position: absolute; right: 6px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.45); color: white; border: none; border-radius: 50%; width: 28px; height: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px;">❯</button>
+          
+          <!-- Counter badge -->
+          <div id="slideCounter" style="position: absolute; top: 6px; right: 6px; background: rgba(0,0,0,0.55); color: white; font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 9999px;">1 / 3</div>
+        </div>
+
+        <!-- Dot Indicators -->
+        <div style="display: flex; justify-content: center; gap: 6px; margin-top: 8px;">
+          <span class="slide-dot active" data-index="0" style="display: inline-block; width: 22px; height: 6px; border-radius: 9999px; background: #db2777; cursor: pointer; transition: all 0.2s;"></span>
+          <span class="slide-dot" data-index="1" style="display: inline-block; width: 6px; height: 6px; border-radius: 9999px; background: #fbcfe8; cursor: pointer; transition: all 0.2s;"></span>
+          <span class="slide-dot" data-index="2" style="display: inline-block; width: 6px; height: 6px; border-radius: 9999px; background: #fbcfe8; cursor: pointer; transition: all 0.2s;"></span>
+        </div>
+
+        <div id="photoName" class="photo-name">Dina 🌸✨</div>
+        <div id="photoCaption" class="photo-caption">Happy Birthday!!! 😋</div>
       </div>
 
       <!-- Modal Bottom Close Button -->
@@ -851,7 +865,7 @@
       `;
       candleActionArea.innerHTML = `
         <button id="btnTiupLilin" class="action-btn-tiup" type="button">
-          🌬️ Ketuk untuk Tiup Lilin
+          🌬️ Tiup Lilin
         </button>
       `;
       photoFrame.style.display = 'none';
@@ -862,6 +876,48 @@
     btnTiupLilin.addEventListener('click', blowCandles);
     cakeGraphic.addEventListener('click', blowCandles);
     flamesGroup.addEventListener('click', blowCandles);
+
+    // 3-Photo Slider Logic
+    const photosData = [
+      { url: 'assets/images/photo1.jpg', title: 'Dina 🌸✨', caption: 'Happy Birthday!!! 😋' },
+      { url: 'assets/images/photo2.jpg', title: 'Hehehehe✌😁', caption: '' },
+      { url: 'assets/images/photo3.jpg', title: 'Bismillah jadi BA vaseline', caption: '' }
+    ];
+    let activeSlide = 0;
+    const dinaImg = document.getElementById('dinaImg');
+    const photoName = document.getElementById('photoName');
+    const photoCaption = document.getElementById('photoCaption');
+    const slideCounter = document.getElementById('slideCounter');
+    const dots = document.querySelectorAll('.slide-dot');
+
+    function renderSlide(idx) {
+      activeSlide = (idx + photosData.length) % photosData.length;
+      const data = photosData[activeSlide];
+      dinaImg.src = data.url;
+      photoName.textContent = data.title;
+      photoCaption.textContent = data.caption || '';
+      photoCaption.style.display = data.caption ? 'block' : 'none';
+      slideCounter.textContent = `${activeSlide + 1} / 3`;
+      dots.forEach((dot, i) => {
+        if (i === activeSlide) {
+          dot.style.width = '22px';
+          dot.style.background = '#db2777';
+        } else {
+          dot.style.width = '6px';
+          dot.style.background = '#fbcfe8';
+        }
+      });
+      sound.playChime();
+    }
+
+    document.getElementById('btnPrevSlide').addEventListener('click', () => renderSlide(activeSlide - 1));
+    document.getElementById('btnNextSlide').addEventListener('click', () => renderSlide(activeSlide + 1));
+    dots.forEach((dot) => {
+      dot.addEventListener('click', (e) => {
+        const idx = parseInt(e.target.getAttribute('data-index'), 10);
+        renderSlide(idx);
+      });
+    });
   </script>
 </body>
 </html>

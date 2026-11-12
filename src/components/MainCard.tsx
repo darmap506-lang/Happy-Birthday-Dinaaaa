@@ -44,8 +44,8 @@ export const MainCard: React.FC<MainCardProps> = ({
         </h1>
 
         {/* Warm Greeting Message */}
-        <p className="text-[#4a4a4a] text-sm sm:text-base leading-relaxed sm:leading-[1.7] mb-8 font-normal">
-          Semoga di usia yang baru ini, hari-harimu dipenuhi dengan kebahagiaan, senyuman, kesuksesan, dan tercapainya semua impian indahmu. Tetap jadi pribadi yang inspiratif ya! 🌸✨
+        <p className="text-[#4a4a4a] text-sm sm:text-base leading-relaxed sm:leading-[1.7] mb-8 font-normal whitespace-pre-line">
+          {`Happy birthday!!!Dinaaaa.  I hope this year brings u new opportunities and plenty of happiness. Sehat terus yaa dan sukses selaluuuu, semoga segala harapan yang belum tercapai segera tercapaii.\nBe happy, be awesome. May peace be upon u!!!🤲✌☺️✌`}
         </p>
 
         {/* Primary CTA Button: pencet lerrrr */}
@@ -66,11 +66,11 @@ export const MainCard: React.FC<MainCardProps> = ({
           <button
             type="button"
             onClick={onCloseEnvelope}
-            aria-label="Tutup amplop dan kembali ke halaman pertama"
+            aria-label="Tutup dan kembali ke amplop"
             className="inline-flex items-center gap-1.5 text-xs sm:text-sm text-pink-700/80 hover:text-pink-950 font-medium transition-colors hover:underline px-2 py-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-pink-300 rounded-md"
           >
             <span>✉️</span>
-            <span>Tutup Amplop</span>
+            <span>Tutup</span>
           </button>
         </div>
       </div>

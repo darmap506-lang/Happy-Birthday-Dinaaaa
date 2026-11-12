@@ -49,12 +49,9 @@ export const OpeningEnvelope: React.FC<OpeningEnvelopeProps> = ({
 
           {/* Letter inside */}
           <div className="letter-content">
-            <p className="font-serif-display text-pink-900 text-lg md:text-xl font-bold tracking-wide text-center">
-              Untuk {recipientName} 🌸
+            <p className="font-serif-display text-pink-900 text-base sm:text-lg md:text-xl font-bold tracking-wide text-center">
+              from Darto to Wita 🌸
             </p>
-            <span className="text-[11px] text-pink-600 font-medium mt-1 tracking-wider uppercase">
-              Spesial Hari Bahagia
-            </span>
           </div>
 
           {/* Front triangular pocket */}

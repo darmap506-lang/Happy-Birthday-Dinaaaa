@@ -5,7 +5,6 @@
 
 import { useState, useEffect } from 'react';
 import { FallingPetals } from './components/FallingPetals';
-import { FlowerGround } from './components/FlowerGround';
 import { OpeningEnvelope } from './components/OpeningEnvelope';
 import { MainCard } from './components/MainCard';
 import { SurpriseModal } from './components/SurpriseModal';
@@ -15,7 +14,7 @@ import { formatRecipientName } from './utils/greeting';
 import { sound } from './utils/audio';
 
 export default function App() {
-  const [recipientName, setRecipientName] = useState('Dina');
+  const [recipientName, setRecipientName] = useState('Dina Perwitasari');
   const [stage, setStage] = useState<'envelope' | 'card'>('envelope');
   const [isSurpriseOpen, setIsSurpriseOpen] = useState(false);
 
@@ -69,9 +68,6 @@ export default function App() {
         onClose={() => setIsSurpriseOpen(false)}
         recipientName={recipientName}
       />
-
-      {/* Bottom Flower Ground Illustration */}
-      <FlowerGround />
     </main>
   );
 }

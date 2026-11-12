@@ -24,9 +24,9 @@ export const PETAL_COLORS = [
  * Normalizes recipient name, defaulting to 'Dina' if absent or blank.
  */
 export function formatRecipientName(rawName?: string | null): string {
-  if (!rawName) return 'Dina';
+  if (!rawName) return 'Dina Perwitasari';
   const trimmed = rawName.trim();
-  if (trimmed.length === 0) return 'Dina';
+  if (trimmed.length === 0) return 'Dina Perwitasari';
   // Capitalize first letter of each word
   return trimmed
     .split(' ')
