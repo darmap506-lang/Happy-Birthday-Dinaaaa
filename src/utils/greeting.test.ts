@@ -8,11 +8,11 @@ import {
   PETAL_COLORS,
 } from './greeting';
 
-test('formatRecipientName defaults to Dina Perwitasari when input is null, undefined, or empty', () => {
-  assert.equal(formatRecipientName(null), 'Dina Perwitasari');
-  assert.equal(formatRecipientName(undefined), 'Dina Perwitasari');
-  assert.equal(formatRecipientName(''), 'Dina Perwitasari');
-  assert.equal(formatRecipientName('   '), 'Dina Perwitasari');
+test('formatRecipientName defaults to Dina when input is null, undefined, or empty', () => {
+  assert.equal(formatRecipientName(null), 'Dina');
+  assert.equal(formatRecipientName(undefined), 'Dina');
+  assert.equal(formatRecipientName(''), 'Dina');
+  assert.equal(formatRecipientName('   '), 'Dina');
 });
 
 test('formatRecipientName formats and capitalizes properly', () => {
