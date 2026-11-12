@@ -94,3 +94,34 @@ export function getSpecialMessage(name: string): string {
   const cleanName = formatRecipientName(name);
   return `Semoga hari-harimu seindah taman bunga dan secerah senyumanmu hari ini, ${cleanName}! Have a wonderful, unforgettable birthday! 💖✨`;
 }
+
+export interface PhotoSlide {
+  src: string;
+  caption: string;
+}
+
+export const DEFAULT_PHOTO_SLIDES: PhotoSlide[] = [
+  {
+    src: '/assets/aistudio/IMG-20261110-WA0692_a3015910.jpg',
+    caption: 'Happy Birthday!!! 😋',
+  },
+  {
+    src: '/assets/aistudio/Foto_dina_2_10506b4f.jpg',
+    caption: 'Hehehehe ✌😁✌',
+  },
+  {
+    src: '/assets/aistudio/Foto_dina_3_f5852c23.jpg',
+    caption: 'Bismillah jadi BA Vaseline 😇',
+  },
+];
+
+export function getNextSlideIndex(currentIndex: number, totalSlides: number): number {
+  if (totalSlides <= 0) return 0;
+  return (currentIndex + 1) % totalSlides;
+}
+
+export function getPrevSlideIndex(currentIndex: number, totalSlides: number): number {
+  if (totalSlides <= 0) return 0;
+  return (currentIndex - 1 + totalSlides) % totalSlides;
+}
+

@@ -150,3 +150,93 @@
   animation: candleFlicker 0.8s ease-in-out infinite;
   transform-origin: bottom center;
 }
+
+/* ================= VECTOR CAKE & WIND ANIMATIONS ================= */
+@keyframes cakeFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.animate-cake-float {
+  animation: cakeFloat 3s ease-in-out infinite;
+}
+
+@keyframes cakeWobble {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-3deg) scale(1.02);
+  }
+  75% {
+    transform: rotate(3deg) scale(1.02);
+  }
+}
+
+.animate-cake-wobble {
+  animation: cakeWobble 0.5s ease-in-out;
+}
+
+@keyframes windGustStream {
+  0% {
+    transform: translateX(-45px) scaleX(0.2);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.95;
+  }
+  80% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateX(120px) scaleX(1.2);
+    opacity: 0;
+  }
+}
+
+.animate-wind-stream {
+  animation: windGustStream 0.75s cubic-bezier(0.2, 0.9, 0.4, 1) forwards;
+}
+
+@keyframes windBlowSway {
+  0% {
+    transform: rotate(0deg) skewX(0deg);
+  }
+  25% {
+    transform: rotate(5deg) skewX(4deg) translateX(3px);
+  }
+  70% {
+    transform: rotate(-1.5deg) skewX(-1deg);
+  }
+  100% {
+    transform: rotate(0deg) skewX(0deg);
+  }
+}
+
+.animate-wind-sway {
+  animation: windBlowSway 0.9s ease-out;
+}
+
+@keyframes smokeWisp {
+  0% {
+    transform: translateY(0) scale(0.6);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translateY(-14px) translateX(4px) scale(1.1);
+    opacity: 0.45;
+  }
+  100% {
+    transform: translateY(-28px) translateX(-5px) scale(1.5);
+    opacity: 0;
+  }
+}
+
+.animate-smoke-wisp {
+  animation: smokeWisp 1.4s ease-out forwards;
+}
+

@@ -14,7 +14,7 @@ import { formatRecipientName } from './utils/greeting';
 import { sound } from './utils/audio';
 
 export default function App() {
-  const [recipientName, setRecipientName] = useState('Dina');
+  const [recipientName, setRecipientName] = useState('Dina Perwitasari');
   const [stage, setStage] = useState<'envelope' | 'card'>('envelope');
   const [isSurpriseOpen, setIsSurpriseOpen] = useState(false);
 

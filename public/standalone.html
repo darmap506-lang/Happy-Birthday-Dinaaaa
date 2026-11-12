@@ -507,12 +507,22 @@ Be happy, be awesome. May peace be upon u!!!🤲✌☺️✌</p>
         </div>
       </div>
 
-      <!-- Photo Revealed After Blowing Candles -->
-      <div id="photoFrame" class="photo-frame">
-        <!-- Ganti src di bawah dengan path atau nama file foto kamu (contoh: dina.jpg) -->
+      <!-- Photo Revealed After Blowing Candles (3-Photo Slide Carousel) -->
+      <div id="photoFrame" class="photo-frame" style="position: relative; max-width: 270px;">
+        <div id="slideCounter" style="position: absolute; top: 14px; right: 14px; background: rgba(0,0,0,0.55); color: #fff; font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 9999px; z-index: 10;">1 / 3</div>
+
+        <button id="btnPrevSlide" type="button" aria-label="Foto sebelumnya" style="position: absolute; left: -10px; top: 40%; transform: translateY(-50%); width: 30px; height: 30px; border-radius: 50%; background: #ffffff; border: 1px solid #fbcfe8; color: #be185d; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.12); z-index: 20; display: flex; align-items: center; justify-content: center;">‹</button>
+        <button id="btnNextSlide" type="button" aria-label="Foto selanjutnya" style="position: absolute; right: -10px; top: 40%; transform: translateY(-50%); width: 30px; height: 30px; border-radius: 50%; background: #ffffff; border: 1px solid #fbcfe8; color: #be185d; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.12); z-index: 20; display: flex; align-items: center; justify-content: center;">›</button>
+
         <img id="dinaImg" src="assets/aistudio/IMG-20261110-WA0692_a3015910.jpg" alt="Foto Dina" class="photo-img">
         <div class="photo-name">Dina 🌸✨</div>
-        <div class="photo-caption">Happy Birthday!!! 😋</div>
+        <div id="dinaCaption" class="photo-caption" style="min-height: 18px;">Happy Birthday!!! 😋</div>
+
+        <div id="slideDots" style="display: flex; justify-content: center; gap: 6px; margin-top: 8px;">
+          <span class="slide-dot" data-index="0" style="width: 20px; height: 7px; border-radius: 9999px; background: #be185d; cursor: pointer; transition: all 0.2s;"></span>
+          <span class="slide-dot" data-index="1" style="width: 7px; height: 7px; border-radius: 9999px; background: #fbcfe8; cursor: pointer; transition: all 0.2s;"></span>
+          <span class="slide-dot" data-index="2" style="width: 7px; height: 7px; border-radius: 9999px; background: #fbcfe8; cursor: pointer; transition: all 0.2s;"></span>
+        </div>
       </div>
 
       <!-- Modal Bottom Close Button -->
@@ -571,28 +581,61 @@ Be happy, be awesome. May peace be upon u!!!🤲✌☺️✌</p>
       playBlowSound() {
         this.initContext();
         if (this.muted || !this.ctx) return;
-        // White noise whoosh for candle blow
-        const bufferSize = this.ctx.sampleRate * 0.45;
+        const now = this.ctx.currentTime;
+        const duration = 0.85;
+
+        // Air breath / wind gust noise buffer
+        const bufferSize = Math.floor(this.ctx.sampleRate * duration);
         const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
         const data = buffer.getChannelData(0);
         for (let i = 0; i < bufferSize; i++) {
-          data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.3));
+          const progress = i / bufferSize;
+          const envelope = Math.sin(progress * Math.PI) * Math.pow(1 - progress, 0.4);
+          data[i] = (Math.random() * 2 - 1) * envelope;
         }
+
         const noise = this.ctx.createBufferSource();
         noise.buffer = buffer;
-        const filter = this.ctx.createBiquadFilter();
-        filter.type = 'lowpass';
-        filter.frequency.setValueAtTime(600, this.ctx.currentTime);
-        filter.frequency.linearRampToValueAtTime(200, this.ctx.currentTime + 0.4);
+
+        const lpFilter = this.ctx.createBiquadFilter();
+        lpFilter.type = 'lowpass';
+        lpFilter.frequency.setValueAtTime(1400, now);
+        lpFilter.frequency.exponentialRampToValueAtTime(320, now + duration);
+
+        const bpFilter = this.ctx.createBiquadFilter();
+        bpFilter.type = 'bandpass';
+        bpFilter.Q.value = 1.4;
+        bpFilter.frequency.setValueAtTime(850, now);
+        bpFilter.frequency.exponentialRampToValueAtTime(380, now + duration);
 
         const gain = this.ctx.createGain();
-        gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.45);
+        gain.gain.setValueAtTime(0.001, now);
+        gain.gain.linearRampToValueAtTime(0.38, now + 0.12);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
 
-        noise.connect(filter);
-        filter.connect(gain);
+        noise.connect(lpFilter);
+        lpFilter.connect(bpFilter);
+        bpFilter.connect(gain);
         gain.connect(this.ctx.destination);
-        noise.start();
+
+        // Low frequency displacement rumble
+        const rumble = this.ctx.createOscillator();
+        const rumbleGain = this.ctx.createGain();
+        rumble.type = 'sine';
+        rumble.frequency.setValueAtTime(95, now);
+        rumble.frequency.exponentialRampToValueAtTime(45, now + duration * 0.7);
+
+        rumbleGain.gain.setValueAtTime(0.001, now);
+        rumbleGain.gain.linearRampToValueAtTime(0.18, now + 0.1);
+        rumbleGain.gain.exponentialRampToValueAtTime(0.001, now + duration * 0.7);
+
+        rumble.connect(rumbleGain);
+        rumbleGain.connect(this.ctx.destination);
+
+        noise.start(now);
+        noise.stop(now + duration);
+        rumble.start(now);
+        rumble.stop(now + duration * 0.7);
       }
 
       playChime() {
@@ -822,10 +865,10 @@ Be happy, be awesome. May peace be upon u!!!🤲✌☺️✌</p>
         <span style="opacity: 0.6; font-size: 16px;">💨</span>
       `;
 
-      // Status badge "Maaf✌✌" + Relight button
+      // Status badge "Kue-nya virtual aja yaaaa😅" + Relight button
       candleActionArea.innerHTML = `
         <div style="display: inline-flex; align-items: center; gap: 8px;">
-          <span class="status-badge">Maaf✌✌</span>
+          <span class="status-badge">Kue-nya virtual aja yaaaa😅</span>
           <button id="btnRelight" class="btn-relight" title="Nyalakan lilin kembali">🔄</button>
         </div>
       `;
@@ -860,6 +903,45 @@ Be happy, be awesome. May peace be upon u!!!🤲✌☺️✌</p>
     btnTiupLilin.addEventListener('click', blowCandles);
     cakeGraphic.addEventListener('click', blowCandles);
     flamesGroup.addEventListener('click', blowCandles);
+
+    /* 3-Photo Carousel Script */
+    const photoSlides = [
+      { src: 'assets/aistudio/IMG-20261110-WA0692_a3015910.jpg', caption: 'Happy Birthday!!! 😋' },
+      { src: 'assets/aistudio/Foto_dina_2_10506b4f.jpg', caption: 'Hehehehe ✌😁✌' },
+      { src: 'assets/aistudio/Foto_dina_3_f5852c23.jpg', caption: 'Bismillah jadi BA Vaseline 😇' }
+    ];
+    let currentSlideIdx = 0;
+
+    function renderSlide(index) {
+      currentSlideIdx = (index + photoSlides.length) % photoSlides.length;
+      const slide = photoSlides[currentSlideIdx];
+      document.getElementById('dinaImg').src = slide.src;
+      document.getElementById('dinaCaption').textContent = slide.caption;
+      document.getElementById('slideCounter').textContent = (currentSlideIdx + 1) + ' / ' + photoSlides.length;
+      document.querySelectorAll('.slide-dot').forEach((dot, i) => {
+        if (i === currentSlideIdx) {
+          dot.style.width = '20px';
+          dot.style.background = '#be185d';
+        } else {
+          dot.style.width = '7px';
+          dot.style.background = '#fbcfe8';
+        }
+      });
+      sound.playChime();
+    }
+
+    document.getElementById('btnPrevSlide').addEventListener('click', () => {
+      renderSlide(currentSlideIdx - 1);
+    });
+    document.getElementById('btnNextSlide').addEventListener('click', () => {
+      renderSlide(currentSlideIdx + 1);
+    });
+    document.querySelectorAll('.slide-dot').forEach((dot) => {
+      dot.addEventListener('click', () => {
+        const idx = parseInt(dot.getAttribute('data-index'), 10);
+        renderSlide(idx);
+      });
+    });
   </script>
 </body>
 </html>

@@ -5,6 +5,8 @@ import {
   validateWish,
   calculatePetalStyle,
   getSpecialMessage,
+  getNextSlideIndex,
+  getPrevSlideIndex,
   PETAL_COLORS,
 } from './greeting';
 
@@ -62,3 +64,21 @@ test('getSpecialMessage includes recipient name', () => {
   assert.ok(msg.includes('Dina'));
   assert.ok(msg.includes('taman bunga'));
 });
+
+test('getNextSlideIndex and getPrevSlideIndex wrap correctly', () => {
+  const total = 3;
+  // Next wrapping
+  assert.equal(getNextSlideIndex(0, total), 1);
+  assert.equal(getNextSlideIndex(1, total), 2);
+  assert.equal(getNextSlideIndex(2, total), 0);
+
+  // Prev wrapping
+  assert.equal(getPrevSlideIndex(0, total), 2);
+  assert.equal(getPrevSlideIndex(2, total), 1);
+  assert.equal(getPrevSlideIndex(1, total), 0);
+
+  // Fallback on empty
+  assert.equal(getNextSlideIndex(0, 0), 0);
+  assert.equal(getPrevSlideIndex(0, 0), 0);
+});
+

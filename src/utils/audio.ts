@@ -116,43 +116,77 @@ class SoundManager {
   }
 
   /**
-   * Candle blow out whoosh & magic sparkle
+   * Candle blow out whoosh, wind gust & magic sparkle
    */
   public playBlowCandle() {
     if (this.isMuted) return;
     const ctx = this.initCtx();
     if (!ctx) return;
 
-    // Breath / white noise puff
-    const bufferSize = ctx.sampleRate * 0.4;
+    const now = ctx.currentTime;
+    const duration = 0.85;
+
+    // 1. Air breath / wind gust noise buffer
+    const bufferSize = Math.floor(ctx.sampleRate * duration);
     const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
     const data = buffer.getChannelData(0);
     for (let i = 0; i < bufferSize; i++) {
-      data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (ctx.sampleRate * 0.12));
+      // Pink/white noise hybrid with gentle curve
+      const progress = i / bufferSize;
+      const envelope = Math.sin(progress * Math.PI) * Math.pow(1 - progress, 0.4);
+      data[i] = (Math.random() * 2 - 1) * envelope;
     }
 
-    const noise = ctx.createBufferSource();
-    noise.buffer = buffer;
+    const noiseSource = ctx.createBufferSource();
+    noiseSource.buffer = buffer;
 
-    const filter = ctx.createBiquadFilter();
-    filter.type = 'bandpass';
-    filter.frequency.setValueAtTime(800, ctx.currentTime);
-    filter.frequency.exponentialRampToValueAtTime(300, ctx.currentTime + 0.35);
+    // Dynamic lowpass filter to mimic rushing wind frequency shift
+    const lpFilter = ctx.createBiquadFilter();
+    lpFilter.type = 'lowpass';
+    lpFilter.frequency.setValueAtTime(1400, now);
+    lpFilter.frequency.exponentialRampToValueAtTime(320, now + duration);
 
-    const gain = ctx.createGain();
-    gain.gain.setValueAtTime(0.2, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.35);
+    // Dynamic bandpass filter for windy turbulence whistling
+    const bpFilter = ctx.createBiquadFilter();
+    bpFilter.type = 'bandpass';
+    bpFilter.Q.value = 1.4;
+    bpFilter.frequency.setValueAtTime(850, now);
+    bpFilter.frequency.exponentialRampToValueAtTime(380, now + duration);
 
-    noise.connect(filter);
-    filter.connect(gain);
-    gain.connect(ctx.destination);
+    const noiseGain = ctx.createGain();
+    noiseGain.gain.setValueAtTime(0.001, now);
+    noiseGain.gain.linearRampToValueAtTime(0.88, now + 0.14);
+    noiseGain.gain.exponentialRampToValueAtTime(0.001, now + duration);
 
-    noise.start();
+    // Connect noise layers
+    noiseSource.connect(lpFilter);
+    lpFilter.connect(bpFilter);
+    bpFilter.connect(noiseGain);
+    noiseGain.connect(ctx.destination);
 
-    // Follow with cheerful chime
+    // 2. Low-frequency wind air displacement rumble (boosted volume)
+    const rumbleOsc = ctx.createOscillator();
+    const rumbleGain = ctx.createGain();
+    rumbleOsc.type = 'sine';
+    rumbleOsc.frequency.setValueAtTime(105, now);
+    rumbleOsc.frequency.exponentialRampToValueAtTime(40, now + duration * 0.75);
+
+    rumbleGain.gain.setValueAtTime(0.001, now);
+    rumbleGain.gain.linearRampToValueAtTime(0.45, now + 0.12);
+    rumbleGain.gain.exponentialRampToValueAtTime(0.001, now + duration * 0.75);
+
+    rumbleOsc.connect(rumbleGain);
+    rumbleGain.connect(ctx.destination);
+
+    noiseSource.start(now);
+    noiseSource.stop(now + duration);
+    rumbleOsc.start(now);
+    rumbleOsc.stop(now + duration * 0.75);
+
+    // Follow with cheerful sparkle celebration once candles extinguish
     setTimeout(() => {
       this.playSparkle();
-    }, 250);
+    }, 450);
   }
 
   /**
