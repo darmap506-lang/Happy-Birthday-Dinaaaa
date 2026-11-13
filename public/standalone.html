@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Artinyaapabangmessi</title>
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -16,9 +16,14 @@
       padding: 0;
     }
 
+    html {
+      -webkit-text-size-adjust: 100%;
+    }
+
     body {
       font-family: 'Poppins', sans-serif;
       min-height: 100vh;
+      min-height: 100dvh;
       background: radial-gradient(circle at 50% 20%, #ffeef4 0%, #ffd6e5 50%, #fbcfe8 100%);
       color: #333;
       overflow-x: hidden;
@@ -27,6 +32,19 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
+      padding: 64px 12px 96px;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    @media (min-width: 640px) {
+      body {
+        padding: 32px 24px;
+      }
+    }
+
+    button {
+      touch-action: manipulation;
+      font-family: inherit;
     }
 
     /* Ambient Sakura Petals */
@@ -35,10 +53,10 @@
       top: -40px;
       background: radial-gradient(circle at 35% 35%, #ffffff 0%, #ffc0cb 50%, #f472b6 100%);
       border-radius: 12px 1px 12px 1px;
-      opacity: 0.75;
+      opacity: 0.72;
       pointer-events: none;
       z-index: 1;
-      filter: drop-shadow(0 2px 4px rgba(244, 114, 182, 0.25));
+      will-change: transform, opacity;
       animation: fall linear infinite;
     }
 
@@ -62,16 +80,16 @@
     /* Floating Music Toggle */
     .music-btn {
       position: fixed;
-      top: 16px;
-      right: 16px;
+      top: max(12px, env(safe-area-inset-top));
+      right: max(12px, env(safe-area-inset-right));
       z-index: 50;
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      background: rgba(255, 255, 255, 0.85);
-      backdrop-filter: blur(8px);
-      border: 1px solid rgba(244, 114, 182, 0.4);
-      padding: 6px 14px;
+      min-height: 42px;
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid rgba(244, 114, 182, 0.45);
+      padding: 8px 14px;
       border-radius: 9999px;
       font-size: 12px;
       font-weight: 600;
@@ -95,9 +113,12 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 16px;
+      padding: 16px 16px 96px;
       perspective: 1600px;
       transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+    }
+    @media (min-width: 640px) {
+      .envelope-screen { padding: 16px; }
     }
     .envelope-screen.hidden {
       opacity: 0;
@@ -256,17 +277,22 @@
       position: relative;
       z-index: 10;
       max-width: 460px;
-      width: 90%;
-      margin: 20px auto;
-      background: rgba(255, 255, 255, 0.92);
-      backdrop-filter: blur(16px);
-      border-radius: 28px;
-      padding: 36px 28px;
+      width: 100%;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, 0.94);
+      border-radius: 26px;
+      padding: 24px 20px;
       text-align: center;
       box-shadow: 0 20px 45px rgba(136, 14, 79, 0.18);
-      border: 2px solid rgba(255, 255, 255, 0.9);
+      border: 2px solid rgba(255, 255, 255, 0.95);
       display: none;
       animation: fadeInCard 0.7s ease-out forwards;
+    }
+    @media (min-width: 390px) {
+      .card-container { padding: 28px 24px; }
+    }
+    @media (min-width: 640px) {
+      .card-container { border-radius: 28px; padding: 36px 28px; }
     }
     @keyframes fadeInCard {
       from { opacity: 0; transform: scale(0.95) translateY(10px); }
@@ -274,27 +300,41 @@
     }
 
     .card-subtitle {
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 700;
       color: #ad1457;
       text-transform: uppercase;
-      letter-spacing: 2.5px;
+      letter-spacing: 2.2px;
       margin-bottom: 8px;
+    }
+    @media (min-width: 640px) {
+      .card-subtitle { font-size: 12px; letter-spacing: 2.5px; }
     }
 
     .card-title {
       font-family: 'Playfair Display', serif;
-      font-size: 36px;
+      font-size: 26px;
+      line-height: 1.15;
       color: #880e4f;
       font-weight: 700;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
+      text-wrap: balance;
+    }
+    @media (min-width: 390px) {
+      .card-title { font-size: 30px; }
+    }
+    @media (min-width: 640px) {
+      .card-title { font-size: 36px; margin-bottom: 16px; }
     }
 
     .card-message {
-      font-size: 14.5px;
-      line-height: 1.7;
+      font-size: 13.5px;
+      line-height: 1.68;
       color: #4a4a4a;
-      margin-bottom: 28px;
+      margin-bottom: 24px;
+    }
+    @media (min-width: 640px) {
+      .card-message { font-size: 14.5px; line-height: 1.7; margin-bottom: 28px; }
     }
 
     /* Buttons */
@@ -303,7 +343,8 @@
       align-items: center;
       justify-content: center;
       gap: 8px;
-      padding: 13px 34px;
+      min-height: 48px;
+      padding: 12px 30px;
       background: linear-gradient(135deg, #d81b60, #ad1457);
       color: #ffffff;
       font-weight: 600;
@@ -320,13 +361,16 @@
       box-shadow: 0 10px 25px rgba(216, 27, 96, 0.5);
     }
     .btn-primary:active {
-      transform: translateY(0);
+      transform: scale(0.97);
     }
 
     .btn-close-envelope {
-      margin-top: 18px;
+      margin-top: 14px;
       background: transparent;
       border: none;
+      min-height: 44px;
+      padding: 8px 16px;
+      border-radius: 9999px;
       font-size: 13px;
       color: #9d174d;
       cursor: pointer;
@@ -344,12 +388,14 @@
       position: fixed;
       inset: 0;
       z-index: 100;
-      background: rgba(0, 0, 0, 0.5);
-      backdrop-filter: blur(6px);
+      background: rgba(76, 5, 25, 0.56);
       display: none;
       align-items: center;
       justify-content: center;
-      padding: 16px;
+      padding: 12px;
+    }
+    @media (min-width: 640px) {
+      .modal-backdrop { padding: 16px; }
     }
     .modal-backdrop.active {
       display: flex;
@@ -357,17 +403,21 @@
 
     .modal-content {
       position: relative;
-      background: rgba(255, 255, 255, 0.96);
-      border-radius: 28px;
-      padding: 24px 20px;
+      background: #ffffff;
+      border-radius: 26px;
+      padding: 20px 16px;
       max-width: 420px;
       width: 100%;
-      max-height: 90vh;
+      max-height: 90dvh;
       overflow-y: auto;
+      overscroll-behavior: contain;
       text-align: center;
       box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
       border: 2px solid #fbcfe8;
       animation: zoomModal 0.25s ease-out forwards;
+    }
+    @media (min-width: 640px) {
+      .modal-content { border-radius: 28px; padding: 24px 20px; }
     }
     @keyframes zoomModal {
       from { transform: scale(0.92); opacity: 0; }
@@ -376,14 +426,18 @@
 
     .close-x-btn {
       position: absolute;
-      top: 14px;
-      right: 14px;
+      top: 8px;
+      right: 8px;
+      min-width: 44px;
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       background: transparent;
       border: none;
       font-size: 20px;
       color: #f472b6;
       cursor: pointer;
-      padding: 4px 8px;
       border-radius: 50%;
     }
     .close-x-btn:hover {
@@ -428,16 +482,18 @@
     .action-btn-tiup {
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: 6px;
+      min-height: 44px;
       background: #fce7f3;
       border: 1px solid #fbcfe8;
       color: #be185d;
-      font-size: 12px;
+      font-size: 13px;
       font-weight: 600;
-      padding: 6px 14px;
+      padding: 8px 16px;
       border-radius: 9999px;
       cursor: pointer;
-      margin-top: 6px;
+      white-space: nowrap;
     }
     .status-badge {
       display: inline-flex;
@@ -447,7 +503,7 @@
       color: #047857;
       font-size: 12px;
       font-weight: 700;
-      padding: 6px 14px;
+      padding: 7px 14px;
       border-radius: 9999px;
       animation: bounce 1s infinite;
       margin-top: 6px;
@@ -460,8 +516,10 @@
       background: none;
       border: none;
       cursor: pointer;
-      font-size: 13px;
-      margin-left: 6px;
+      min-width: 38px;
+      min-height: 38px;
+      font-size: 14px;
+      margin-left: 4px;
       color: #6b7280;
     }
 
@@ -473,10 +531,17 @@
       border-radius: 18px;
       box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
       border: 1px solid #fce7f3;
-      margin: 14px auto 8px;
-      max-width: 260px;
+      margin: 12px auto 8px;
+      width: 100%;
+      max-width: 244px;
       transform: rotate(-1deg);
       animation: popPhoto 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+    @media (min-width: 390px) {
+      .photo-frame { max-width: 260px; }
+    }
+    @media (min-width: 640px) {
+      .photo-frame { max-width: 280px; }
     }
     @keyframes popPhoto {
       from { transform: scale(0.8) rotate(4deg); opacity: 0; }
@@ -487,6 +552,8 @@
       aspect-ratio: 1 / 1;
       object-fit: cover;
       border-radius: 12px;
+      user-select: none;
+      -webkit-user-drag: none;
     }
     .photo-name {
       font-family: 'Playfair Display', serif;
@@ -522,6 +589,7 @@
       position: absolute;
       bottom: -140px;
       opacity: 0;
+      will-change: transform, opacity;
       animation: balloonRise linear infinite;
     }
     @keyframes balloonRise {
@@ -536,18 +604,21 @@
       position: fixed;
       left: 0;
       right: 0;
-      bottom: 10px;
+      bottom: max(6px, env(safe-area-inset-bottom));
       pointer-events: none;
       overflow: visible;
       z-index: 12;
       display: flex;
       align-items: flex-end;
       justify-content: space-between;
-      padding: 0 14px;
+      padding: 0 8px;
+    }
+    @media (min-width: 640px) {
+      .pixel-mascots-layer { padding: 0 18px; }
     }
     .pixel-mascot-box {
       position: relative;
-      width: 105px;
+      width: 78px;
       pointer-events: auto;
       cursor: pointer;
       background: transparent;
@@ -555,17 +626,26 @@
       padding: 0;
       animation: pixelPopperRecoil 0.55s steps(2, end) infinite;
     }
+    @media (min-width: 390px) {
+      .pixel-mascot-box { width: 88px; }
+    }
+    @media (min-width: 640px) {
+      .pixel-mascot-box { width: 114px; }
+    }
     .pixel-modal-row {
       display: flex;
       align-items: flex-end;
       justify-content: center;
-      gap: 10px;
+      gap: 6px;
       width: 100%;
-      padding-top: 12px;
+      padding-top: 8px;
+    }
+    @media (min-width: 640px) {
+      .pixel-modal-row { gap: 12px; padding-top: 12px; }
     }
     .pixel-modal-mascot {
       position: relative;
-      width: 58px;
+      width: 48px;
       flex-shrink: 0;
       pointer-events: auto;
       cursor: pointer;
@@ -573,6 +653,12 @@
       border: none;
       padding: 0;
       user-select: none;
+    }
+    @media (min-width: 390px) {
+      .pixel-modal-mascot { width: 56px; }
+    }
+    @media (min-width: 640px) {
+      .pixel-modal-mascot { width: 66px; }
     }
     .pixel-speech-bubble {
       position: absolute;
@@ -588,10 +674,13 @@
       border-radius: 12px;
       box-shadow: 0 6px 16px rgba(136, 14, 79, 0.16);
       width: max-content;
-      max-width: 152px;
+      max-width: 140px;
       text-align: left;
       pointer-events: none;
       animation: pixelBubbleIn 0.24s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+    @media (min-width: 640px) {
+      .pixel-speech-bubble { max-width: 164px; }
     }
     .pixel-speech-bubble.left { left: 0; }
     .pixel-speech-bubble.right { right: 0; }
@@ -614,20 +703,23 @@
       align-items: center;
       justify-content: center;
       gap: 8px;
-      margin-top: 6px;
+      margin-top: 8px;
     }
     .action-btn-mic {
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: 5px;
+      min-height: 44px;
       background: #ffffff;
       border: 1px solid #fbcfe8;
       color: #be185d;
-      font-size: 12px;
+      font-size: 13px;
       font-weight: 600;
-      padding: 6px 12px;
+      padding: 8px 14px;
       border-radius: 9999px;
       cursor: pointer;
+      white-space: nowrap;
     }
     .action-btn-mic.listening {
       background: #ecfdf5;
@@ -695,30 +787,47 @@
     }
     .wish-form {
       display: flex;
-      gap: 6px;
+      gap: 8px;
       align-items: center;
     }
     .wish-input {
       flex: 1;
       min-width: 0;
+      min-height: 44px;
       background: #ffffff;
       border: 1px solid #fbcfe8;
-      border-radius: 10px;
-      padding: 6px 10px;
-      font-size: 12px;
+      border-radius: 12px;
+      padding: 8px 12px;
+      font-size: 16px;
       color: #334155;
       outline: none;
     }
     .wish-submit-btn {
       flex-shrink: 0;
+      min-height: 44px;
       background: linear-gradient(135deg, #d81b60, #ad1457);
       color: #ffffff;
       border: none;
-      border-radius: 10px;
-      padding: 6px 11px;
-      font-size: 12px;
+      border-radius: 12px;
+      padding: 8px 14px;
+      font-size: 13px;
       font-weight: 600;
       cursor: pointer;
+      white-space: nowrap;
+    }
+    @media (min-width: 640px) {
+      .wish-input {
+        min-height: 36px;
+        padding: 6px 10px;
+        font-size: 12px;
+        border-radius: 10px;
+      }
+      .wish-submit-btn {
+        min-height: 36px;
+        padding: 6px 12px;
+        font-size: 12px;
+        border-radius: 10px;
+      }
     }
     .wish-saved-card {
       background: rgba(255, 255, 255, 0.92);
@@ -803,22 +912,37 @@
       84% { transform: translate3d(0, -4px, 0) scale(0.99) rotate(-0.5deg); }
       100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1) rotate(0deg); }
     }
+    .roulette-wheel-wrap {
+      position: relative;
+      width: min(70vw, 268px);
+      height: min(70vw, 268px);
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    @media (min-width: 640px) {
+      .roulette-wheel-wrap {
+        width: 296px;
+        height: 296px;
+      }
+    }
     @keyframes pandaWalkFromLeft {
-      0% { transform: translate3d(-150px, 0, 0); opacity: 0; }
-      15% { opacity: 1; transform: translate3d(-115px, -3px, 0); }
-      35% { transform: translate3d(-85px, 0, 0); }
-      55% { transform: translate3d(-55px, -3px, 0); }
-      75% { transform: translate3d(-28px, 0, 0); }
-      90% { transform: translate3d(-10px, -2px, 0); }
+      0% { transform: translate3d(-28vw, 0, 0); opacity: 0; }
+      15% { opacity: 1; transform: translate3d(-21vw, -3px, 0); }
+      35% { transform: translate3d(-15vw, 0, 0); }
+      55% { transform: translate3d(-10vw, -3px, 0); }
+      75% { transform: translate3d(-5vw, 0, 0); }
+      90% { transform: translate3d(-2vw, -2px, 0); }
       100% { transform: translate3d(0, 0, 0); opacity: 1; }
     }
     @keyframes catWalkPrizeFromRight {
-      0% { transform: translate3d(150px, 0, 0); opacity: 0; }
-      15% { opacity: 1; transform: translate3d(115px, -3px, 0); }
-      35% { transform: translate3d(85px, 0, 0); }
-      55% { transform: translate3d(55px, -3px, 0); }
-      75% { transform: translate3d(28px, 0, 0); }
-      90% { transform: translate3d(10px, -2px, 0); }
+      0% { transform: translate3d(28vw, 0, 0); opacity: 0; }
+      15% { opacity: 1; transform: translate3d(21vw, -3px, 0); }
+      35% { transform: translate3d(15vw, 0, 0); }
+      55% { transform: translate3d(10vw, -3px, 0); }
+      75% { transform: translate3d(5vw, 0, 0); }
+      90% { transform: translate3d(2vw, -2px, 0); }
       100% { transform: translate3d(0, 0, 0); opacity: 1; }
     }
   </style>
@@ -827,7 +951,7 @@
 
   <!-- Floating Music Toggle Button -->
   <button id="musicToggleBtn" class="music-btn" title="Nyalakan / Matikan Musik">
-    🎵 <span id="musicStatusText">Musik: On</span>
+    🎵 <span id="musicStatusText">Musik: Off</span>
   </button>
 
   <!-- Pixel Panda (bottom-left) & Orange Cat (bottom-right) Carrying Balloons -->
@@ -1010,27 +1134,27 @@ Be happy, be awesome. May peace be upon u!!!🤲✌☺️✌</p>
       </section>
 
       <!-- Photo Revealed After Blowing Candles (3-Photo Slide Carousel) -->
-      <div id="photoFrame" class="photo-frame" style="position: relative; max-width: 270px;">
-        <button id="btnPrevSlide" type="button" aria-label="Foto sebelumnya" style="position: absolute; left: -10px; top: 40%; transform: translateY(-50%); width: 30px; height: 30px; border-radius: 50%; background: #ffffff; border: 1px solid #fbcfe8; color: #be185d; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.12); z-index: 20; display: flex; align-items: center; justify-content: center;">‹</button>
-        <button id="btnNextSlide" type="button" aria-label="Foto selanjutnya" style="position: absolute; right: -10px; top: 40%; transform: translateY(-50%); width: 30px; height: 30px; border-radius: 50%; background: #ffffff; border: 1px solid #fbcfe8; color: #be185d; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.12); z-index: 20; display: flex; align-items: center; justify-content: center;">›</button>
+      <div id="photoFrame" class="photo-frame" style="position: relative;">
+        <button id="btnPrevSlide" type="button" aria-label="Foto sebelumnya" style="position: absolute; left: -12px; top: 40%; transform: translateY(-50%); width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.96); border: 1px solid #fbcfe8; color: #be185d; font-size: 18px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.12); z-index: 20; display: flex; align-items: center; justify-content: center;">‹</button>
+        <button id="btnNextSlide" type="button" aria-label="Foto selanjutnya" style="position: absolute; right: -12px; top: 40%; transform: translateY(-50%); width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.96); border: 1px solid #fbcfe8; color: #be185d; font-size: 18px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.12); z-index: 20; display: flex; align-items: center; justify-content: center;">›</button>
 
         <img id="dinaImg" src="assets/aistudio/IMG-20261110-WA0692_a3015910.jpg" alt="Foto Dina" class="photo-img">
         <div class="photo-name">Dina 🌸✨</div>
         <div id="dinaCaption" class="photo-caption" style="min-height: 18px;">Happy Birthday!!! 😋</div>
 
-        <div id="slideDots" style="display: flex; justify-content: center; gap: 6px; margin-top: 8px;">
-          <span class="slide-dot" data-index="0" style="width: 20px; height: 7px; border-radius: 9999px; background: #be185d; cursor: pointer; transition: all 0.2s;"></span>
-          <span class="slide-dot" data-index="1" style="width: 7px; height: 7px; border-radius: 9999px; background: #fbcfe8; cursor: pointer; transition: all 0.2s;"></span>
-          <span class="slide-dot" data-index="2" style="width: 7px; height: 7px; border-radius: 9999px; background: #fbcfe8; cursor: pointer; transition: all 0.2s;"></span>
+        <div id="slideDots" style="display: flex; justify-content: center; gap: 4px; margin-top: 6px;">
+          <button type="button" class="slide-dot-btn" data-index="0" aria-label="Foto 1" style="background:transparent;border:none;padding:6px 4px;cursor:pointer;display:flex;align-items:center;"><span class="slide-dot" style="display:block;width:22px;height:7px;border-radius:9999px;background:#be185d;transition:all 0.2s;"></span></button>
+          <button type="button" class="slide-dot-btn" data-index="1" aria-label="Foto 2" style="background:transparent;border:none;padding:6px 4px;cursor:pointer;display:flex;align-items:center;"><span class="slide-dot" style="display:block;width:7px;height:7px;border-radius:9999px;background:#fbcfe8;transition:all 0.2s;"></span></button>
+          <button type="button" class="slide-dot-btn" data-index="2" aria-label="Foto 3" style="background:transparent;border:none;padding:6px 4px;cursor:pointer;display:flex;align-items:center;"><span class="slide-dot" style="display:block;width:7px;height:7px;border-radius:9999px;background:#fbcfe8;transition:all 0.2s;"></span></button>
         </div>
       </div>
 
       <!-- Modal Bottom Action Buttons -->
-      <div style="margin-top: 16px; display: flex; align-items: center; justify-content: center; gap: 10px;">
-        <button id="btnMainGame" type="button" style="display: none; align-items: center; justify-content: center; gap: 6px; padding: 10px 20px; font-size: 14px; font-weight: 600; color: #fff; background: linear-gradient(135deg, #f59e0b, #ec4899, #e11d48); border: none; border-radius: 9999px; box-shadow: 0 6px 18px rgba(236, 72, 153, 0.35); cursor: pointer;">
+      <div style="margin-top: 14px; display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: nowrap;">
+        <button id="btnMainGame" type="button" style="display: none; align-items: center; justify-content: center; gap: 6px; min-height: 44px; padding: 10px 18px; font-size: 13.5px; font-weight: 600; color: #fff; background: linear-gradient(135deg, #f59e0b, #ec4899, #e11d48); border: none; border-radius: 9999px; box-shadow: 0 6px 18px rgba(236, 72, 153, 0.35); cursor: pointer; white-space: nowrap;">
           🎮 Main game
         </button>
-        <button id="btnModalClose" class="btn-primary" style="padding: 10px 26px; font-size: 14px;" type="button">
+        <button id="btnModalClose" class="btn-primary" style="min-height: 44px; padding: 10px 24px; font-size: 13.5px; white-space: nowrap;" type="button">
           Tutup
         </button>
       </div>
@@ -1041,10 +1165,10 @@ Be happy, be awesome. May peace be upon u!!!🤲✌☺️✌</p>
   <div id="rouletteModal" class="modal-backdrop" style="z-index: 150;">
     <div class="modal-content" style="max-width: 440px; z-index: 10; overflow-x: hidden;">
       <button id="btnRouletteCloseX" class="close-x-btn" aria-label="Tutup">&times;</button>
-      <h2 id="rouletteModalTitle" style="font-family:'Playfair Display',serif;font-size:22px;color:#880e4f;margin-bottom:14px;padding:0 24px;">Semoga Beruntungggg!!!</h2>
+      <h2 id="rouletteModalTitle" style="font-family:'Playfair Display',serif;font-size:21px;color:#880e4f;margin-bottom:12px;padding:0 34px;">Semoga Beruntungggg!!!</h2>
 
       <div id="rouletteWheelStage">
-        <div style="position:relative;width:280px;height:280px;margin:0 auto;display:flex;align-items:center;justify-content:center;">
+        <div class="roulette-wheel-wrap">
           <div style="position:absolute;top:-8px;left:50%;transform:translateX(-50%);z-index:20;">
             <svg width="30" height="32" viewBox="0 0 32 34">
               <path d="M 16 32 L 4 8 Q 3 2 10 2 L 22 2 Q 29 2 28 8 Z" fill="#be185d" stroke="#fde68a" stroke-width="2.5"/>
@@ -1054,27 +1178,27 @@ Be happy, be awesome. May peace be upon u!!!🤲✌☺️✌</p>
         </div>
 
         <div style="margin-top:16px;">
-          <button id="btnSpinRoulette" class="btn-primary" type="button" style="padding:11px 28px;font-size:14px;">
+          <button id="btnSpinRoulette" class="btn-primary" type="button" style="min-height:46px;padding:11px 28px;font-size:14px;">
             🎯 Putar Roulette!
           </button>
         </div>
       </div>
 
       <div id="roulettePrizeStage" style="display:none;position:relative;overflow:hidden;padding:8px 0;">
-        <div style="display:flex;align-items:flex-end;justify-content:center;gap:8px;width:100%;">
-          <div id="prizePandaSlot" style="width:72px;flex-shrink:0;margin-bottom:4px;"></div>
-          <div id="prizeShoeBox" style="flex:1;min-width:0;max-width:210px;">
+        <div style="display:flex;align-items:flex-end;justify-content:center;gap:6px;width:100%;">
+          <div id="prizePandaSlot" style="width:clamp(54px,16vw,72px);flex-shrink:0;margin-bottom:4px;"></div>
+          <div id="prizeShoeBox" style="flex:1;min-width:0;max-width:min(46vw,196px);">
             <div style="border-radius:16px;overflow:hidden;border:2px solid #fbcfe8;aspect-ratio:4/3;background:#fdf2f8;box-shadow:0 10px 24px rgba(136,14,79,0.16);">
               <img src="assets/aistudio/Sepatu_NB_64664b7f.jpg" alt="Sepatu" loading="eager" decoding="async" style="width:100%;height:100%;object-fit:cover;object-position:center;">
             </div>
-            <p style="font-family:'Playfair Display',serif;font-size:19px;font-weight:700;color:#880e4f;margin-top:8px;">Sepatu 👟✨</p>
+            <p style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:#880e4f;margin-top:8px;">Sepatu 👟✨</p>
           </div>
-          <div id="prizeCatSlot" style="width:72px;flex-shrink:0;margin-bottom:4px;"></div>
+          <div id="prizeCatSlot" style="width:clamp(54px,16vw,72px);flex-shrink:0;margin-bottom:4px;"></div>
         </div>
 
         <div style="display:flex;gap:10px;margin-top:18px;justify-content:center;">
-          <button id="btnRouletteAgain" type="button" style="flex:1;max-width:150px;padding:10px 16px;border-radius:9999px;border:1px solid #fbcfe8;background:#fdf2f8;color:#9d174d;font-weight:600;font-size:13px;cursor:pointer;">Putar Lagi</button>
-          <button id="btnRouletteWinClose" class="btn-primary" type="button" style="flex:1;max-width:150px;padding:10px 16px;font-size:13px;">Tutup</button>
+          <button id="btnRouletteAgain" type="button" style="flex:1;max-width:150px;min-height:44px;padding:10px 14px;border-radius:9999px;border:1px solid #fbcfe8;background:#fdf2f8;color:#9d174d;font-weight:600;font-size:13px;cursor:pointer;white-space:nowrap;">Putar Lagi</button>
+          <button id="btnRouletteWinClose" class="btn-primary" type="button" style="flex:1;max-width:150px;min-height:44px;padding:10px 14px;font-size:13px;white-space:nowrap;">Tutup</button>
         </div>
       </div>
     </div>
@@ -1085,155 +1209,291 @@ Be happy, be awesome. May peace be upon u!!!🤲✌☺️✌</p>
 
   <script>
     /* ========================================================
-       1. WEB AUDIO API SYNTHESIZER (Happy Birthday Music Box)
+       1. SAMPLE-ACCURATE WEB AUDIO SYNTHESIZER (3/4 Waltz Music Box)
        ======================================================== */
+    const BEAT_SEC = 0.52;
+    const LOOKAHEAD_SEC = 0.16;
+    const SCHEDULER_INTERVAL_MS = 30;
+    const ENVELOPE_CHIME_SYNC_DELAY_SEC = 0.42;
+
+    const HAPPY_BIRTHDAY_NOTES = [
+      { freq: 261.63, beats: 0.75, bassFreq: 174.61 },
+      { freq: 261.63, beats: 0.25 },
+      { freq: 293.66, beats: 1.0, bassFreq: 174.61 },
+      { freq: 261.63, beats: 1.0 },
+      { freq: 349.23, beats: 1.0 },
+      { freq: 329.63, beats: 2.0, bassFreq: 130.81 },
+      { freq: 261.63, beats: 0.75 },
+      { freq: 261.63, beats: 0.25 },
+      { freq: 293.66, beats: 1.0, bassFreq: 130.81 },
+      { freq: 261.63, beats: 1.0 },
+      { freq: 392.00, beats: 1.0 },
+      { freq: 349.23, beats: 2.0, bassFreq: 174.61 },
+      { freq: 261.63, beats: 0.75 },
+      { freq: 261.63, beats: 0.25 },
+      { freq: 523.25, beats: 1.0, bassFreq: 174.61 },
+      { freq: 440.00, beats: 1.0 },
+      { freq: 349.23, beats: 1.0 },
+      { freq: 329.63, beats: 1.0, bassFreq: 116.54 },
+      { freq: 293.66, beats: 2.0 },
+      { freq: 466.16, beats: 0.75 },
+      { freq: 466.16, beats: 0.25 },
+      { freq: 440.00, beats: 1.0, bassFreq: 174.61 },
+      { freq: 349.23, beats: 1.0 },
+      { freq: 392.00, beats: 1.0, bassFreq: 130.81 },
+      { freq: 349.23, beats: 2.0, bassFreq: 174.61 }
+    ];
+
     class BirthdayAudio {
       constructor() {
         this.ctx = null;
+        this.musicMasterGain = null;
+        this.sfxMasterGain = null;
         this.musicPlaying = false;
-        this.timer = null;
+        this.schedulerTimer = null;
+        this.noteIndex = 0;
+        this.nextNoteTime = 0;
         this.muted = false;
+        this.ducked = false;
+        this.activeMusicNodes = new Set();
+        this.listeners = new Set();
+
+        if (typeof document !== 'undefined') {
+          document.addEventListener('visibilitychange', () => {
+            if (!document.hidden && this.musicPlaying && this.ctx && this.ctx.state === 'running') {
+              if (this.nextNoteTime < this.ctx.currentTime - 0.05) {
+                this.nextNoteTime = this.ctx.currentTime + 0.05;
+              }
+            }
+          });
+        }
       }
 
-      initContext() {
+      onStatusChange(fn) {
+        this.listeners.add(fn);
+        return () => this.listeners.delete(fn);
+      }
+
+      notify() {
+        const playing = this.isPlaying();
+        this.listeners.forEach((fn) => fn(playing));
+      }
+
+      ensureNodes() {
         if (!this.ctx) {
           const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-          if (AudioContextClass) {
-            this.ctx = new AudioContextClass();
-          }
+          if (!AudioContextClass) return null;
+          this.ctx = new AudioContextClass();
+          this.ctx.onstatechange = () => this.notify();
         }
-        if (this.ctx && this.ctx.state === 'suspended') {
-          this.ctx.resume();
+        if (!this.musicMasterGain) {
+          this.musicMasterGain = this.ctx.createGain();
+          this.musicMasterGain.gain.setValueAtTime(this.ducked ? 0.08 : 1.0, this.ctx.currentTime);
+          this.musicMasterGain.connect(this.ctx.destination);
         }
+        if (!this.sfxMasterGain) {
+          this.sfxMasterGain = this.ctx.createGain();
+          this.sfxMasterGain.gain.setValueAtTime(1.0, this.ctx.currentTime);
+          this.sfxMasterGain.connect(this.ctx.destination);
+        }
+        return this.ctx;
       }
 
-      playTone(freq, time, dur) {
-        if (this.muted || !this.ctx) return;
+      async resumeContext() {
+        const ctx = this.ensureNodes();
+        if (!ctx) return false;
+        if (ctx.state === 'suspended') {
+          try { await ctx.resume(); } catch (e) {}
+        }
+        return ctx.state === 'running';
+      }
+
+      isPlaying() {
+        return Boolean(this.musicPlaying && !this.muted && this.ctx && this.ctx.state === 'running');
+      }
+
+      isMuted() {
+        return this.muted;
+      }
+
+      setMusicDucked(ducked) {
+        this.ducked = ducked;
+        if (!this.ctx || !this.musicMasterGain) return;
+        const now = this.ctx.currentTime;
+        this.musicMasterGain.gain.cancelScheduledValues(now);
+        this.musicMasterGain.gain.setValueAtTime(this.musicMasterGain.gain.value, now);
+        this.musicMasterGain.gain.linearRampToValueAtTime(ducked ? 0.08 : 1.0, now + 0.14);
+      }
+
+      scheduleMusicBoxTone(freq, startTime, durationSec, peakGain, oscType = 'triangle') {
+        if (this.muted || !this.ctx || !this.musicMasterGain) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = oscType;
+        osc.frequency.setValueAtTime(freq, startTime);
+
+        const attack = Math.min(0.025, durationSec * 0.18);
+        const stopAt = startTime + durationSec;
+        gain.gain.setValueAtTime(0.0001, startTime);
+        gain.gain.exponentialRampToValueAtTime(peakGain, startTime + attack);
+        gain.gain.exponentialRampToValueAtTime(0.0001, stopAt);
+
+        osc.connect(gain);
+        gain.connect(this.musicMasterGain);
+        this.activeMusicNodes.add(osc);
+        osc.onended = () => {
+          this.activeMusicNodes.delete(osc);
+          try { osc.disconnect(); gain.disconnect(); } catch (e) {}
+        };
+        osc.start(startTime);
+        osc.stop(stopAt + 0.02);
+      }
+
+      scheduleSfxTone(freq, startTime, durationSec, peakGain = 0.14) {
+        if (this.muted || !this.ctx || !this.sfxMasterGain) return;
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
         osc.type = 'triangle';
-        osc.frequency.setValueAtTime(freq, time);
-
-        gain.gain.setValueAtTime(0.001, time);
-        gain.gain.exponentialRampToValueAtTime(0.18, time + 0.04);
-        gain.gain.exponentialRampToValueAtTime(0.0001, time + dur);
-
+        osc.frequency.setValueAtTime(freq, startTime);
+        gain.gain.setValueAtTime(0.0001, startTime);
+        gain.gain.exponentialRampToValueAtTime(peakGain, startTime + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, startTime + durationSec);
         osc.connect(gain);
-        gain.connect(this.ctx.destination);
-        osc.start(time);
-        osc.stop(time + dur);
+        gain.connect(this.sfxMasterGain);
+        osc.start(startTime);
+        osc.stop(startTime + durationSec + 0.02);
+      }
+
+      schedulerTick() {
+        if (!this.musicPlaying || this.muted || !this.ctx || this.ctx.state !== 'running') return;
+        const now = this.ctx.currentTime;
+        if (this.nextNoteTime < now - 0.1) {
+          this.nextNoteTime = now + 0.04;
+        }
+        const horizon = now + LOOKAHEAD_SEC;
+        while (this.nextNoteTime < horizon) {
+          const note = HAPPY_BIRTHDAY_NOTES[this.noteIndex];
+          const durSec = note.beats * BEAT_SEC;
+          this.scheduleMusicBoxTone(note.freq, this.nextNoteTime, Math.max(0.14, durSec * 0.92), 0.145, 'triangle');
+          if (note.bassFreq) {
+            this.scheduleMusicBoxTone(note.bassFreq, this.nextNoteTime, Math.min(durSec * 1.4, BEAT_SEC * 1.6), 0.045, 'sine');
+          }
+          this.nextNoteTime += durSec;
+          this.noteIndex = (this.noteIndex + 1) % HAPPY_BIRTHDAY_NOTES.length;
+        }
       }
 
       playBlowSound() {
-        this.initContext();
-        if (this.muted || !this.ctx) return;
-        const now = this.ctx.currentTime;
-        const duration = 0.85;
+        if (this.muted) return;
+        this.resumeContext().then((running) => {
+          if (!running || !this.ctx || !this.sfxMasterGain) return;
+          const now = this.ctx.currentTime;
+          const duration = 0.85;
+          const bufferSize = Math.floor(this.ctx.sampleRate * duration);
+          const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+          const data = buffer.getChannelData(0);
+          for (let i = 0; i < bufferSize; i++) {
+            const p = i / bufferSize;
+            data[i] = (Math.random() * 2 - 1) * Math.sin(p * Math.PI) * Math.pow(1 - p, 0.4);
+          }
+          const noise = this.ctx.createBufferSource();
+          noise.buffer = buffer;
+          const lp = this.ctx.createBiquadFilter();
+          lp.type = 'lowpass';
+          lp.frequency.setValueAtTime(1400, now);
+          lp.frequency.exponentialRampToValueAtTime(320, now + duration);
+          const bp = this.ctx.createBiquadFilter();
+          bp.type = 'bandpass';
+          bp.Q.value = 1.4;
+          bp.frequency.setValueAtTime(850, now);
+          bp.frequency.exponentialRampToValueAtTime(380, now + duration);
+          const gain = this.ctx.createGain();
+          gain.gain.setValueAtTime(0.001, now);
+          gain.gain.linearRampToValueAtTime(0.38, now + 0.12);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+          noise.connect(lp); lp.connect(bp); bp.connect(gain); gain.connect(this.sfxMasterGain);
 
-        // Air breath / wind gust noise buffer
-        const bufferSize = Math.floor(this.ctx.sampleRate * duration);
-        const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
-        const data = buffer.getChannelData(0);
-        for (let i = 0; i < bufferSize; i++) {
-          const progress = i / bufferSize;
-          const envelope = Math.sin(progress * Math.PI) * Math.pow(1 - progress, 0.4);
-          data[i] = (Math.random() * 2 - 1) * envelope;
-        }
+          const rumble = this.ctx.createOscillator();
+          const rumbleGain = this.ctx.createGain();
+          rumble.type = 'sine';
+          rumble.frequency.setValueAtTime(95, now);
+          rumble.frequency.exponentialRampToValueAtTime(45, now + duration * 0.7);
+          rumbleGain.gain.setValueAtTime(0.001, now);
+          rumbleGain.gain.linearRampToValueAtTime(0.18, now + 0.1);
+          rumbleGain.gain.exponentialRampToValueAtTime(0.001, now + duration * 0.7);
+          rumble.connect(rumbleGain); rumbleGain.connect(this.sfxMasterGain);
 
-        const noise = this.ctx.createBufferSource();
-        noise.buffer = buffer;
-
-        const lpFilter = this.ctx.createBiquadFilter();
-        lpFilter.type = 'lowpass';
-        lpFilter.frequency.setValueAtTime(1400, now);
-        lpFilter.frequency.exponentialRampToValueAtTime(320, now + duration);
-
-        const bpFilter = this.ctx.createBiquadFilter();
-        bpFilter.type = 'bandpass';
-        bpFilter.Q.value = 1.4;
-        bpFilter.frequency.setValueAtTime(850, now);
-        bpFilter.frequency.exponentialRampToValueAtTime(380, now + duration);
-
-        const gain = this.ctx.createGain();
-        gain.gain.setValueAtTime(0.001, now);
-        gain.gain.linearRampToValueAtTime(0.38, now + 0.12);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
-
-        noise.connect(lpFilter);
-        lpFilter.connect(bpFilter);
-        bpFilter.connect(gain);
-        gain.connect(this.ctx.destination);
-
-        // Low frequency displacement rumble
-        const rumble = this.ctx.createOscillator();
-        const rumbleGain = this.ctx.createGain();
-        rumble.type = 'sine';
-        rumble.frequency.setValueAtTime(95, now);
-        rumble.frequency.exponentialRampToValueAtTime(45, now + duration * 0.7);
-
-        rumbleGain.gain.setValueAtTime(0.001, now);
-        rumbleGain.gain.linearRampToValueAtTime(0.18, now + 0.1);
-        rumbleGain.gain.exponentialRampToValueAtTime(0.001, now + duration * 0.7);
-
-        rumble.connect(rumbleGain);
-        rumbleGain.connect(this.ctx.destination);
-
-        noise.start(now);
-        noise.stop(now + duration);
-        rumble.start(now);
-        rumble.stop(now + duration * 0.7);
-      }
-
-      playChime() {
-        this.initContext();
-        if (this.muted || !this.ctx) return;
-        const now = this.ctx.currentTime;
-        [523.25, 659.25, 783.99, 1046.50].forEach((f, i) => {
-          this.playTone(f, now + i * 0.08, 0.4);
+          noise.start(now); noise.stop(now + duration);
+          rumble.start(now); rumble.stop(now + duration * 0.7);
         });
       }
 
-      startMelody() {
-        this.initContext();
-        if (this.musicPlaying || this.muted) return;
+      playChime() {
+        if (this.muted) return;
+        this.resumeContext().then((running) => {
+          if (!running || !this.ctx) return;
+          const now = this.ctx.currentTime + 0.01;
+          [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => {
+            this.scheduleSfxTone(f, now + i * 0.08, 0.36, 0.13);
+          });
+        });
+      }
+
+      async startMelody(options = {}) {
+        const delaySec = options.delaySec || 0;
+        const restart = options.restartFromBeginning || false;
+        const running = await this.resumeContext();
+        if (!running || this.muted || !this.ctx) {
+          this.notify();
+          return false;
+        }
+        if (this.musicPlaying) {
+          this.notify();
+          return true;
+        }
         this.musicPlaying = true;
+        if (restart) this.noteIndex = 0;
 
-        const melody = [
-          { f: 261.63, d: 0.35 }, { f: 261.63, d: 0.25 }, { f: 293.66, d: 0.6 },
-          { f: 261.63, d: 0.6 },  { f: 349.23, d: 0.6 },  { f: 329.63, d: 1.1 },
-          { f: 261.63, d: 0.35 }, { f: 261.63, d: 0.25 }, { f: 293.66, d: 0.6 },
-          { f: 261.63, d: 0.6 },  { f: 392.00, d: 0.6 },  { f: 349.23, d: 1.1 },
-          { f: 261.63, d: 0.35 }, { f: 261.63, d: 0.25 }, { f: 523.25, d: 0.6 },
-          { f: 440.00, d: 0.6 },  { f: 349.23, d: 0.6 },  { f: 329.63, d: 0.6 },
-          { f: 293.66, d: 0.8 },
-          { f: 466.16, d: 0.35 }, { f: 466.16, d: 0.25 }, { f: 440.00, d: 0.6 },
-          { f: 349.23, d: 0.6 },  { f: 392.00, d: 0.6 },  { f: 349.23, d: 1.3 }
-        ];
+        if (this.musicMasterGain) {
+          const now = this.ctx.currentTime;
+          this.musicMasterGain.gain.cancelScheduledValues(now);
+          this.musicMasterGain.gain.setValueAtTime(this.ducked ? 0.08 : 1.0, now);
+        }
 
-        let index = 0;
-        const playNext = () => {
-          if (!this.musicPlaying || this.muted || !this.ctx) return;
-          const note = melody[index];
-          this.playTone(note.f, this.ctx.currentTime, note.d);
-          index = (index + 1) % melody.length;
-          this.timer = setTimeout(playNext, note.d * 900 + 120);
-        };
-        playNext();
+        this.nextNoteTime = this.ctx.currentTime + Math.max(0.03, delaySec);
+        this.schedulerTick();
+        if (this.schedulerTimer) clearInterval(this.schedulerTimer);
+        this.schedulerTimer = setInterval(() => this.schedulerTick(), SCHEDULER_INTERVAL_MS);
+        this.notify();
+        return true;
       }
 
       stopMelody() {
         this.musicPlaying = false;
-        if (this.timer) clearTimeout(this.timer);
+        if (this.schedulerTimer) {
+          clearInterval(this.schedulerTimer);
+          this.schedulerTimer = null;
+        }
+        if (this.ctx && this.musicMasterGain) {
+          const now = this.ctx.currentTime;
+          this.musicMasterGain.gain.cancelScheduledValues(now);
+          this.musicMasterGain.gain.setValueAtTime(this.musicMasterGain.gain.value, now);
+          this.musicMasterGain.gain.linearRampToValueAtTime(0.0001, now + 0.08);
+        }
+        this.activeMusicNodes.forEach((osc) => {
+          try { osc.stop(this.ctx ? this.ctx.currentTime + 0.09 : 0); } catch (e) {}
+        });
+        this.notify();
       }
 
-      toggleMute() {
-        this.muted = !this.muted;
-        if (this.muted) {
+      async toggleMute() {
+        if (this.isPlaying()) {
+          this.muted = true;
           this.stopMelody();
-        } else {
-          this.startMelody();
+          return false;
         }
-        return !this.muted;
+        this.muted = false;
+        return this.startMelody({ delaySec: 0.03 });
       }
     }
 
@@ -1355,9 +1615,13 @@ Be happy, be awesome. May peace be upon u!!!🤲✌☺️✌</p>
 
     let candlesBlown = false;
 
-    // Music Toggle
-    musicBtn.addEventListener('click', () => {
-      const isOn = sound.toggleMute();
+    // Music Toggle synced with live AudioContext state
+    sound.onStatusChange((playing) => {
+      musicStatusText.textContent = playing ? 'Musik: On' : 'Musik: Off';
+    });
+
+    musicBtn.addEventListener('click', async () => {
+      const isOn = await sound.toggleMute();
       musicStatusText.textContent = isOn ? 'Musik: On' : 'Musik: Off';
     });
 
@@ -1369,7 +1633,9 @@ Be happy, be awesome. May peace be upon u!!!🤲✌☺️✌</p>
       isOpeningEnvelope = true;
       envelopeWrapper.classList.add('is-unsealing');
       sound.playChime();
-      sound.startMelody();
+      if (!sound.isMuted() && !sound.isPlaying()) {
+        sound.startMelody({ delaySec: ENVELOPE_CHIME_SYNC_DELAY_SEC });
+      }
 
       setTimeout(() => envelopeWrapper.classList.add('is-top-open'), 240);
       setTimeout(() => envelopeWrapper.classList.add('is-bottom-open'), 620);
@@ -1444,6 +1710,7 @@ Be happy, be awesome. May peace be upon u!!!🤲✌☺️✌</p>
       }
       micSustainedFrames = 0;
       micActive = false;
+      sound.setMusicDucked(false);
     }
 
     function bindCandleButtons() {
@@ -1499,6 +1766,7 @@ Be happy, be awesome. May peace be upon u!!!🤲✌☺️✌</p>
         micAudioCtx = ctxAudio;
         micActive = true;
         micSustainedFrames = 0;
+        sound.setMusicDucked(true);
 
         const micBtn = document.getElementById('btnTiupMic');
         if (micBtn) {
@@ -1729,9 +1997,11 @@ Be happy, be awesome. May peace be upon u!!!🤲✌☺️✌</p>
       const slide = photoSlides[currentSlideIdx];
       document.getElementById('dinaImg').src = slide.src;
       document.getElementById('dinaCaption').textContent = slide.caption;
-      document.querySelectorAll('.slide-dot').forEach((dot, i) => {
+      document.querySelectorAll('.slide-dot-btn').forEach((btn, i) => {
+        const dot = btn.querySelector('.slide-dot');
+        if (!dot) return;
         if (i === currentSlideIdx) {
-          dot.style.width = '20px';
+          dot.style.width = '22px';
           dot.style.background = '#be185d';
         } else {
           dot.style.width = '7px';
@@ -1747,12 +2017,27 @@ Be happy, be awesome. May peace be upon u!!!🤲✌☺️✌</p>
     document.getElementById('btnNextSlide').addEventListener('click', () => {
       renderSlide(currentSlideIdx + 1);
     });
-    document.querySelectorAll('.slide-dot').forEach((dot) => {
-      dot.addEventListener('click', () => {
-        const idx = parseInt(dot.getAttribute('data-index'), 10);
+    document.querySelectorAll('.slide-dot-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const idx = parseInt(btn.getAttribute('data-index'), 10);
         renderSlide(idx);
       });
     });
+
+    let touchStartX = null;
+    photoFrame.addEventListener('touchstart', (e) => {
+      if (e.touches && e.touches.length > 0) {
+        touchStartX = e.touches[0].clientX;
+      }
+    }, { passive: true });
+    photoFrame.addEventListener('touchend', (e) => {
+      if (touchStartX === null || !e.changedTouches || e.changedTouches.length === 0) return;
+      const deltaX = e.changedTouches[0].clientX - touchStartX;
+      touchStartX = null;
+      if (Math.abs(deltaX) < 36) return;
+      if (deltaX < 0) renderSlide(currentSlideIdx + 1);
+      else renderSlide(currentSlideIdx - 1);
+    }, { passive: true });
 
     /* ========================================================
        5. PIXEL PANDA & ORANGE CAT ACROSS ALL 4 PAGES

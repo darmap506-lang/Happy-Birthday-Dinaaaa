@@ -55,6 +55,7 @@ export const SurpriseModal: React.FC<SurpriseModalProps> = ({
   const [balloonRunKey, setBalloonRunKey] = useState(0);
   const [isGameOpen, setIsGameOpen] = useState(false);
   const blowTimersRef = useRef<number[]>([]);
+  const touchStartXRef = useRef<number | null>(null);
 
   // Microphone blow-detection state
   const [micActive, setMicActive] = useState(false);
@@ -139,8 +140,17 @@ export const SurpriseModal: React.FC<SurpriseModalProps> = ({
     return () => {
       clearBlowTimers();
       stopMicrophone();
+      sound.setMusicDucked(false);
     };
   }, [isOpen, stopMicrophone]);
+
+  // Duck background music softly while microphone is listening so speaker audio won't falsely trigger blow detection
+  useEffect(() => {
+    sound.setMusicDucked(isOpen && micActive);
+    return () => {
+      sound.setMusicDucked(false);
+    };
+  }, [isOpen, micActive]);
 
   // Preload Page 4 carousel photos, Roulette modal chunk, and Sepatu NB image once candles are blown
   useEffect(() => {
@@ -289,7 +299,7 @@ export const SurpriseModal: React.FC<SurpriseModalProps> = ({
       role="dialog"
       aria-modal="true"
       aria-label="Kejutan Ulang Tahun"
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/50 backdrop-blur-xs animate-in fade-in duration-300"
+      className="fixed inset-0 z-50 flex items-center justify-center p-2.5 sm:p-4 bg-rose-950/55 animate-in fade-in duration-300"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
@@ -297,19 +307,20 @@ export const SurpriseModal: React.FC<SurpriseModalProps> = ({
       {/* Flying Balloons rising from the bottom of the screen */}
       <FlyingBalloons runKey={balloonRunKey} count={12} />
 
-      <div className="relative z-10 bg-white/95 border-2 border-pink-200/90 rounded-3xl p-5 sm:p-7 max-w-md w-full max-h-[90vh] overflow-y-auto text-center shadow-2xl transition-all transform scale-100 animate-in zoom-in-95 duration-200">
+      <div className="relative z-10 bg-white/97 border-2 border-pink-200/90 rounded-[24px] sm:rounded-3xl p-4 min-[390px]:p-5 sm:p-7 max-w-md w-full max-h-[90dvh] overflow-y-auto overscroll-contain text-center shadow-2xl transition-all transform scale-100 animate-in zoom-in-95 duration-200">
         {/* Close icon top-right */}
         <button
+          type="button"
           onClick={onClose}
           aria-label="Tutup kejutan"
-          className="absolute top-3.5 right-3.5 p-2 text-pink-400 hover:text-pink-700 hover:bg-pink-50 rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-pink-400 cursor-pointer"
+          className="absolute top-2 right-2 sm:top-3.5 sm:right-3.5 min-w-[44px] min-h-[44px] flex items-center justify-center text-pink-400 hover:text-pink-700 hover:bg-pink-50 rounded-full transition-colors touch-manipulation focus:outline-none focus-visible:ring-2 focus-visible:ring-pink-400 cursor-pointer z-20"
         >
           <X className="w-5 h-5" />
         </button>
 
         {/* Interactive Vector Cake flanked by Pixel Panda (left) & Orange Cat (right) */}
-        <div className="my-1 flex flex-col items-center">
-          <div className="relative flex items-end justify-center gap-1.5 sm:gap-3 w-full pt-3">
+        <div className="my-0.5 flex flex-col items-center">
+          <div className="relative flex items-end justify-center gap-1 min-[390px]:gap-2 sm:gap-3 w-full pt-4 sm:pt-3">
             <div className="mb-1 shrink-0">
               <PixelPanda mode={candlesBlown ? 'cake' : isBlowing ? 'clap' : 'idle'} />
             </div>
@@ -334,12 +345,12 @@ export const SurpriseModal: React.FC<SurpriseModalProps> = ({
           <div className="mt-2.5 flex flex-col items-center gap-2 w-full">
             {!candlesBlown ? (
               <>
-                <div className="flex flex-wrap items-center justify-center gap-2">
+                <div className="flex flex-wrap items-center justify-center gap-2 w-full">
                   <button
                     type="button"
                     onClick={handleBlowCandles}
                     disabled={isBlowing}
-                    className={`inline-flex items-center gap-1.5 text-xs font-semibold px-4 py-1.5 rounded-full transition-all shadow-sm cursor-pointer ${
+                    className={`min-h-[44px] inline-flex items-center justify-center gap-1.5 text-xs sm:text-sm font-semibold px-4 py-2 rounded-full transition-all shadow-sm cursor-pointer touch-manipulation whitespace-nowrap ${
                       isBlowing
                         ? 'bg-sky-100 text-sky-800 scale-105 ring-2 ring-sky-300'
                         : 'text-pink-700 bg-pink-100/85 hover:bg-pink-200/95 hover:scale-105 active:scale-95'
@@ -354,7 +365,7 @@ export const SurpriseModal: React.FC<SurpriseModalProps> = ({
                     onClick={handleToggleMicrophone}
                     disabled={isBlowing}
                     aria-pressed={micActive}
-                    className={`inline-flex items-center gap-1.5 text-xs font-semibold px-3.5 py-1.5 rounded-full transition-all shadow-sm cursor-pointer border ${
+                    className={`min-h-[44px] inline-flex items-center justify-center gap-1.5 text-xs sm:text-sm font-semibold px-4 py-2 rounded-full transition-all shadow-sm cursor-pointer touch-manipulation whitespace-nowrap border ${
                       micActive
                         ? 'bg-emerald-50 text-emerald-800 border-emerald-300 ring-2 ring-emerald-200'
                         : 'bg-white text-rose-700 border-pink-200 hover:bg-pink-50 hover:scale-105 active:scale-95'
@@ -452,7 +463,7 @@ export const SurpriseModal: React.FC<SurpriseModalProps> = ({
                     setIsEditingWish(true);
                     setWishError(null);
                   }}
-                  className="inline-flex items-center gap-1 text-[11px] font-semibold text-pink-700 hover:text-pink-900 bg-white/80 hover:bg-white px-2.5 py-0.5 rounded-full border border-pink-200 transition-colors cursor-pointer"
+                  className="min-h-[36px] inline-flex items-center gap-1 text-[11px] font-semibold text-pink-700 hover:text-pink-900 bg-white/85 hover:bg-white px-3 py-1 rounded-full border border-pink-200 transition-colors touch-manipulation cursor-pointer"
                 >
                   <Pencil className="w-3 h-3" />
                   <span>Ubah</span>
@@ -473,11 +484,11 @@ export const SurpriseModal: React.FC<SurpriseModalProps> = ({
                     maxLength={MAX_BIRTHDAY_WISH_LENGTH}
                     placeholder="Tulis harapan ulang tahunmu..."
                     aria-label="Tulis harapan ulang tahunmu"
-                    className="flex-1 min-w-0 bg-white/95 border border-pink-200 rounded-xl px-3 py-1.5 text-xs text-slate-700 placeholder:text-pink-300 focus:outline-none focus:ring-2 focus:ring-pink-400"
+                    className="flex-1 min-w-0 min-h-[44px] bg-white/95 border border-pink-200 rounded-xl px-3 py-2 text-base sm:text-xs text-slate-700 placeholder:text-pink-300 focus:outline-none focus:ring-2 focus:ring-pink-400"
                   />
                   <button
                     type="submit"
-                    className="shrink-0 inline-flex items-center gap-1 px-3 py-1.5 bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700 text-white text-xs font-semibold rounded-xl shadow-sm transition-all active:scale-95 cursor-pointer"
+                    className="shrink-0 min-h-[44px] inline-flex items-center justify-center gap-1 px-3.5 py-2 bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700 text-white text-xs sm:text-sm font-semibold rounded-xl shadow-sm transition-all active:scale-95 touch-manipulation cursor-pointer"
                   >
                     <Sparkles className="w-3.5 h-3.5" />
                     <span>Simpan</span>
@@ -521,17 +532,32 @@ export const SurpriseModal: React.FC<SurpriseModalProps> = ({
 
         {/* Revealed Photo Carousel after blowing candles */}
         {candlesBlown && (
-          <div className="mt-3.5 animate-in zoom-in-95 fade-in duration-500 flex flex-col items-center w-full">
-            <div className="relative bg-white p-3 pb-3 rounded-2xl shadow-xl border border-pink-200/90 transform rotate-[-0.5deg] hover:rotate-0 transition-transform duration-300 max-w-[270px] sm:max-w-[290px] w-full">
+          <div className="mt-3 animate-in zoom-in-95 fade-in duration-500 flex flex-col items-center w-full">
+            <div
+              onTouchStart={(e) => {
+                touchStartXRef.current = e.touches[0]?.clientX ?? null;
+              }}
+              onTouchEnd={(e) => {
+                if (touchStartXRef.current === null) return;
+                const endX = e.changedTouches[0]?.clientX ?? touchStartXRef.current;
+                const deltaX = endX - touchStartXRef.current;
+                touchStartXRef.current = null;
+                if (Math.abs(deltaX) > 36) {
+                  if (deltaX < 0) handleNextSlide();
+                  else handlePrevSlide();
+                }
+              }}
+              className="relative bg-white p-2.5 sm:p-3 pb-3 rounded-2xl shadow-xl border border-pink-200/90 transform rotate-[-0.5deg] hover:rotate-0 transition-transform duration-300 max-w-[228px] min-[390px]:max-w-[254px] sm:max-w-[290px] w-full touch-pan-y"
+            >
               {/* Prev Slide Arrow */}
               <button
                 type="button"
                 onClick={handlePrevSlide}
                 aria-label="Foto sebelumnya"
                 title="Foto sebelumnya"
-                className="absolute left-[-12px] top-[40%] -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-white/95 hover:bg-pink-50 text-pink-700 shadow-md border border-pink-200 flex items-center justify-center transition-all hover:scale-110 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-pink-400 cursor-pointer"
+                className="absolute -left-3.5 sm:-left-3 top-[40%] -translate-y-1/2 z-20 w-10 h-10 sm:w-9 sm:h-9 rounded-full bg-white/95 hover:bg-pink-50 text-pink-700 shadow-md border border-pink-200 flex items-center justify-center transition-all hover:scale-110 active:scale-95 touch-manipulation focus:outline-none focus-visible:ring-2 focus-visible:ring-pink-400 cursor-pointer"
               >
-                <ChevronLeft className="w-4 h-4" />
+                <ChevronLeft className="w-5 h-5 sm:w-4 sm:h-4" />
               </button>
 
               {/* Next Slide Arrow */}
@@ -540,9 +566,9 @@ export const SurpriseModal: React.FC<SurpriseModalProps> = ({
                 onClick={handleNextSlide}
                 aria-label="Foto selanjutnya"
                 title="Foto selanjutnya"
-                className="absolute right-[-12px] top-[40%] -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-white/95 hover:bg-pink-50 text-pink-700 shadow-md border border-pink-200 flex items-center justify-center transition-all hover:scale-110 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-pink-400 cursor-pointer"
+                className="absolute -right-3.5 sm:-right-3 top-[40%] -translate-y-1/2 z-20 w-10 h-10 sm:w-9 sm:h-9 rounded-full bg-white/95 hover:bg-pink-50 text-pink-700 shadow-md border border-pink-200 flex items-center justify-center transition-all hover:scale-110 active:scale-95 touch-manipulation focus:outline-none focus-visible:ring-2 focus-visible:ring-pink-400 cursor-pointer"
               >
-                <ChevronRight className="w-4 h-4" />
+                <ChevronRight className="w-5 h-5 sm:w-4 sm:h-4" />
               </button>
 
               {/* Image Frame */}
@@ -566,19 +592,23 @@ export const SurpriseModal: React.FC<SurpriseModalProps> = ({
                 </p>
 
                 {/* Dot Indicators */}
-                <div className="flex items-center justify-center gap-1.5 mt-2">
+                <div className="flex items-center justify-center gap-0.5 mt-1.5">
                   {DEFAULT_PHOTO_SLIDES.map((_, idx) => (
                     <button
                       key={idx}
                       type="button"
                       onClick={() => handleSelectSlide(idx)}
                       aria-label={`Lihat foto ${idx + 1}`}
-                      className={`h-2 transition-all rounded-full cursor-pointer ${
-                        currentSlide === idx
-                          ? 'w-5 bg-gradient-to-r from-pink-600 to-rose-600 shadow-sm'
-                          : 'w-2 bg-pink-200 hover:bg-pink-300'
-                      }`}
-                    />
+                      className="p-1.5 flex items-center justify-center cursor-pointer touch-manipulation focus:outline-none focus-visible:ring-2 focus-visible:ring-pink-400 rounded-full"
+                    >
+                      <span
+                        className={`block h-2 transition-all rounded-full ${
+                          currentSlide === idx
+                            ? 'w-5 bg-gradient-to-r from-pink-600 to-rose-600 shadow-sm'
+                            : 'w-2 bg-pink-200 hover:bg-pink-300'
+                        }`}
+                      />
+                    </button>
                   ))}
                 </div>
               </div>
@@ -587,7 +617,7 @@ export const SurpriseModal: React.FC<SurpriseModalProps> = ({
         )}
 
         {/* Action Buttons */}
-        <div className="flex items-center justify-center gap-3 mt-4">
+        <div className="flex items-center justify-center gap-2.5 sm:gap-3 mt-4">
           {candlesBlown && (
             <button
               type="button"
@@ -596,7 +626,7 @@ export const SurpriseModal: React.FC<SurpriseModalProps> = ({
                 setIsGameOpen(true);
               }}
               data-testid="btn-main-game"
-              className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-5 sm:px-6 py-2.5 bg-gradient-to-r from-amber-400 via-pink-500 to-rose-500 hover:from-amber-500 hover:via-pink-600 hover:to-rose-600 text-white font-semibold text-sm sm:text-base rounded-full shadow-lg shadow-pink-500/30 hover:-translate-y-0.5 active:translate-y-0 transition-all focus:outline-none focus-visible:ring-4 focus-visible:ring-pink-300 cursor-pointer"
+              className="flex-1 sm:flex-initial min-h-[46px] inline-flex items-center justify-center gap-1.5 px-4 sm:px-6 py-2.5 bg-gradient-to-r from-amber-400 via-pink-500 to-rose-500 hover:from-amber-500 hover:via-pink-600 hover:to-rose-600 text-white font-semibold text-sm sm:text-base rounded-full shadow-lg shadow-pink-500/30 hover:-translate-y-0.5 active:scale-[0.98] transition-all touch-manipulation whitespace-nowrap focus:outline-none focus-visible:ring-4 focus-visible:ring-pink-300 cursor-pointer"
             >
               <Gamepad2 className="w-4 h-4 shrink-0" />
               <span>Main game</span>
@@ -606,8 +636,8 @@ export const SurpriseModal: React.FC<SurpriseModalProps> = ({
             type="button"
             onClick={onClose}
             className={`${
-              candlesBlown ? 'flex-1 sm:flex-initial px-6 sm:px-8' : 'w-full sm:w-auto px-8'
-            } py-2.5 bg-gradient-to-r from-[#d81b60] to-[#ad1457] hover:from-[#c2185b] hover:to-[#880e4f] text-white font-medium text-sm sm:text-base rounded-full shadow-lg shadow-pink-600/30 hover:shadow-pink-600/50 hover:-translate-y-0.5 active:translate-y-0 transition-all focus:outline-none focus-visible:ring-4 focus-visible:ring-pink-300 cursor-pointer`}
+              candlesBlown ? 'flex-1 sm:flex-initial px-5 sm:px-8' : 'w-full sm:w-auto px-8'
+            } min-h-[46px] py-2.5 bg-gradient-to-r from-[#d81b60] to-[#ad1457] hover:from-[#c2185b] hover:to-[#880e4f] text-white font-medium text-sm sm:text-base rounded-full shadow-lg shadow-pink-600/30 hover:shadow-pink-600/50 hover:-translate-y-0.5 active:scale-[0.98] transition-all touch-manipulation whitespace-nowrap focus:outline-none focus-visible:ring-4 focus-visible:ring-pink-300 cursor-pointer`}
           >
             Tutup
           </button>

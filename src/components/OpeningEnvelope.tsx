@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { sound } from '../utils/audio';
+import { ENVELOPE_CHIME_SYNC_DELAY_SEC } from '../utils/audioSchedule';
 import {
   ENVELOPE_TIMELINE,
   getEnvelopeStateFlags,
@@ -29,8 +30,10 @@ export const OpeningEnvelope: React.FC<OpeningEnvelopeProps> = ({
     if (phase !== 'idle') return;
 
     setPhase('unsealing');
-    sound.startMusic();
     sound.playEnvelopeOpen();
+    if (!sound.getMuted() && !sound.getIsMusicPlaying()) {
+      sound.startMusic({ delaySec: ENVELOPE_CHIME_SYNC_DELAY_SEC });
+    }
 
     const prefersReducedMotion =
       typeof window !== 'undefined' &&
@@ -67,7 +70,7 @@ export const OpeningEnvelope: React.FC<OpeningEnvelopeProps> = ({
   return (
     <div
       data-envelope-phase={phase}
-      className={`fixed inset-0 z-20 flex flex-col items-center justify-center p-4 transition-all duration-700 ease-out ${
+      className={`fixed inset-0 z-20 flex flex-col items-center justify-center p-4 pb-24 sm:pb-4 transition-all duration-700 ease-out ${
         isExiting ? 'opacity-0 scale-[1.03] pointer-events-none' : 'opacity-100 scale-100'
       }`}
     >
@@ -87,7 +90,7 @@ export const OpeningEnvelope: React.FC<OpeningEnvelopeProps> = ({
           type="button"
           onClick={handleOpen}
           aria-label={`Buka amplop ucapan ulang tahun untuk ${recipientName}`}
-          className={`luxury-envelope group focus:outline-none focus-visible:ring-4 focus-visible:ring-pink-300/80 focus-visible:ring-offset-4 rounded-2xl select-none ${
+          className={`luxury-envelope group touch-manipulation focus:outline-none focus-visible:ring-4 focus-visible:ring-pink-300/80 focus-visible:ring-offset-4 rounded-2xl select-none ${
             isUnsealing ? 'is-unsealing cursor-default' : ''
           } ${isTopOpen ? 'is-top-open' : ''} ${isBottomOpen ? 'is-bottom-open' : ''} ${
             isRightOpen ? 'is-right-open' : ''

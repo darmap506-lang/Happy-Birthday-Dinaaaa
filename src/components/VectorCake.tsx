@@ -128,7 +128,7 @@ export const VectorCake: React.FC<VectorCakeProps> = memo(({
 
       {/* Vector Cake SVG */}
       <div
-        className={`w-36 sm:w-44 transition-transform duration-500 ${
+        className={`w-32 min-[390px]:w-36 sm:w-44 transition-transform duration-500 ${
           isBlowing
             ? 'animate-wind-sway'
             : !candlesBlown
@@ -175,6 +175,12 @@ export const VectorCake: React.FC<VectorCakeProps> = memo(({
               <stop offset="0%" stopColor="#ffffff" />
               <stop offset="100%" stopColor="#fff176" />
             </linearGradient>
+
+            <radialGradient id="flameGlow" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="#ffb703" stopOpacity="0.65" />
+              <stop offset="60%" stopColor="#ffb703" stopOpacity="0.22" />
+              <stop offset="100%" stopColor="#ffb703" stopOpacity="0" />
+            </radialGradient>
 
             {/* Candle striped patterns */}
             <pattern id="stripePink" width="8" height="8" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
@@ -291,7 +297,7 @@ export const VectorCake: React.FC<VectorCakeProps> = memo(({
                 style={{ animationDelay: '0s' }}
               >
                 {/* Outer Glow */}
-                <circle cx="3" cy="-4" r="9" fill="#ffb703" opacity="0.35" filter="blur(3px)" />
+                <circle cx="3" cy="-4" r="11" fill="url(#flameGlow)" />
                 {/* Outer Flame */}
                 <path
                   d="M3 -11 C-1 -6, -0.5 -1, 3 1 C6.5 -1, 7 -6, 3 -11 Z"
@@ -335,7 +341,7 @@ export const VectorCake: React.FC<VectorCakeProps> = memo(({
                 style={{ animationDelay: '0.2s' }}
               >
                 {/* Outer Glow */}
-                <circle cx="3.25" cy="-5" r="11" fill="#ffb703" opacity="0.4" filter="blur(3px)" />
+                <circle cx="3.25" cy="-5" r="13" fill="url(#flameGlow)" />
                 {/* Outer Flame */}
                 <path
                   d="M3.25 -13 C-1.5 -7, -1 -1, 3.25 1 C7.5 -1, 8 -7, 3.25 -13 Z"
@@ -379,7 +385,7 @@ export const VectorCake: React.FC<VectorCakeProps> = memo(({
                 style={{ animationDelay: '0.4s' }}
               >
                 {/* Outer Glow */}
-                <circle cx="3" cy="-4" r="9" fill="#ffb703" opacity="0.35" filter="blur(3px)" />
+                <circle cx="3" cy="-4" r="11" fill="url(#flameGlow)" />
                 {/* Outer Flame */}
                 <path
                   d="M3 -11 C-1 -6, -0.5 -1, 3 1 C6.5 -1, 7 -6, 3 -11 Z"

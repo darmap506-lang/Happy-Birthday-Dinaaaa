@@ -149,25 +149,25 @@ export const RouletteGameModal: React.FC<RouletteGameModalProps> = ({
       aria-modal="true"
       aria-label={headingText}
       data-testid="roulette-game-modal"
-      className="fixed inset-0 z-[65] flex items-center justify-center p-3 sm:p-4 bg-black/65 animate-in fade-in duration-250"
+      className="fixed inset-0 z-[65] flex items-center justify-center p-2.5 sm:p-4 bg-black/65 animate-in fade-in duration-250"
       onClick={(e) => {
         if (e.target === e.currentTarget && !isSpinning) onClose();
       }}
     >
-      <div className="relative z-10 bg-white border-2 border-pink-200 rounded-3xl p-5 sm:p-6 max-w-md w-full max-h-[92vh] overflow-y-auto overflow-x-hidden text-center shadow-2xl">
+      <div className="relative z-10 bg-white border-2 border-pink-200 rounded-[24px] sm:rounded-3xl p-4 min-[390px]:p-5 sm:p-6 max-w-md w-full max-h-[92dvh] overflow-y-auto overflow-x-hidden overscroll-contain text-center shadow-2xl">
         <button
           type="button"
           onClick={onClose}
           disabled={isSpinning}
           aria-label="Tutup game roulette"
-          className="absolute top-3.5 right-3.5 p-2 text-pink-400 hover:text-pink-700 hover:bg-pink-50 rounded-full transition-colors disabled:opacity-40 cursor-pointer z-20"
+          className="absolute top-2 right-2 sm:top-3.5 sm:right-3.5 min-w-[44px] min-h-[44px] flex items-center justify-center text-pink-400 hover:text-pink-700 hover:bg-pink-50 rounded-full transition-colors disabled:opacity-40 touch-manipulation cursor-pointer z-20"
         >
           <X className="w-5 h-5" />
         </button>
 
         <h2
           data-testid="roulette-modal-heading"
-          className="font-serif-display text-xl sm:text-2xl font-bold text-[#880e4f] mb-4 pr-6 pl-6"
+          className="font-serif-display text-lg min-[390px]:text-xl sm:text-2xl font-bold text-[#880e4f] mb-3.5 sm:mb-4 px-8"
         >
           {headingText}
         </h2>
@@ -175,7 +175,7 @@ export const RouletteGameModal: React.FC<RouletteGameModalProps> = ({
         {!showPrizeStage ? (
           <>
             {/* Roulette Wheel Stage */}
-            <div className="relative mx-auto w-[278px] h-[278px] sm:w-[308px] sm:h-[308px] flex items-center justify-center">
+            <div className="relative mx-auto w-[min(70vw,268px)] h-[min(70vw,268px)] sm:w-[308px] sm:h-[308px] flex items-center justify-center">
               {/* Top Pointer Needle (12 o'clock) */}
               <div
                 aria-hidden="true"
@@ -282,7 +282,7 @@ export const RouletteGameModal: React.FC<RouletteGameModalProps> = ({
                 onClick={handleSpin}
                 disabled={isSpinning}
                 data-testid="btn-spin-roulette"
-                className="inline-flex items-center justify-center gap-2 px-7 py-2.5 bg-gradient-to-r from-[#d81b60] to-[#ad1457] hover:from-[#c2185b] hover:to-[#880e4f] disabled:opacity-60 text-white font-semibold text-sm rounded-full shadow-lg shadow-pink-600/30 hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer"
+                className="w-full sm:w-auto min-h-[46px] inline-flex items-center justify-center gap-2 px-7 py-2.5 bg-gradient-to-r from-[#d81b60] to-[#ad1457] hover:from-[#c2185b] hover:to-[#880e4f] disabled:opacity-60 text-white font-semibold text-sm sm:text-base rounded-full shadow-lg shadow-pink-600/30 hover:-translate-y-0.5 active:scale-[0.98] transition-all touch-manipulation whitespace-nowrap cursor-pointer"
               >
                 <RotateCw className={`w-4 h-4 ${isSpinning ? 'animate-spin' : ''}`} />
                 <span>{isSpinning ? 'Memutar Roda...' : 'Putar Roulette!'}</span>
@@ -296,8 +296,8 @@ export const RouletteGameModal: React.FC<RouletteGameModalProps> = ({
             data-testid="roulette-prize-stage"
             className="relative overflow-hidden py-2"
           >
-            <div className="flex items-end justify-center gap-1.5 sm:gap-3 w-full">
-              {/* Panda walks in from left and stops at left side of Sepatu NB image, clapping */}
+            <div className="flex items-end justify-center gap-1 min-[390px]:gap-2 sm:gap-3 w-full">
+              {/* Panda walks in from left and stops at left side of Sepatu image, clapping */}
               <div className="shrink-0 mb-1 animate-panda-walk-from-left">
                 <PixelPanda
                   mode={mascotsClapping ? 'clap' : 'idle'}
@@ -305,8 +305,8 @@ export const RouletteGameModal: React.FC<RouletteGameModalProps> = ({
                 />
               </div>
 
-              {/* Sepatu NB Image drops from top */}
-              <div className="flex-1 min-w-0 max-w-[188px] sm:max-w-[218px] animate-shoe-drop-from-top">
+              {/* Sepatu Image drops from top */}
+              <div className="flex-1 min-w-0 max-w-[168px] min-[390px]:max-w-[192px] sm:max-w-[218px] animate-shoe-drop-from-top">
                 <div className="rounded-2xl overflow-hidden border-2 border-pink-200 bg-pink-50 shadow-lg aspect-[4/3]">
                   <img
                     src={winningPrize.imageSrc}
@@ -319,7 +319,7 @@ export const RouletteGameModal: React.FC<RouletteGameModalProps> = ({
                 </p>
               </div>
 
-              {/* Orange Cat walks in from right and stops at right side of Sepatu NB image, clapping */}
+              {/* Orange Cat walks in from right and stops at right side of Sepatu image, clapping */}
               <div className="shrink-0 mb-1 animate-cat-walk-prize-from-right">
                 <PixelOrangeCat
                   mode={mascotsClapping ? 'clap' : 'idle'}
@@ -332,14 +332,14 @@ export const RouletteGameModal: React.FC<RouletteGameModalProps> = ({
               <button
                 type="button"
                 onClick={handleSpinAgain}
-                className="flex-1 sm:flex-initial px-5 py-2.5 bg-pink-50 hover:bg-pink-100 text-pink-800 border border-pink-200 font-semibold text-xs sm:text-sm rounded-full transition-colors cursor-pointer"
+                className="flex-1 sm:flex-initial min-h-[46px] px-4 sm:px-5 py-2.5 bg-pink-50 hover:bg-pink-100 text-pink-800 border border-pink-200 font-semibold text-sm rounded-full transition-colors active:scale-[0.98] touch-manipulation whitespace-nowrap cursor-pointer"
               >
                 Putar Lagi
               </button>
               <button
                 type="button"
                 onClick={onClose}
-                className="flex-1 sm:flex-initial px-7 py-2.5 bg-gradient-to-r from-[#d81b60] to-[#ad1457] hover:from-[#c2185b] hover:to-[#880e4f] text-white font-semibold text-xs sm:text-sm rounded-full shadow-md transition-all cursor-pointer"
+                className="flex-1 sm:flex-initial min-h-[46px] px-6 sm:px-7 py-2.5 bg-gradient-to-r from-[#d81b60] to-[#ad1457] hover:from-[#c2185b] hover:to-[#880e4f] text-white font-semibold text-sm rounded-full shadow-md transition-all active:scale-[0.98] touch-manipulation whitespace-nowrap cursor-pointer"
               >
                 Tutup
               </button>

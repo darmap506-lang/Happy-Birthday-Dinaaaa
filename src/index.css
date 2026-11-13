@@ -1,12 +1,22 @@
 @import "tailwindcss";
 
 @layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
   body {
     font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     background: linear-gradient(135deg, rgba(255, 182, 193, 0.35), rgba(255, 148, 184, 0.3), rgba(255, 192, 203, 0.35));
     min-height: 100vh;
+    min-height: 100dvh;
     color: #4a4a4a;
     overflow-x: hidden;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  button {
+    touch-action: manipulation;
   }
 
   h1, h2, h3, .font-serif-display {
@@ -334,6 +344,7 @@
   animation-timing-function: linear;
   animation-iteration-count: infinite;
   pointer-events: none;
+  will-change: transform, opacity;
   z-index: 5;
 }
 
@@ -497,6 +508,7 @@
 
 .animate-balloon-rise {
   opacity: 0;
+  will-change: transform, opacity;
   animation-name: balloonRise;
   animation-timing-function: linear;
   animation-iteration-count: infinite;
@@ -788,24 +800,24 @@
 
 @keyframes pandaWalkFromLeft {
   0% {
-    transform: translate3d(-150px, 0, 0);
+    transform: translate3d(-28vw, 0, 0);
     opacity: 0;
   }
   15% {
     opacity: 1;
-    transform: translate3d(-115px, -3px, 0);
+    transform: translate3d(-22vw, -3px, 0);
   }
   35% {
-    transform: translate3d(-85px, 0, 0);
+    transform: translate3d(-16vw, 0, 0);
   }
   55% {
-    transform: translate3d(-55px, -3px, 0);
+    transform: translate3d(-11vw, -3px, 0);
   }
   75% {
-    transform: translate3d(-28px, 0, 0);
+    transform: translate3d(-6vw, 0, 0);
   }
   90% {
-    transform: translate3d(-10px, -2px, 0);
+    transform: translate3d(-2vw, -2px, 0);
   }
   100% {
     transform: translate3d(0, 0, 0);
@@ -819,24 +831,24 @@
 
 @keyframes catWalkPrizeFromRight {
   0% {
-    transform: translate3d(150px, 0, 0);
+    transform: translate3d(28vw, 0, 0);
     opacity: 0;
   }
   15% {
     opacity: 1;
-    transform: translate3d(115px, -3px, 0);
+    transform: translate3d(22vw, -3px, 0);
   }
   35% {
-    transform: translate3d(85px, 0, 0);
+    transform: translate3d(16vw, 0, 0);
   }
   55% {
-    transform: translate3d(55px, -3px, 0);
+    transform: translate3d(11vw, -3px, 0);
   }
   75% {
-    transform: translate3d(28px, 0, 0);
+    transform: translate3d(6vw, 0, 0);
   }
   90% {
-    transform: translate3d(10px, -2px, 0);
+    transform: translate3d(2vw, -2px, 0);
   }
   100% {
     transform: translate3d(0, 0, 0);

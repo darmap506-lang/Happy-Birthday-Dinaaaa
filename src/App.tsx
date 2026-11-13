@@ -57,7 +57,7 @@ export default function App() {
   }, [stage]);
 
   return (
-    <main className="relative min-h-screen w-full flex flex-col justify-center items-center overflow-x-hidden selection:bg-pink-300 selection:text-pink-900">
+    <main className="relative min-h-dvh w-full flex flex-col justify-center items-center px-3 pt-16 pb-24 sm:px-6 sm:py-8 overflow-x-hidden selection:bg-pink-300 selection:text-pink-900">
       {/* Background Music Toggle Button */}
       <MusicToggle />
 

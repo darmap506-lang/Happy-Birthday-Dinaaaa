@@ -3,14 +3,31 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-// Web Audio API helper for sound effects and gentle music box melody
+import {
+  BEAT_SEC,
+  HAPPY_BIRTHDAY_NOTES,
+  LOOKAHEAD_SEC,
+  SCHEDULER_INTERVAL_MS,
+  collectNotesInWindow,
+  resyncNoteTime,
+} from './audioSchedule';
+
+// Web Audio API helper for sound effects and sample-accurate music box melody
 
 class SoundManager {
   private ctx: AudioContext | null = null;
+  private musicMasterGain: GainNode | null = null;
   private isMuted: boolean = false;
   private isMusicPlaying: boolean = false;
-  private musicTimeout: number | null = null;
+  private isMusicDucked: boolean = false;
+  private userPaused: boolean = false;
+  private pendingAutoplay: boolean = false;
+  private schedulerInterval: number | null = null;
+  private nextNoteTime: number = 0;
+  private currentStep: number = 0;
+  private activeOscillators: Set<OscillatorNode> = new Set();
   private listeners: Set<(playing: boolean) => void> = new Set();
+  private visibilityBound: boolean = false;
 
   public subscribe(listener: (playing: boolean) => void): () => void {
     this.listeners.add(listener);
@@ -30,14 +47,44 @@ class SoundManager {
     });
   }
 
+  private ensureVisibilityHandler() {
+    if (this.visibilityBound || typeof document === 'undefined') return;
+    this.visibilityBound = true;
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible' && this.isMusicPlaying && !this.isMuted && this.ctx) {
+        if (this.ctx.state === 'suspended') {
+          this.ctx.resume().then(() => {
+            if (this.ctx && this.isMusicPlaying) {
+              this.nextNoteTime = this.ctx.currentTime + 0.05;
+            }
+          }).catch(() => {});
+        } else {
+          this.nextNoteTime = resyncNoteTime(this.ctx.currentTime, this.nextNoteTime);
+        }
+      }
+    });
+  }
+
   private initCtx(): AudioContext | null {
     if (typeof window === 'undefined') return null;
+    this.ensureVisibilityHandler();
+
     if (!this.ctx) {
-      const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+      const AudioCtx =
+        window.AudioContext ||
+        (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
       if (AudioCtx) {
         this.ctx = new AudioCtx();
       }
     }
+
+    if (this.ctx && !this.musicMasterGain) {
+      const master = this.ctx.createGain();
+      master.gain.setValueAtTime(this.isMusicDucked ? 0.08 : 1, this.ctx.currentTime);
+      master.connect(this.ctx.destination);
+      this.musicMasterGain = master;
+    }
+
     if (this.ctx && this.ctx.state === 'suspended') {
       this.ctx.resume().catch(() => {});
     }
@@ -46,8 +93,11 @@ class SoundManager {
 
   public setMuted(muted: boolean) {
     this.isMuted = muted;
-    if (muted && this.isMusicPlaying) {
-      this.stopMusic();
+    if (muted) {
+      this.userPaused = true;
+      if (this.isMusicPlaying) {
+        this.stopMusic();
+      }
     }
   }
 
@@ -57,6 +107,14 @@ class SoundManager {
 
   public getIsMusicPlaying() {
     return this.isMusicPlaying;
+  }
+
+  public setMusicDucked(ducked: boolean) {
+    this.isMusicDucked = ducked;
+    if (!this.ctx || !this.musicMasterGain) return;
+    const now = this.ctx.currentTime;
+    this.musicMasterGain.gain.cancelScheduledValues(now);
+    this.musicMasterGain.gain.setTargetAtTime(ducked ? 0.08 : 1, now, 0.05);
   }
 
   /**
@@ -71,19 +129,20 @@ class SoundManager {
     notes.forEach((freq, idx) => {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
+      const startTime = ctx.currentTime + idx * 0.095;
 
       osc.type = 'sine';
-      osc.frequency.setValueAtTime(freq, ctx.currentTime + idx * 0.1);
+      osc.frequency.setValueAtTime(freq, startTime);
 
-      gain.gain.setValueAtTime(0.001, ctx.currentTime + idx * 0.1);
-      gain.gain.exponentialRampToValueAtTime(0.2, ctx.currentTime + idx * 0.1 + 0.04);
-      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + idx * 0.1 + 0.7);
+      gain.gain.setValueAtTime(0.001, startTime);
+      gain.gain.exponentialRampToValueAtTime(0.18, startTime + 0.035);
+      gain.gain.exponentialRampToValueAtTime(0.0001, startTime + 0.65);
 
       osc.connect(gain);
       gain.connect(ctx.destination);
 
-      osc.start(ctx.currentTime + idx * 0.1);
-      osc.stop(ctx.currentTime + idx * 0.1 + 0.75);
+      osc.start(startTime);
+      osc.stop(startTime + 0.7);
     });
   }
 
@@ -99,19 +158,20 @@ class SoundManager {
     freqs.forEach((freq, i) => {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
+      const startTime = ctx.currentTime + i * 0.055;
 
       osc.type = 'triangle';
-      osc.frequency.setValueAtTime(freq, ctx.currentTime + i * 0.06);
+      osc.frequency.setValueAtTime(freq, startTime);
 
-      gain.gain.setValueAtTime(0.001, ctx.currentTime + i * 0.06);
-      gain.gain.exponentialRampToValueAtTime(0.15, ctx.currentTime + i * 0.06 + 0.02);
-      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + i * 0.06 + 0.5);
+      gain.gain.setValueAtTime(0.001, startTime);
+      gain.gain.exponentialRampToValueAtTime(0.14, startTime + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, startTime + 0.48);
 
       osc.connect(gain);
       gain.connect(ctx.destination);
 
-      osc.start(ctx.currentTime + i * 0.06);
-      osc.stop(ctx.currentTime + i * 0.06 + 0.55);
+      osc.start(startTime);
+      osc.stop(startTime + 0.52);
     });
   }
 
@@ -126,12 +186,10 @@ class SoundManager {
     const now = ctx.currentTime;
     const duration = 0.85;
 
-    // 1. Air breath / wind gust noise buffer
     const bufferSize = Math.floor(ctx.sampleRate * duration);
     const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
     const data = buffer.getChannelData(0);
     for (let i = 0; i < bufferSize; i++) {
-      // Pink/white noise hybrid with gentle curve
       const progress = i / bufferSize;
       const envelope = Math.sin(progress * Math.PI) * Math.pow(1 - progress, 0.4);
       data[i] = (Math.random() * 2 - 1) * envelope;
@@ -140,13 +198,11 @@ class SoundManager {
     const noiseSource = ctx.createBufferSource();
     noiseSource.buffer = buffer;
 
-    // Dynamic lowpass filter to mimic rushing wind frequency shift
     const lpFilter = ctx.createBiquadFilter();
     lpFilter.type = 'lowpass';
     lpFilter.frequency.setValueAtTime(1400, now);
     lpFilter.frequency.exponentialRampToValueAtTime(320, now + duration);
 
-    // Dynamic bandpass filter for windy turbulence whistling
     const bpFilter = ctx.createBiquadFilter();
     bpFilter.type = 'bandpass';
     bpFilter.Q.value = 1.4;
@@ -158,13 +214,11 @@ class SoundManager {
     noiseGain.gain.linearRampToValueAtTime(0.88, now + 0.14);
     noiseGain.gain.exponentialRampToValueAtTime(0.001, now + duration);
 
-    // Connect noise layers
     noiseSource.connect(lpFilter);
     lpFilter.connect(bpFilter);
     bpFilter.connect(noiseGain);
     noiseGain.connect(ctx.destination);
 
-    // 2. Low-frequency wind air displacement rumble (boosted volume)
     const rumbleOsc = ctx.createOscillator();
     const rumbleGain = ctx.createGain();
     rumbleOsc.type = 'sine';
@@ -183,118 +237,217 @@ class SoundManager {
     rumbleOsc.start(now);
     rumbleOsc.stop(now + duration * 0.75);
 
-    // Follow with cheerful sparkle celebration once candles extinguish
-    setTimeout(() => {
+    window.setTimeout(() => {
       this.playSparkle();
     }, 450);
   }
 
   /**
-   * Gentle music box Happy Birthday lullaby
+   * Toggle music on/off cleanly
    */
   public toggleMusic(onStateChange?: (playing: boolean) => void) {
     if (this.isMusicPlaying) {
+      this.userPaused = true;
+      this.pendingAutoplay = false;
       this.stopMusic();
       if (onStateChange) onStateChange(false);
     } else {
-      this.startMusic();
+      this.userPaused = false;
+      this.pendingAutoplay = false;
+      this.startMusic({ delaySec: 0, restartFromBeginning: true });
       if (onStateChange) onStateChange(true);
     }
   }
 
-  public startMusic() {
-    if (this.isMusicPlaying) return;
-    if (this.isMuted) this.isMuted = false;
-    const ctx = this.initCtx();
-    if (!ctx) return;
+  private scheduleNote(freq: number, timeSec: number, durationSec: number, bassFreq?: number) {
+    const ctx = this.ctx;
+    const master = this.musicMasterGain;
+    if (!ctx || !master) return;
 
+    // Main music-box bell voice + gentle 2nd harmonic
+    const osc = ctx.createOscillator();
+    const oscHarmonic = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(freq, timeSec);
+
+    oscHarmonic.type = 'triangle';
+    oscHarmonic.frequency.setValueAtTime(freq * 2, timeSec);
+
+    const releaseSec = Math.min(Math.max(durationSec * 1.45, 0.55), 1.65);
+    gain.gain.setValueAtTime(0.0001, timeSec);
+    gain.gain.linearRampToValueAtTime(0.115, timeSec + 0.018);
+    gain.gain.exponentialRampToValueAtTime(0.0001, timeSec + releaseSec);
+
+    osc.connect(gain);
+    oscHarmonic.connect(gain);
+    gain.connect(master);
+
+    this.activeOscillators.add(osc);
+    this.activeOscillators.add(oscHarmonic);
+
+    const cleanup = (node: OscillatorNode) => {
+      node.onended = () => {
+        this.activeOscillators.delete(node);
+        try {
+          node.disconnect();
+        } catch {
+          // ignore
+        }
+      };
+    };
+    cleanup(osc);
+    cleanup(oscHarmonic);
+
+    osc.start(timeSec);
+    oscHarmonic.start(timeSec);
+    osc.stop(timeSec + releaseSec + 0.04);
+    oscHarmonic.stop(timeSec + releaseSec + 0.04);
+
+    // Warm downbeat root bass note synced to the exact same Web Audio clock
+    if (typeof bassFreq === 'number') {
+      const bassOsc = ctx.createOscillator();
+      const bassGain = ctx.createGain();
+      const bassRelease = Math.min(durationSec * 1.8, 1.5);
+
+      bassOsc.type = 'sine';
+      bassOsc.frequency.setValueAtTime(bassFreq, timeSec);
+
+      bassGain.gain.setValueAtTime(0.0001, timeSec);
+      bassGain.gain.linearRampToValueAtTime(0.045, timeSec + 0.03);
+      bassGain.gain.exponentialRampToValueAtTime(0.0001, timeSec + bassRelease);
+
+      bassOsc.connect(bassGain);
+      bassGain.connect(master);
+
+      this.activeOscillators.add(bassOsc);
+      cleanup(bassOsc);
+
+      bassOsc.start(timeSec);
+      bassOsc.stop(timeSec + bassRelease + 0.04);
+    }
+  }
+
+  private runSchedulerTick = () => {
+    if (!this.isMusicPlaying || !this.ctx || this.ctx.state !== 'running') return;
+
+    const now = this.ctx.currentTime;
+    this.nextNoteTime = resyncNoteTime(now, this.nextNoteTime);
+
+    const horizon = now + LOOKAHEAD_SEC;
+    const { events, nextStep, nextNoteTime } = collectNotesInWindow(
+      this.currentStep,
+      this.nextNoteTime,
+      horizon,
+      BEAT_SEC,
+      HAPPY_BIRTHDAY_NOTES
+    );
+
+    for (const evt of events) {
+      this.scheduleNote(evt.note.freq, evt.timeSec, evt.durationSec, evt.note.bassFreq);
+    }
+
+    this.currentStep = nextStep;
+    this.nextNoteTime = nextNoteTime;
+  };
+
+  private beginLookAheadLoop(delaySec = 0) {
+    if (!this.ctx || this.ctx.state !== 'running') return;
+    if (this.schedulerInterval !== null) {
+      window.clearInterval(this.schedulerInterval);
+      this.schedulerInterval = null;
+    }
+
+    if (this.musicMasterGain) {
+      const now = this.ctx.currentTime;
+      this.musicMasterGain.gain.cancelScheduledValues(now);
+      this.musicMasterGain.gain.setTargetAtTime(this.isMusicDucked ? 0.08 : 1, now, 0.03);
+    }
+
+    this.currentStep = 0;
+    this.nextNoteTime = this.ctx.currentTime + Math.max(0.03, delaySec);
     this.isMusicPlaying = true;
     this.notify();
 
-    // Happy birthday melody notes & durations: [freq, duration in beats]
-    // Happy Birthday in F major:
-    // C4, C4, D4, C4, F4, E4
-    // C4, C4, D4, C4, G4, F4
-    // C4, C4, C5, A4, F4, E4, D4
-    // Bb4, Bb4, A4, F4, G4, F4
-    const melody: Array<[number, number]> = [
-      [261.63, 0.75], [261.63, 0.25], [293.66, 1], [261.63, 1], [349.23, 1], [329.63, 2],
-      [261.63, 0.75], [261.63, 0.25], [293.66, 1], [261.63, 1], [392.00, 1], [349.23, 2],
-      [261.63, 0.75], [261.63, 0.25], [523.25, 1], [440.00, 1], [349.23, 1], [329.63, 1], [293.66, 1.5],
-      [466.16, 0.75], [466.16, 0.25], [440.00, 1], [349.23, 1], [392.00, 1], [349.23, 2.5]
-    ];
+    this.runSchedulerTick();
+    this.schedulerInterval = window.setInterval(this.runSchedulerTick, SCHEDULER_INTERVAL_MS);
+  }
 
-    const tempoMs = 520; // gentle slow music box tempo
-    let step = 0;
+  public startMusic(options?: { delaySec?: number; restartFromBeginning?: boolean }) {
+    const delaySec = options?.delaySec ?? 0;
+    if (this.isMusicPlaying && !options?.restartFromBeginning) return;
+    if (this.isMuted) this.isMuted = false;
 
-    const playNext = () => {
-      if (!this.isMusicPlaying) return;
-      const [freq, beats] = melody[step];
-      const durationSec = (beats * tempoMs) / 1000;
+    const ctx = this.initCtx();
+    if (!ctx) return;
 
-      // Play soft music box bell note
-      const osc = ctx.createOscillator();
-      const oscHarmonic = ctx.createOscillator();
-      const gain = ctx.createGain();
-
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(freq, ctx.currentTime);
-
-      oscHarmonic.type = 'triangle';
-      oscHarmonic.frequency.setValueAtTime(freq * 2, ctx.currentTime);
-
-      const now = ctx.currentTime;
-      gain.gain.setValueAtTime(0.001, now);
-      gain.gain.exponentialRampToValueAtTime(0.12, now + 0.02);
-      gain.gain.exponentialRampToValueAtTime(0.0001, now + Math.min(durationSec * 1.5, 1.8));
-
-      osc.connect(gain);
-      oscHarmonic.connect(gain);
-      gain.connect(ctx.destination);
-
-      osc.start(now);
-      oscHarmonic.start(now);
-      osc.stop(now + 2);
-      oscHarmonic.stop(now + 2);
-
-      step = (step + 1) % melody.length;
-      const pauseDuration = step === 0 ? 2500 : beats * tempoMs;
-      this.musicTimeout = window.setTimeout(playNext, pauseDuration);
+    const launchIfRunning = () => {
+      if (this.userPaused || this.isMuted || !this.ctx) return;
+      if (this.ctx.state === 'running') {
+        if (!this.isMusicPlaying || options?.restartFromBeginning) {
+          this.beginLookAheadLoop(delaySec);
+        }
+      }
     };
 
-    playNext();
+    if (ctx.state === 'running') {
+      launchIfRunning();
+    } else {
+      ctx
+        .resume()
+        .then(() => {
+          launchIfRunning();
+        })
+        .catch(() => {});
+    }
   }
 
   public stopMusic() {
     this.isMusicPlaying = false;
-    if (this.musicTimeout) {
-      clearTimeout(this.musicTimeout);
-      this.musicTimeout = null;
+    this.pendingAutoplay = false;
+
+    if (this.schedulerInterval !== null) {
+      window.clearInterval(this.schedulerInterval);
+      this.schedulerInterval = null;
     }
+
+    if (this.ctx && this.musicMasterGain) {
+      const now = this.ctx.currentTime;
+      this.musicMasterGain.gain.cancelScheduledValues(now);
+      this.musicMasterGain.gain.setTargetAtTime(0.0001, now, 0.02);
+    }
+
+    const stopAt = this.ctx ? this.ctx.currentTime + 0.06 : 0;
+    this.activeOscillators.forEach((osc) => {
+      try {
+        osc.stop(stopAt);
+      } catch {
+        // already stopped
+      }
+    });
+    this.activeOscillators.clear();
     this.notify();
   }
 
   /**
-   * Attempts automatic playback on load and safely unlocks AudioContext on first user interaction.
+   * Unlocks AudioContext cleanly on the very first user gesture so backsound
+   * never starts out-of-sync or triggers blocked-AudioContext warnings on load.
    */
   public startAutoplay() {
     if (typeof window === 'undefined') return;
-    if (this.isMusicPlaying) return;
+    if (this.isMusicPlaying || this.userPaused) return;
 
-    const tryPlay = () => {
-      this.startMusic();
-    };
+    this.pendingAutoplay = true;
 
-    // Attempt immediate playback
-    tryPlay();
-
-    // Listen to first gesture in case browser policy requires it
-    const gestureEvents = ['click', 'touchstart', 'pointerdown', 'keydown'];
+    const gestureEvents = ['pointerdown', 'touchstart', 'click', 'keydown'];
     const onFirstGesture = () => {
-      tryPlay();
       gestureEvents.forEach((evt) => {
         window.removeEventListener(evt, onFirstGesture);
       });
+      if (!this.pendingAutoplay || this.userPaused || this.isMusicPlaying) return;
+      this.pendingAutoplay = false;
+      this.startMusic({ delaySec: 0.05 });
     };
 
     gestureEvents.forEach((evt) => {
