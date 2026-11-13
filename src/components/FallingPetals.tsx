@@ -1,11 +1,11 @@
-import React, { useMemo } from 'react';
+import React, { memo, useMemo } from 'react';
 import { calculatePetalStyle } from '../utils/greeting';
 
 interface FallingPetalsProps {
   count?: number;
 }
 
-export const FallingPetals: React.FC<FallingPetalsProps> = ({ count = 28 }) => {
+export const FallingPetals: React.FC<FallingPetalsProps> = memo(({ count = 28 }) => {
   const petals = useMemo(() => {
     return Array.from({ length: count }, (_, i) => ({
       id: i,
@@ -35,4 +35,4 @@ export const FallingPetals: React.FC<FallingPetalsProps> = ({ count = 28 }) => {
       ))}
     </div>
   );
-};
+});

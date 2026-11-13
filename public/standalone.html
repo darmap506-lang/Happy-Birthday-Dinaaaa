@@ -86,7 +86,7 @@
       box-shadow: 0 6px 16px rgba(190, 24, 93, 0.25);
     }
 
-    /* Envelope 3D Container */
+    /* Luxury 4-Sided Unfolding Stationery Envelope */
     .envelope-screen {
       position: fixed;
       inset: 0;
@@ -95,97 +95,160 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      transition: all 0.7s ease-out;
+      padding: 16px;
+      perspective: 1600px;
+      transition: opacity 0.7s ease-out, transform 0.7s ease-out;
     }
     .envelope-screen.hidden {
       opacity: 0;
-      transform: scale(0.95);
+      transform: scale(1.03);
       pointer-events: none;
     }
 
     .envelope-wrapper {
       position: relative;
-      width: 280px;
-      height: 190px;
-      background: linear-gradient(135deg, #f06292 0%, #e91e63 100%);
-      border-radius: 0 0 16px 16px;
-      box-shadow: 0 20px 40px rgba(173, 20, 87, 0.35);
+      width: min(74vw, 336px);
+      aspect-ratio: 352 / 224;
+      background: transparent;
       cursor: pointer;
-      perspective: 800px;
-      transition: transform 0.3s ease;
+      transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
     }
-    .envelope-wrapper:hover {
-      transform: translateY(-4px);
+    @media (min-width: 640px) {
+      .envelope-wrapper { width: 344px; }
     }
-
-    /* Flap Top */
-    .envelope-flap {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 0;
-      height: 0;
-      border-left: 140px solid transparent;
-      border-right: 140px solid transparent;
-      border-top: 105px solid #d81b60;
-      transform-origin: top;
-      transition: transform 0.7s ease-in-out, z-index 0.3s;
-      z-index: 5;
-    }
-    .envelope-wrapper.open .envelope-flap {
-      transform: rotateX(180deg);
-      z-index: 1;
+    .envelope-wrapper:not(.is-unsealing):hover {
+      transform: translateY(-7px) scale(1.015);
     }
 
-    /* Envelope Front Pocket */
-    .envelope-pocket {
+    .envelope-body {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      border-radius: 16px;
+      perspective: 1400px;
+      box-shadow: 0 24px 52px -12px rgba(136, 14, 79, 0.24), 0 10px 24px -8px rgba(190, 24, 93, 0.14);
+      transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .envelope-wrapper.is-unsealing:not(.is-top-open) .envelope-body {
+      transform: translateY(4px) scale(0.99);
+    }
+    .envelope-wrapper.is-top-open .envelope-body {
+      transform: scale(0.68);
+    }
+    @media (min-width: 640px) {
+      .envelope-wrapper.is-top-open .envelope-body { transform: scale(0.88); }
+    }
+
+    .env-flap {
       position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 0;
-      height: 0;
-      border-left: 140px solid #f48fb1;
-      border-right: 140px solid #f48fb1;
-      border-bottom: 95px solid #ec407a;
-      border-radius: 0 0 16px 16px;
-      z-index: 4;
+      transform-style: preserve-3d;
       pointer-events: none;
     }
+    .flap-face {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+    .flap-front-x { transform: rotateX(0deg) translateZ(1px); }
+    .flap-back-x { transform: rotateX(180deg) translateZ(1px); }
+    .flap-front-y { transform: rotateY(0deg) translateZ(1px); }
+    .flap-back-y { transform: rotateY(180deg) translateZ(1px); }
 
-    /* Letter inside */
+    .flap-top {
+      top: 0; left: 0; width: 100%; height: 61.6%; z-index: 6;
+      transform-origin: top center;
+      transition: transform 0.58s cubic-bezier(0.22, 1, 0.36, 1), z-index 0.01s linear 0.26s;
+    }
+    .envelope-wrapper.is-top-open .flap-top { transform: rotateX(174deg); z-index: 1; }
+
+    .flap-bottom {
+      bottom: 0; left: 0; width: 100%; height: 61.6%; z-index: 5;
+      transform-origin: bottom center;
+      transition: transform 0.58s cubic-bezier(0.22, 1, 0.36, 1), z-index 0.01s linear 0.26s;
+    }
+    .envelope-wrapper.is-bottom-open .flap-bottom { transform: rotateX(-174deg); z-index: 1; }
+
+    .flap-right {
+      top: 0; right: 0; width: 54%; height: 100%; z-index: 4;
+      transform-origin: right center;
+      transition: transform 0.58s cubic-bezier(0.22, 1, 0.36, 1), z-index 0.01s linear 0.26s;
+    }
+    .envelope-wrapper.is-right-open .flap-right { transform: rotateY(174deg); z-index: 1; }
+
+    .flap-left {
+      top: 0; left: 0; width: 54%; height: 100%; z-index: 3;
+      transform-origin: left center;
+      transition: transform 0.58s cubic-bezier(0.22, 1, 0.36, 1), z-index 0.01s linear 0.26s;
+    }
+    .envelope-wrapper.is-left-open .flap-left { transform: rotateY(-174deg); z-index: 1; }
+
     .letter {
       position: absolute;
-      top: 15px;
-      left: 20px;
-      width: 240px;
-      height: 155px;
-      background: #ffffff;
+      left: 7%;
+      right: 7%;
+      top: 8%;
+      bottom: 8%;
+      background: linear-gradient(165deg, #fffefb 0%, #fff8fa 100%);
       border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(212, 163, 115, 0.45);
+      box-shadow: 0 6px 18px rgba(136, 14, 79, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px;
+      z-index: 2;
+      transform: translate3d(0, 0, 0) scale(0.98);
+      transition: transform 0.68s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.68s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.52s ease, z-index 0.01s linear;
+    }
+    .letter-inner {
+      width: 100%;
+      height: 100%;
+      border-radius: 8px;
+      border: 1px solid rgba(244, 114, 182, 0.25);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 12px;
-      z-index: 2;
-      transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+      padding: 14px;
+      text-align: center;
     }
-    .envelope-wrapper.open .letter {
-      transform: translateY(-90px);
-      z-index: 3;
+    .envelope-wrapper.is-revealing .letter {
+      transform: translate3d(0, -14px, 0) scale(1.12);
+      box-shadow: 0 24px 48px -12px rgba(136, 14, 79, 0.24);
+      z-index: 7;
+    }
+    .envelope-wrapper.is-exiting .letter {
+      transform: translate3d(0, -28px, 0) scale(1.16);
+      opacity: 0;
+      z-index: 7;
     }
     .letter h3 {
       font-family: 'Playfair Display', serif;
       color: #880e4f;
       font-size: 18px;
-      margin-bottom: 4px;
+      margin: 0;
     }
-    .letter p {
-      font-size: 11px;
-      color: #db2777;
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-      font-weight: 600;
+
+    .wax-seal {
+      position: absolute;
+      top: 52%;
+      left: 50%;
+      width: 56px;
+      height: 56px;
+      z-index: 8;
+      transform: translate(-50%, -50%) scale(1);
+      pointer-events: none;
+      transition: transform 0.36s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.28s ease;
+    }
+    .envelope-wrapper:not(.is-unsealing):hover .wax-seal {
+      transform: translate(-50%, -50%) scale(1.07);
+    }
+    .envelope-wrapper.is-unsealing .wax-seal {
+      transform: translate(-50%, -68%) scale(0.82);
+      opacity: 0;
     }
 
     /* Main Greeting Card */
@@ -296,9 +359,11 @@
       position: relative;
       background: rgba(255, 255, 255, 0.96);
       border-radius: 28px;
-      padding: 28px 24px;
-      max-width: 400px;
+      padding: 24px 20px;
+      max-width: 420px;
       width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
       text-align: center;
       box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
       border: 2px solid #fbcfe8;
@@ -444,6 +509,318 @@
       pointer-events: none;
       z-index: 999;
     }
+
+    /* Flying Balloons */
+    .balloon-layer {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 1;
+    }
+    .flying-balloon {
+      position: absolute;
+      bottom: -140px;
+      opacity: 0;
+      animation: balloonRise linear infinite;
+    }
+    @keyframes balloonRise {
+      0% { transform: translate3d(0, 0, 0) rotate(0deg); opacity: 0; }
+      10% { opacity: 0.95; }
+      70% { opacity: 0.92; }
+      100% { transform: translate3d(var(--sway, 16px), -135vh, 0) rotate(var(--tilt, 5deg)); opacity: 0; }
+    }
+
+    /* Pixel Panda & Orange Cat with Party Hats & Confetti Cannons (Pages 1 & 2 Corners) */
+    .pixel-mascots-layer {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 10px;
+      pointer-events: none;
+      overflow: visible;
+      z-index: 12;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      padding: 0 14px;
+    }
+    .pixel-mascot-box {
+      position: relative;
+      width: 105px;
+      pointer-events: auto;
+      cursor: pointer;
+      background: transparent;
+      border: none;
+      padding: 0;
+      animation: pixelPopperRecoil 0.55s steps(2, end) infinite;
+    }
+    .pixel-modal-row {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      padding-top: 12px;
+    }
+    .pixel-modal-mascot {
+      position: relative;
+      width: 58px;
+      flex-shrink: 0;
+      pointer-events: auto;
+      cursor: pointer;
+      background: transparent;
+      border: none;
+      padding: 0;
+      user-select: none;
+    }
+    .pixel-speech-bubble {
+      position: absolute;
+      bottom: calc(100% + 6px);
+      z-index: 25;
+      background: rgba(255, 255, 255, 0.96);
+      border: 2px solid #f9a8d4;
+      color: #831843;
+      font-size: 11px;
+      line-height: 1.3;
+      font-weight: 600;
+      padding: 6px 10px;
+      border-radius: 12px;
+      box-shadow: 0 6px 16px rgba(136, 14, 79, 0.16);
+      width: max-content;
+      max-width: 152px;
+      text-align: left;
+      pointer-events: none;
+      animation: pixelBubbleIn 0.24s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+    .pixel-speech-bubble.left { left: 0; }
+    .pixel-speech-bubble.right { right: 0; }
+    @keyframes pixelBubbleIn {
+      0% { opacity: 0; transform: translateY(6px) scale(0.86); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @keyframes mascotEasterHop {
+      0%, 100% { transform: translateY(0) scale(1); }
+      35% { transform: translateY(-9px) scale(1.06); }
+      70% { transform: translateY(-2px) scale(0.98); }
+    }
+    .mascot-hop {
+      animation: mascotEasterHop 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    /* Microphone & Make-a-Wish Styles */
+    .candle-btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 6px;
+    }
+    .action-btn-mic {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: #ffffff;
+      border: 1px solid #fbcfe8;
+      color: #be185d;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 6px 12px;
+      border-radius: 9999px;
+      cursor: pointer;
+    }
+    .action-btn-mic.listening {
+      background: #ecfdf5;
+      border-color: #6ee7b7;
+      color: #065f46;
+    }
+    .mic-meter-box {
+      margin: 8px auto 0;
+      max-width: 260px;
+      background: #ecfdf5;
+      border: 1px solid #a7f3d0;
+      border-radius: 14px;
+      padding: 7px 10px;
+      text-align: left;
+      font-size: 11px;
+      color: #065f46;
+      font-weight: 600;
+    }
+    .mic-meter-track {
+      width: 100%;
+      height: 8px;
+      background: #d1fae5;
+      border-radius: 9999px;
+      overflow: hidden;
+      margin-top: 4px;
+    }
+    .mic-meter-fill {
+      height: 100%;
+      width: 4%;
+      background: linear-gradient(90deg, #34d399, #14b8a6);
+      border-radius: 9999px;
+      transition: width 0.08s linear;
+    }
+    .mic-error-box {
+      margin: 8px auto 0;
+      max-width: 290px;
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      color: #92400e;
+      font-size: 11px;
+      font-weight: 500;
+      padding: 6px 10px;
+      border-radius: 12px;
+    }
+    .wish-box {
+      margin-top: 14px;
+      background: linear-gradient(135deg, #fff1f2, #fdf2f8, #fffbeb);
+      border: 1px solid #fbcfe8;
+      border-radius: 16px;
+      padding: 10px 12px;
+      text-align: left;
+    }
+    .wish-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+    .wish-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: #831843;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .wish-form {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+    .wish-input {
+      flex: 1;
+      min-width: 0;
+      background: #ffffff;
+      border: 1px solid #fbcfe8;
+      border-radius: 10px;
+      padding: 6px 10px;
+      font-size: 12px;
+      color: #334155;
+      outline: none;
+    }
+    .wish-submit-btn {
+      flex-shrink: 0;
+      background: linear-gradient(135deg, #d81b60, #ad1457);
+      color: #ffffff;
+      border: none;
+      border-radius: 10px;
+      padding: 6px 11px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .wish-saved-card {
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid #fce7f3;
+      border-radius: 12px;
+      padding: 8px 10px;
+    }
+    .pixel-frame-a { animation: pixelFrameA 0.7s steps(1, end) infinite; }
+    .pixel-frame-b { animation: pixelFrameB 0.7s steps(1, end) infinite; }
+    .pixel-clap-a { animation: pixelFrameA 0.24s steps(1, end) infinite; }
+    .pixel-clap-b { animation: pixelFrameB 0.24s steps(1, end) infinite; }
+    .pixel-clap-hop { animation: pixelClapHop 0.24s steps(2, end) infinite; }
+    .pixel-walk-once-a { animation: pixelFrameA 0.36s steps(1, end) 6 forwards; }
+    .pixel-walk-once-b { animation: pixelFrameB 0.36s steps(1, end) 6 forwards; }
+    .pixel-confetti {
+      opacity: 0;
+      animation: pixelConfettiShoot 1.65s cubic-bezier(0.22, 0.85, 0.45, 1) infinite;
+    }
+    .pixel-popper-kick { animation: pixelPopperKick 0.55s steps(2, end) infinite; }
+    .pixel-cake-bob { animation: pixelCakeBob 0.9s steps(2, end) infinite; }
+    .cat-wind-blown { animation: catWindBlown 0.95s cubic-bezier(0.25, 0.85, 0.45, 1) forwards; }
+    .cat-walk-from-right { animation: catWalkFromRight 2.15s linear forwards; }
+
+    @keyframes pixelFrameA {
+      0%, 49.9% { opacity: 1; }
+      50%, 100% { opacity: 0; }
+    }
+    @keyframes pixelFrameB {
+      0%, 49.9% { opacity: 0; }
+      50%, 100% { opacity: 1; }
+    }
+    @keyframes pixelStepBob {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-3px); }
+    }
+    @keyframes pixelClapHop {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+    }
+    @keyframes pixelConfettiShoot {
+      0% { transform: translate3d(0, 0, 0) scale(0.55) rotate(0deg); opacity: 0; }
+      10% { opacity: 1; transform: translate3d(calc(var(--tx, 8px) * 0.35), calc(var(--ty, -14px) * 0.5), 0) scale(1.15) rotate(calc(var(--rot, 120deg) * 0.3)); }
+      65% { opacity: 1; transform: translate3d(var(--tx, 8px), var(--ty, -14px), 0) scale(1) rotate(var(--rot, 120deg)); }
+      100% { opacity: 0; transform: translate3d(calc(var(--tx, 8px) * 1.15), calc(var(--ty, -14px) + 6px), 0) scale(0.75) rotate(calc(var(--rot, 120deg) * 1.35)); }
+    }
+    @keyframes pixelPopperRecoil {
+      0%, 100% { transform: translateY(0); }
+      18% { transform: translateY(-2px); }
+      35% { transform: translateY(0); }
+    }
+    @keyframes pixelPopperKick {
+      0%, 100% { transform: translate(0, 0); }
+      20% { transform: translate(-1px, 1px); }
+      45% { transform: translate(0.5px, -0.5px); }
+    }
+    @keyframes pixelCakeBob {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-0.8px); }
+    }
+    @keyframes catWindBlown {
+      0% { transform: translate3d(0, 0, 0) rotate(0deg) scale(1); opacity: 1; }
+      20% { transform: translate3d(24px, -22px, 0) rotate(16deg) scale(1.04); opacity: 1; }
+      55% { transform: translate3d(160px, -70px, 0) rotate(36deg) scale(0.95); opacity: 0.95; }
+      100% { transform: translate3d(48vw, -120px, 0) rotate(68deg) scale(0.75); opacity: 0; }
+    }
+    @keyframes catWalkFromRight {
+      0% { transform: translate3d(52vw, 0, 0); opacity: 0.95; }
+      15% { transform: translate3d(42vw, -3px, 0); opacity: 1; }
+      30% { transform: translate3d(33vw, 0, 0); }
+      45% { transform: translate3d(24vw, -3px, 0); }
+      60% { transform: translate3d(16vw, 0, 0); }
+      75% { transform: translate3d(9vw, -3px, 0); }
+      90% { transform: translate3d(3vw, 0, 0); }
+      100% { transform: translate3d(0, 0, 0); opacity: 1; }
+    }
+    .shoe-drop-from-top { animation: shoeDropFromTop 0.95s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+    .panda-walk-from-left { animation: pandaWalkFromLeft 1.25s linear forwards; }
+    .cat-walk-prize-from-right { animation: catWalkPrizeFromRight 1.25s linear forwards; }
+    @keyframes shoeDropFromTop {
+      0% { opacity: 0; transform: translate3d(0, -180px, 0) scale(0.84) rotate(-4deg); }
+      68% { opacity: 1; transform: translate3d(0, 10px, 0) scale(1.03) rotate(1.5deg); }
+      84% { transform: translate3d(0, -4px, 0) scale(0.99) rotate(-0.5deg); }
+      100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1) rotate(0deg); }
+    }
+    @keyframes pandaWalkFromLeft {
+      0% { transform: translate3d(-150px, 0, 0); opacity: 0; }
+      15% { opacity: 1; transform: translate3d(-115px, -3px, 0); }
+      35% { transform: translate3d(-85px, 0, 0); }
+      55% { transform: translate3d(-55px, -3px, 0); }
+      75% { transform: translate3d(-28px, 0, 0); }
+      90% { transform: translate3d(-10px, -2px, 0); }
+      100% { transform: translate3d(0, 0, 0); opacity: 1; }
+    }
+    @keyframes catWalkPrizeFromRight {
+      0% { transform: translate3d(150px, 0, 0); opacity: 0; }
+      15% { opacity: 1; transform: translate3d(115px, -3px, 0); }
+      35% { transform: translate3d(85px, 0, 0); }
+      55% { transform: translate3d(55px, -3px, 0); }
+      75% { transform: translate3d(28px, 0, 0); }
+      90% { transform: translate3d(10px, -2px, 0); }
+      100% { transform: translate3d(0, 0, 0); opacity: 1; }
+    }
   </style>
 </head>
 <body>
@@ -453,14 +830,117 @@
     🎵 <span id="musicStatusText">Musik: On</span>
   </button>
 
-  <!-- 3D Opening Envelope Screen -->
+  <!-- Pixel Panda (bottom-left) & Orange Cat (bottom-right) Carrying Balloons -->
+  <div id="pixelMascotsLayer" class="pixel-mascots-layer" aria-hidden="true"></div>
+
+  <!-- Luxury 4-Sided Unfolding Stationery Envelope Screen -->
   <div id="envelopeScreen" class="envelope-screen">
     <div id="envelopeWrapper" class="envelope-wrapper" title="Ketuk untuk membuka amplop">
-      <div class="envelope-flap"></div>
-      <div class="letter">
-        <h3 style="font-size: 16px;">from Darto to Wita 🌸</h3>
+      <div class="envelope-body">
+        <svg viewBox="0 0 352 224" style="position:absolute;inset:0;width:100%;height:100%;border-radius:16px;overflow:hidden;" aria-hidden="true">
+          <defs>
+            <linearGradient id="stBack" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fdf0f5"/><stop offset="100%" stop-color="#f8dce7"/></linearGradient>
+            <linearGradient id="stLiner" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#f6cade"/><stop offset="100%" stop-color="#e89eba"/></linearGradient>
+            <linearGradient id="stGold" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#d8b272" stop-opacity="0.4"/><stop offset="50%" stop-color="#f2d694" stop-opacity="0.95"/><stop offset="100%" stop-color="#d8b272" stop-opacity="0.4"/></linearGradient>
+            <pattern id="stLattice" width="24" height="24" patternUnits="userSpaceOnUse">
+              <path d="M 12 0 L 24 12 L 12 24 L 0 12 Z" fill="none" stroke="#fff5eb" stroke-width="0.7" stroke-opacity="0.45"/>
+              <circle cx="12" cy="12" r="1.4" fill="#fde68a" fill-opacity="0.55"/>
+            </pattern>
+          </defs>
+          <rect width="352" height="224" rx="16" fill="url(#stBack)"/>
+          <rect x="8" y="8" width="336" height="208" rx="12" fill="url(#stLiner)"/>
+          <rect x="8" y="8" width="336" height="208" rx="12" fill="url(#stLattice)"/>
+          <rect x="1" y="1" width="350" height="222" rx="15" fill="none" stroke="rgba(216,178,114,0.42)" stroke-width="1.2"/>
+        </svg>
+        <div class="letter">
+          <div class="letter-inner">
+            <div style="color:#c99b63;font-size:10px;margin-bottom:6px;letter-spacing:4px;">— ✦ —</div>
+            <h3>from Darto to Wita 🌸</h3>
+          </div>
+        </div>
+        <!-- Sisi Kiri (4th) -->
+        <div class="env-flap flap-left" aria-hidden="true">
+          <div class="flap-face flap-front-y">
+            <svg viewBox="0 0 190 224" style="width:100%;height:100%;">
+              <defs><linearGradient id="stLeftGrad" x1="0" y1="0" x2="1" y2="0.4"><stop offset="0%" stop-color="#fff6f9"/><stop offset="100%" stop-color="#f5d1df"/></linearGradient></defs>
+              <path d="M 14 0 Q 0 0 0 14 L 0 210 Q 0 224 14 224 L 172 124 Q 186 112 172 100 Z" fill="url(#stLeftGrad)"/>
+              <path d="M 6 12 L 166 103 Q 178 112 166 121 L 6 212" fill="none" stroke="url(#stGold)" stroke-width="1.2" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="flap-face flap-back-y">
+            <svg viewBox="0 0 190 224" style="width:100%;height:100%;">
+              <path d="M 14 0 Q 0 0 0 14 L 0 210 Q 0 224 14 224 L 172 124 Q 186 112 172 100 Z" fill="url(#stLiner)"/>
+              <path d="M 12 8 Q 6 8 6 16 L 6 208 Q 6 216 12 216 L 166 122 Q 178 112 166 102 Z" fill="url(#stLattice)"/>
+            </svg>
+          </div>
+        </div>
+        <!-- Sisi Kanan (3rd) -->
+        <div class="env-flap flap-right" aria-hidden="true">
+          <div class="flap-face flap-front-y">
+            <svg viewBox="0 0 190 224" style="width:100%;height:100%;">
+              <defs><linearGradient id="stRightGrad" x1="1" y1="0" x2="0" y2="0.4"><stop offset="0%" stop-color="#fef2f6"/><stop offset="100%" stop-color="#f2c6d7"/></linearGradient></defs>
+              <path d="M 176 0 Q 190 0 190 14 L 190 210 Q 190 224 176 224 L 18 124 Q 4 112 18 100 Z" fill="url(#stRightGrad)"/>
+              <path d="M 184 12 L 24 103 Q 12 112 24 121 L 184 212" fill="none" stroke="url(#stGold)" stroke-width="1.2" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="flap-face flap-back-y">
+            <svg viewBox="0 0 190 224" style="width:100%;height:100%;">
+              <path d="M 176 0 Q 190 0 190 14 L 190 210 Q 190 224 176 224 L 18 124 Q 4 112 18 100 Z" fill="url(#stLiner)"/>
+              <path d="M 178 8 Q 184 8 184 16 L 184 208 Q 184 216 178 216 L 24 122 Q 12 112 24 102 Z" fill="url(#stLattice)"/>
+            </svg>
+          </div>
+        </div>
+        <!-- Sisi Bawah (2nd) -->
+        <div class="env-flap flap-bottom" aria-hidden="true">
+          <div class="flap-face flap-front-x">
+            <svg viewBox="0 0 352 138" style="width:100%;height:100%;">
+              <defs><linearGradient id="stBottomGrad" x1="0" y1="1" x2="0" y2="0"><stop offset="0%" stop-color="#f5cfe0"/><stop offset="55%" stop-color="#fce8f0"/><stop offset="100%" stop-color="#fff7fa"/></linearGradient></defs>
+              <path d="M 0 124 Q 0 138 14 138 L 338 138 Q 352 138 352 124 L 194 16 Q 176 4 158 16 Z" fill="url(#stBottomGrad)"/>
+              <path d="M 10 128 L 160 21 Q 176 10 192 21 L 342 128" fill="none" stroke="url(#stGold)" stroke-width="1.25" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="flap-face flap-back-x">
+            <svg viewBox="0 0 352 138" style="width:100%;height:100%;">
+              <path d="M 0 124 Q 0 138 14 138 L 338 138 Q 352 138 352 124 L 194 16 Q 176 4 158 16 Z" fill="url(#stLiner)"/>
+              <path d="M 8 126 Q 8 132 16 132 L 336 132 Q 344 132 344 126 L 192 20 Q 176 9 160 20 Z" fill="url(#stLattice)"/>
+            </svg>
+          </div>
+        </div>
+        <!-- Sisi Atas (1st) -->
+        <div class="env-flap flap-top" aria-hidden="true">
+          <div class="flap-face flap-front-x">
+            <svg viewBox="0 0 352 138" style="width:100%;height:100%;">
+              <defs><linearGradient id="stFlap" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fff8fa"/><stop offset="65%" stop-color="#fbe3ec"/><stop offset="100%" stop-color="#f4c7d8"/></linearGradient></defs>
+              <path d="M 0 12 Q 0 0 14 0 L 338 0 Q 352 0 352 12 L 194 122 Q 176 134 158 122 Z" fill="url(#stFlap)"/>
+              <path d="M 12 6 L 160 113 Q 176 124 192 113 L 340 6" fill="none" stroke="url(#stGold)" stroke-width="1.2" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="flap-face flap-back-x">
+            <svg viewBox="0 0 352 138" style="width:100%;height:100%;">
+              <path d="M 0 12 Q 0 0 14 0 L 338 0 Q 352 0 352 12 L 194 122 Q 176 134 158 122 Z" fill="url(#stLiner)"/>
+              <path d="M 8 10 Q 8 4 16 4 L 336 4 Q 344 4 344 10 L 192 117 Q 176 128 160 117 Z" fill="url(#stLattice)"/>
+            </svg>
+          </div>
+        </div>
+        <div class="wax-seal" aria-hidden="true">
+          <svg viewBox="0 0 64 64" style="width:100%;height:100%;filter:drop-shadow(0 6px 12px rgba(136,14,79,0.32));">
+            <defs>
+              <radialGradient id="stWax" cx="38%" cy="32%" r="68%"><stop offset="0%" stop-color="#e11d74"/><stop offset="52%" stop-color="#be185d"/><stop offset="100%" stop-color="#831843"/></radialGradient>
+              <linearGradient id="stSealGold" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#fef08a"/><stop offset="50%" stop-color="#eab308"/><stop offset="100%" stop-color="#d97706"/></linearGradient>
+            </defs>
+            <path d="M 32 4 C 38 4, 42 7, 46 8 C 51 9, 55 13, 56 18 C 57 22, 60 27, 60 32 C 60 37, 57 42, 56 46 C 54 51, 50 55, 45 56 C 41 57, 37 60, 32 60 C 27 60, 22 57, 18 56 C 13 54, 9 50, 8 45 C 7 41, 4 37, 4 32 C 4 27, 7 22, 8 18 C 10 13, 14 9, 19 8 C 23 7, 27 4, 32 4 Z" fill="url(#stWax)"/>
+            <circle cx="32" cy="32" r="19.5" fill="#9d174d" stroke="url(#stSealGold)" stroke-width="1.2"/>
+            <g transform="translate(32, 32)" fill="url(#stSealGold)">
+              <path d="M 0 -10.5 C 3 -8.5, 3.6 -4, 0 -1.5 C -3.6 -4, -3 -8.5, 0 -10.5 Z"/>
+              <path d="M 0 -10.5 C 3 -8.5, 3.6 -4, 0 -1.5 C -3.6 -4, -3 -8.5, 0 -10.5 Z" transform="rotate(72)"/>
+              <path d="M 0 -10.5 C 3 -8.5, 3.6 -4, 0 -1.5 C -3.6 -4, -3 -8.5, 0 -10.5 Z" transform="rotate(144)"/>
+              <path d="M 0 -10.5 C 3 -8.5, 3.6 -4, 0 -1.5 C -3.6 -4, -3 -8.5, 0 -10.5 Z" transform="rotate(216)"/>
+              <path d="M 0 -10.5 C 3 -8.5, 3.6 -4, 0 -1.5 C -3.6 -4, -3 -8.5, 0 -10.5 Z" transform="rotate(288)"/>
+              <circle cx="0" cy="0" r="2.3" fill="#fef3c7"/>
+            </g>
+          </svg>
+        </div>
       </div>
-      <div class="envelope-pocket"></div>
     </div>
   </div>
 
@@ -488,29 +968,49 @@ Be happy, be awesome. May peace be upon u!!!🤲✌☺️✌</p>
 
   <!-- Surprise Modal -->
   <div id="surpriseModal" class="modal-backdrop">
-    <div class="modal-content">
+    <div id="balloonLayer" class="balloon-layer" aria-hidden="true"></div>
+    <div class="modal-content" style="z-index: 10;">
       <button id="btnModalCloseX" class="close-x-btn" aria-label="Tutup">&times;</button>
       
-      <!-- Cake & Candles -->
+      <!-- Cake & Candles flanked by Pixel Panda & Orange Cat -->
       <div class="cake-container">
-        <div id="flamesGroup" class="flames">
-          <span class="flame">🔥</span>
-          <span class="flame">🔥</span>
-          <span class="flame">🔥</span>
+        <div class="pixel-modal-row">
+          <button id="modalPandaSlot" type="button" class="pixel-modal-mascot" aria-label="Sapa Pixel Panda"></button>
+          <div>
+            <div id="flamesGroup" class="flames">
+              <span class="flame">🔥</span>
+              <span class="flame">🔥</span>
+              <span class="flame">🔥</span>
+            </div>
+            <div id="cakeGraphic" class="cake-emoji" title="Ketuk kue untuk meniup lilin">🎂</div>
+          </div>
+          <button id="modalCatSlot" type="button" class="pixel-modal-mascot" aria-label="Sapa Pixel Kucing Orange"></button>
         </div>
-        <div id="cakeGraphic" class="cake-emoji" title="Ketuk kue untuk meniup lilin">🎂</div>
 
         <div id="candleActionArea">
-          <button id="btnTiupLilin" class="action-btn-tiup" type="button">
-            🌬️ Tiup Lilin
-          </button>
+          <div class="candle-btn-row">
+            <button id="btnTiupLilin" class="action-btn-tiup" type="button">
+              🌬️ Tiup Lilin
+            </button>
+            <button id="btnTiupMic" class="action-btn-mic" type="button">
+              🎙️ Tiup pakai Mic
+            </button>
+          </div>
+          <div id="micStatusContainer"></div>
         </div>
       </div>
 
+      <!-- Make a Wish Section (Page 3 only, hidden on Page 4) -->
+      <section id="wishSection" class="wish-box" aria-label="Make a Wish">
+        <div class="wish-header">
+          <span class="wish-title">🌟 Make a Wish</span>
+          <button id="btnEditWish" type="button" style="display:none;background:#fff;border:1px solid #fbcfe8;color:#be185d;font-size:11px;font-weight:600;padding:2px 8px;border-radius:9999px;cursor:pointer;">✏️ Ubah</button>
+        </div>
+        <div id="wishBody"></div>
+      </section>
+
       <!-- Photo Revealed After Blowing Candles (3-Photo Slide Carousel) -->
       <div id="photoFrame" class="photo-frame" style="position: relative; max-width: 270px;">
-        <div id="slideCounter" style="position: absolute; top: 14px; right: 14px; background: rgba(0,0,0,0.55); color: #fff; font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 9999px; z-index: 10;">1 / 3</div>
-
         <button id="btnPrevSlide" type="button" aria-label="Foto sebelumnya" style="position: absolute; left: -10px; top: 40%; transform: translateY(-50%); width: 30px; height: 30px; border-radius: 50%; background: #ffffff; border: 1px solid #fbcfe8; color: #be185d; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.12); z-index: 20; display: flex; align-items: center; justify-content: center;">‹</button>
         <button id="btnNextSlide" type="button" aria-label="Foto selanjutnya" style="position: absolute; right: -10px; top: 40%; transform: translateY(-50%); width: 30px; height: 30px; border-radius: 50%; background: #ffffff; border: 1px solid #fbcfe8; color: #be185d; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.12); z-index: 20; display: flex; align-items: center; justify-content: center;">›</button>
 
@@ -525,17 +1025,63 @@ Be happy, be awesome. May peace be upon u!!!🤲✌☺️✌</p>
         </div>
       </div>
 
-      <!-- Modal Bottom Close Button -->
-      <div style="margin-top: 18px;">
-        <button id="btnModalClose" class="btn-primary" style="padding: 10px 30px; font-size: 14px;" type="button">
+      <!-- Modal Bottom Action Buttons -->
+      <div style="margin-top: 16px; display: flex; align-items: center; justify-content: center; gap: 10px;">
+        <button id="btnMainGame" type="button" style="display: none; align-items: center; justify-content: center; gap: 6px; padding: 10px 20px; font-size: 14px; font-weight: 600; color: #fff; background: linear-gradient(135deg, #f59e0b, #ec4899, #e11d48); border: none; border-radius: 9999px; box-shadow: 0 6px 18px rgba(236, 72, 153, 0.35); cursor: pointer;">
+          🎮 Main game
+        </button>
+        <button id="btnModalClose" class="btn-primary" style="padding: 10px 26px; font-size: 14px;" type="button">
           Tutup
         </button>
       </div>
     </div>
   </div>
 
+  <!-- Roulette Game Modal -->
+  <div id="rouletteModal" class="modal-backdrop" style="z-index: 150;">
+    <div class="modal-content" style="max-width: 440px; z-index: 10; overflow-x: hidden;">
+      <button id="btnRouletteCloseX" class="close-x-btn" aria-label="Tutup">&times;</button>
+      <h2 id="rouletteModalTitle" style="font-family:'Playfair Display',serif;font-size:22px;color:#880e4f;margin-bottom:14px;padding:0 24px;">Semoga Beruntungggg!!!</h2>
+
+      <div id="rouletteWheelStage">
+        <div style="position:relative;width:280px;height:280px;margin:0 auto;display:flex;align-items:center;justify-content:center;">
+          <div style="position:absolute;top:-8px;left:50%;transform:translateX(-50%);z-index:20;">
+            <svg width="30" height="32" viewBox="0 0 32 34">
+              <path d="M 16 32 L 4 8 Q 3 2 10 2 L 22 2 Q 29 2 28 8 Z" fill="#be185d" stroke="#fde68a" stroke-width="2.5"/>
+            </svg>
+          </div>
+          <div id="rouletteWheel" style="width:100%;height:100%;border-radius:50%;box-shadow:0 12px 28px rgba(136,14,79,0.2);"></div>
+        </div>
+
+        <div style="margin-top:16px;">
+          <button id="btnSpinRoulette" class="btn-primary" type="button" style="padding:11px 28px;font-size:14px;">
+            🎯 Putar Roulette!
+          </button>
+        </div>
+      </div>
+
+      <div id="roulettePrizeStage" style="display:none;position:relative;overflow:hidden;padding:8px 0;">
+        <div style="display:flex;align-items:flex-end;justify-content:center;gap:8px;width:100%;">
+          <div id="prizePandaSlot" style="width:72px;flex-shrink:0;margin-bottom:4px;"></div>
+          <div id="prizeShoeBox" style="flex:1;min-width:0;max-width:210px;">
+            <div style="border-radius:16px;overflow:hidden;border:2px solid #fbcfe8;aspect-ratio:4/3;background:#fdf2f8;box-shadow:0 10px 24px rgba(136,14,79,0.16);">
+              <img src="assets/aistudio/Sepatu_NB_64664b7f.jpg" alt="Sepatu" loading="eager" decoding="async" style="width:100%;height:100%;object-fit:cover;object-position:center;">
+            </div>
+            <p style="font-family:'Playfair Display',serif;font-size:19px;font-weight:700;color:#880e4f;margin-top:8px;">Sepatu 👟✨</p>
+          </div>
+          <div id="prizeCatSlot" style="width:72px;flex-shrink:0;margin-bottom:4px;"></div>
+        </div>
+
+        <div style="display:flex;gap:10px;margin-top:18px;justify-content:center;">
+          <button id="btnRouletteAgain" type="button" style="flex:1;max-width:150px;padding:10px 16px;border-radius:9999px;border:1px solid #fbcfe8;background:#fdf2f8;color:#9d174d;font-weight:600;font-size:13px;cursor:pointer;">Putar Lagi</button>
+          <button id="btnRouletteWinClose" class="btn-primary" type="button" style="flex:1;max-width:150px;padding:10px 16px;font-size:13px;">Tutup</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Fullscreen Confetti Canvas -->
-  <canvas id="confettiCanvas"></canvas>
+  <canvas id="confettiCanvas" style="z-index: 999;"></canvas>
 
   <script>
     /* ========================================================
@@ -815,36 +1361,282 @@ Be happy, be awesome. May peace be upon u!!!🤲✌☺️✌</p>
       musicStatusText.textContent = isOn ? 'Musik: On' : 'Musik: Off';
     });
 
-    // Open Envelope
+    let isOpeningEnvelope = false;
+
+    // Open Envelope (4-sided sequential: Top -> Bottom -> Right -> Left -> Reveal -> Exit)
     envelopeWrapper.addEventListener('click', () => {
-      envelopeWrapper.classList.add('open');
+      if (isOpeningEnvelope) return;
+      isOpeningEnvelope = true;
+      envelopeWrapper.classList.add('is-unsealing');
       sound.playChime();
       sound.startMelody();
 
+      setTimeout(() => envelopeWrapper.classList.add('is-top-open'), 240);
+      setTimeout(() => envelopeWrapper.classList.add('is-bottom-open'), 620);
+      setTimeout(() => envelopeWrapper.classList.add('is-right-open'), 1000);
+      setTimeout(() => envelopeWrapper.classList.add('is-left-open'), 1380);
+      setTimeout(() => envelopeWrapper.classList.add('is-revealing'), 1780);
       setTimeout(() => {
+        envelopeWrapper.classList.add('is-exiting');
         envelopeScreen.classList.add('hidden');
         setTimeout(() => {
           mainCard.style.display = 'block';
-        }, 500);
-      }, 1250);
+        }, 530);
+      }, 2320);
     });
 
     // Close Envelope
     btnCloseEnvelope.addEventListener('click', () => {
+      isOpeningEnvelope = false;
       mainCard.style.display = 'none';
       envelopeScreen.classList.remove('hidden');
-      envelopeWrapper.classList.remove('open');
+      envelopeWrapper.classList.remove(
+        'is-unsealing',
+        'is-top-open',
+        'is-bottom-open',
+        'is-right-open',
+        'is-left-open',
+        'is-revealing',
+        'is-exiting'
+      );
+    });
+
+    function spawnBalloons() {
+      const layer = document.getElementById('balloonLayer');
+      if (!layer) return;
+      layer.innerHTML = '';
+      const palette = ['#ec4899', '#f43f5e', '#a855f7', '#fbbf24', '#38bdf8', '#34d399', '#fb7185'];
+      for (let i = 0; i < 16; i++) {
+        const el = document.createElement('div');
+        el.className = 'flying-balloon';
+        const w = Math.round(38 + Math.random() * 18);
+        const color = palette[i % palette.length];
+        el.style.left = (4 + (i * 92) / 16) + '%';
+        el.style.width = w + 'px';
+        el.style.animationDuration = (5.5 + Math.random() * 2.7).toFixed(2) + 's';
+        el.style.animationDelay = (i % 2 === 0 ? Math.random() * 1.0 : 1.2 + Math.random() * 2.4).toFixed(2) + 's';
+        el.style.setProperty('--sway', Math.round((Math.random() - 0.5) * 40) + 'px');
+        el.style.setProperty('--tilt', Math.round((Math.random() - 0.5) * 14) + 'deg');
+        el.innerHTML = `<svg viewBox="0 0 64 110" style="width:100%;height:auto;"><path d="M32 76 C27 84, 37 90, 31 98 C27 103, 34 106, 32 110" fill="none" stroke="rgba(255,255,255,0.78)" stroke-width="1.8" stroke-linecap="round"/><path d="M28 73 L36 73 L32 69 Z" fill="${color}"/><path d="M32 6 C14 6, 4 21, 4 38 C4 56, 20 69, 32 70 C44 69, 60 56, 60 38 C60 21, 50 6, 32 6 Z" fill="${color}"/><ellipse cx="20" cy="25" rx="6" ry="12" transform="rotate(-20 20 25)" fill="#fff" opacity="0.4"/></svg>`;
+        layer.appendChild(el);
+      }
+    }
+
+    let isBlowing = false;
+    let blowTimer = null;
+
+    // Microphone blow detection state
+    let micStream = null;
+    let micAudioCtx = null;
+    let micRafId = null;
+    let micActive = false;
+    let micSustainedFrames = 0;
+
+    function stopMicrophone() {
+      if (micRafId !== null) { cancelAnimationFrame(micRafId); micRafId = null; }
+      if (micStream) {
+        micStream.getTracks().forEach((t) => t.stop());
+        micStream = null;
+      }
+      if (micAudioCtx) {
+        micAudioCtx.close().catch(() => {});
+        micAudioCtx = null;
+      }
+      micSustainedFrames = 0;
+      micActive = false;
+    }
+
+    function bindCandleButtons() {
+      const blowBtn = document.getElementById('btnTiupLilin');
+      const micBtn = document.getElementById('btnTiupMic');
+      if (blowBtn) blowBtn.addEventListener('click', blowCandles);
+      if (micBtn) micBtn.addEventListener('click', toggleMicrophone);
+    }
+
+    function renderMicError(msg) {
+      const box = document.getElementById('micStatusContainer');
+      if (box) {
+        box.innerHTML = `<div class="mic-error-box">${msg}</div>`;
+      }
+    }
+
+    async function toggleMicrophone() {
+      if (micActive) {
+        stopMicrophone();
+        const micBtn = document.getElementById('btnTiupMic');
+        if (micBtn) {
+          micBtn.classList.remove('listening');
+          micBtn.textContent = '🎙️ Tiup pakai Mic';
+        }
+        const box = document.getElementById('micStatusContainer');
+        if (box) box.innerHTML = '';
+        return;
+      }
+      if (candlesBlown || isBlowing) return;
+
+      if (!navigator.mediaDevices || typeof navigator.mediaDevices.getUserMedia !== 'function') {
+        renderMicError('Mikrofon tidak didukung — pakai tombol Tiup Lilin ya!');
+        return;
+      }
+
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) {
+          stream.getTracks().forEach((t) => t.stop());
+          renderMicError('Audio browser tidak tersedia — pakai tombol Tiup Lilin ya!');
+          return;
+        }
+        const ctxAudio = new AudioCtx();
+        if (ctxAudio.state === 'suspended') await ctxAudio.resume();
+        const src = ctxAudio.createMediaStreamSource(stream);
+        const analyser = ctxAudio.createAnalyser();
+        analyser.fftSize = 256;
+        analyser.smoothingTimeConstant = 0.45;
+        src.connect(analyser);
+
+        micStream = stream;
+        micAudioCtx = ctxAudio;
+        micActive = true;
+        micSustainedFrames = 0;
+
+        const micBtn = document.getElementById('btnTiupMic');
+        if (micBtn) {
+          micBtn.classList.add('listening');
+          micBtn.textContent = '🔇 Stop Mic';
+        }
+        const box = document.getElementById('micStatusContainer');
+        if (box) {
+          box.innerHTML = `
+            <div class="mic-meter-box">
+              <div style="display:flex;justify-content:space-between;">
+                <span>Tiup ke mikrofon sekarang...</span>
+                <span id="micPctText">0%</span>
+              </div>
+              <div class="mic-meter-track"><div id="micMeterFill" class="mic-meter-fill"></div></div>
+            </div>
+          `;
+        }
+
+        const bins = new Uint8Array(analyser.frequencyBinCount);
+        const loop = () => {
+          if (!micStream) return;
+          analyser.getByteFrequencyData(bins);
+          let sum = 0; let peak = 0;
+          const endIdx = Math.min(bins.length, 28);
+          for (let i = 1; i < endIdx; i++) {
+            sum += bins[i];
+            if (bins[i] > peak) peak = bins[i];
+          }
+          const avgNorm = sum / (Math.max(1, endIdx - 1) * 255);
+          const peakNorm = peak / 255;
+          const level = Math.min(1, 0.65 * avgNorm + 0.35 * peakNorm);
+          const pct = Math.round(level * 100);
+          const fillEl = document.getElementById('micMeterFill');
+          const pctEl = document.getElementById('micPctText');
+          if (fillEl) fillEl.style.width = Math.max(4, pct) + '%';
+          if (pctEl) pctEl.textContent = pct + '%';
+
+          if (level >= 0.36) micSustainedFrames++;
+          else micSustainedFrames = Math.max(0, micSustainedFrames - 1);
+
+          if (micSustainedFrames >= 4) {
+            stopMicrophone();
+            blowCandles();
+            return;
+          }
+          micRafId = requestAnimationFrame(loop);
+        };
+        micRafId = requestAnimationFrame(loop);
+      } catch (err) {
+        stopMicrophone();
+        renderMicError('Mikrofon tidak tersedia / izin ditolak — pakai tombol Tiup Lilin ya!');
+      }
+    }
+
+    // Make-a-Wish with localStorage persistence
+    const WISH_KEY = 'dina_birthday_wish_v1';
+    let isEditingWish = false;
+
+    function escapeHtml(str) {
+      return str.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    }
+
+    function renderWishBox() {
+      const body = document.getElementById('wishBody');
+      const editBtn = document.getElementById('btnEditWish');
+      if (!body || !editBtn) return;
+
+      let saved = null;
+      try {
+        const raw = localStorage.getItem(WISH_KEY);
+        if (raw) saved = JSON.parse(raw);
+      } catch (e) {}
+
+      if (saved && saved.text && !isEditingWish) {
+        editBtn.style.display = 'inline-block';
+        body.innerHTML = `
+          <div class="wish-saved-card">
+            <p style="font-size:12.5px;color:#500724;font-style:italic;font-weight:500;line-height:1.5;">“${escapeHtml(saved.text)}”</p>
+            <p style="margin-top:6px;font-size:11px;font-weight:600;color:#db2777;">
+              Semoga harapan kamu terkabul, Aamiin☺️🤲
+            </p>
+          </div>
+        `;
+      } else {
+        editBtn.style.display = 'none';
+        const val = saved && saved.text ? escapeHtml(saved.text) : '';
+        body.innerHTML = `
+          <form id="wishForm" class="wish-form">
+            <input id="wishInput" class="wish-input" type="text" maxlength="160" placeholder="Tulis harapan ulang tahunmu..." value="${val}">
+            <button type="submit" class="wish-submit-btn">✨ Simpan</button>
+          </form>
+          <div id="wishErrText" style="font-size:11px;color:#e11d48;margin-top:4px;display:none;"></div>
+        `;
+        document.getElementById('wishForm').addEventListener('submit', (ev) => {
+          ev.preventDefault();
+          const inp = document.getElementById('wishInput');
+          const errEl = document.getElementById('wishErrText');
+          const txt = (inp.value || '').trim();
+          if (!txt) {
+            errEl.textContent = 'Tulis dulu harapan ulang tahunmu ya ✨';
+            errEl.style.display = 'block';
+            return;
+          }
+          try {
+            localStorage.setItem(WISH_KEY, JSON.stringify({ text: txt, savedAt: Date.now() }));
+          } catch (e) {}
+          isEditingWish = false;
+          sound.playChime();
+          renderWishBox();
+        });
+      }
+    }
+
+    document.getElementById('btnEditWish').addEventListener('click', () => {
+      isEditingWish = true;
+      renderWishBox();
     });
 
     // Open Surprise Modal (pencet lerrrr)
     btnPencet.addEventListener('click', () => {
+      relightCandles(true);
+      renderSlide(0, true);
+      isEditingWish = false;
+      renderWishBox();
+      spawnBalloons();
+      document.getElementById('pixelMascotsLayer').style.display = 'none';
       surpriseModal.classList.add('active');
       sound.playChime();
     });
 
     // Close Modal
     function closeModal() {
+      if (blowTimer) { clearTimeout(blowTimer); blowTimer = null; }
+      stopMicrophone();
+      isBlowing = false;
       surpriseModal.classList.remove('active');
+      document.getElementById('pixelMascotsLayer').style.display = 'flex';
     }
     btnModalClose.addEventListener('click', closeModal);
     btnModalCloseX.addEventListener('click', closeModal);
@@ -854,36 +1646,45 @@ Be happy, be awesome. May peace be upon u!!!🤲✌☺️✌</p>
 
     // Blow candles logic
     function blowCandles() {
-      if (candlesBlown) return;
-      candlesBlown = true;
+      if (candlesBlown || isBlowing) return;
+      stopMicrophone();
+      isBlowing = true;
       sound.playBlowSound();
+      if (window.updateModalPixelMascots) window.updateModalPixelMascots('blowing');
 
-      // Extinguish flames
-      flamesGroup.innerHTML = `
-        <span style="opacity: 0.6; font-size: 16px;">💨</span>
-        <span style="opacity: 0.6; font-size: 16px;">💨</span>
-        <span style="opacity: 0.6; font-size: 16px;">💨</span>
-      `;
+      blowTimer = setTimeout(() => {
+        isBlowing = false;
+        candlesBlown = true;
 
-      // Status badge "Kue-nya virtual aja yaaaa😅" + Relight button
-      candleActionArea.innerHTML = `
-        <div style="display: inline-flex; align-items: center; gap: 8px;">
-          <span class="status-badge">Kue-nya virtual aja yaaaa😅</span>
-          <button id="btnRelight" class="btn-relight" title="Nyalakan lilin kembali">🔄</button>
-        </div>
-      `;
+        flamesGroup.innerHTML = `
+          <span style="opacity: 0.6; font-size: 16px;">💨</span>
+          <span style="opacity: 0.6; font-size: 16px;">💨</span>
+          <span style="opacity: 0.6; font-size: 16px;">💨</span>
+        `;
 
-      // Reveal Photo with "Happy Birthday!!! 😋"
-      photoFrame.style.display = 'block';
+        candleActionArea.innerHTML = `
+          <div style="display: inline-flex; align-items: center; gap: 8px;">
+            <span class="status-badge">Kue-nya virtual aja yaaaa😅</span>
+            <button id="btnRelight" class="btn-relight" title="Nyalakan lilin kembali">🔄</button>
+          </div>
+        `;
 
-      // Launch Confetti Burst
-      launchConfetti(140);
+        const wishSec = document.getElementById('wishSection');
+        if (wishSec) wishSec.style.display = 'none';
+        const gameBtn = document.getElementById('btnMainGame');
+        if (gameBtn) gameBtn.style.display = 'inline-flex';
+        photoFrame.style.display = 'block';
+        launchConfetti(140);
+        if (window.updateModalPixelMascots) window.updateModalPixelMascots('blown');
 
-      // Re-attach relight listener
-      document.getElementById('btnRelight').addEventListener('click', relightCandles);
+        document.getElementById('btnRelight').addEventListener('click', () => relightCandles(false));
+      }, 950);
     }
 
-    function relightCandles() {
+    function relightCandles(silent = false) {
+      if (blowTimer) { clearTimeout(blowTimer); blowTimer = null; }
+      stopMicrophone();
+      isBlowing = false;
       candlesBlown = false;
       flamesGroup.innerHTML = `
         <span class="flame">🔥</span>
@@ -891,16 +1692,27 @@ Be happy, be awesome. May peace be upon u!!!🤲✌☺️✌</p>
         <span class="flame">🔥</span>
       `;
       candleActionArea.innerHTML = `
-        <button id="btnTiupLilin" class="action-btn-tiup" type="button">
-          🌬️ Tiup Lilin
-        </button>
+        <div class="candle-btn-row">
+          <button id="btnTiupLilin" class="action-btn-tiup" type="button">
+            🌬️ Tiup Lilin
+          </button>
+          <button id="btnTiupMic" class="action-btn-mic" type="button">
+            🎙️ Tiup pakai Mic
+          </button>
+        </div>
+        <div id="micStatusContainer"></div>
       `;
+      const wishSec = document.getElementById('wishSection');
+      if (wishSec) wishSec.style.display = 'block';
+      const gameBtn = document.getElementById('btnMainGame');
+      if (gameBtn) gameBtn.style.display = 'none';
       photoFrame.style.display = 'none';
-      document.getElementById('btnTiupLilin').addEventListener('click', blowCandles);
-      sound.playChime();
+      if (window.updateModalPixelMascots) window.updateModalPixelMascots('idle');
+      bindCandleButtons();
+      if (!silent) sound.playChime();
     }
 
-    btnTiupLilin.addEventListener('click', blowCandles);
+    bindCandleButtons();
     cakeGraphic.addEventListener('click', blowCandles);
     flamesGroup.addEventListener('click', blowCandles);
 
@@ -912,12 +1724,11 @@ Be happy, be awesome. May peace be upon u!!!🤲✌☺️✌</p>
     ];
     let currentSlideIdx = 0;
 
-    function renderSlide(index) {
+    function renderSlide(index, silent = false) {
       currentSlideIdx = (index + photoSlides.length) % photoSlides.length;
       const slide = photoSlides[currentSlideIdx];
       document.getElementById('dinaImg').src = slide.src;
       document.getElementById('dinaCaption').textContent = slide.caption;
-      document.getElementById('slideCounter').textContent = (currentSlideIdx + 1) + ' / ' + photoSlides.length;
       document.querySelectorAll('.slide-dot').forEach((dot, i) => {
         if (i === currentSlideIdx) {
           dot.style.width = '20px';
@@ -927,7 +1738,7 @@ Be happy, be awesome. May peace be upon u!!!🤲✌☺️✌</p>
           dot.style.background = '#fbcfe8';
         }
       });
-      sound.playChime();
+      if (!silent) sound.playChime();
     }
 
     document.getElementById('btnPrevSlide').addEventListener('click', () => {
@@ -942,6 +1753,508 @@ Be happy, be awesome. May peace be upon u!!!🤲✌☺️✌</p>
         renderSlide(idx);
       });
     });
+
+    /* ========================================================
+       5. PIXEL PANDA & ORANGE CAT ACROSS ALL 4 PAGES
+       ======================================================== */
+    (function initPixelMascots() {
+      const cornerLayer = document.getElementById('pixelMascotsLayer');
+      const pandaSlot = document.getElementById('modalPandaSlot');
+      const catSlot = document.getElementById('modalCatSlot');
+
+      function rowsToRects(rows, palette) {
+        let out = '';
+        for (let y = 0; y < rows.length; y++) {
+          const row = rows[y];
+          let x = 0;
+          while (x < row.length) {
+            const sym = row[x];
+            const fill = palette[sym];
+            if (!fill || sym === '.') { x++; continue; }
+            let len = 1;
+            while (x + len < row.length && row[x + len] === sym) len++;
+            out += `<rect x="${x}" y="${y}" width="${len}" height="1" fill="${fill}"/>`;
+            x += len;
+          }
+        }
+        return out;
+      }
+
+      const pandaPalette = { K: '#1e1b24', W: '#ffffff', S: '#e2e8f0', E: '#ffffff', P: '#f472b6', N: '#475569', C: '#facc15', H: '#ec4899', Y: '#fde047' };
+      const catPalette = { K: '#431407', O: '#fb923c', D: '#ea580c', C: '#fff7ed', I: '#f472b6', P: '#fda4af', E: '#1e1b24', W: '#ffffff', H: '#38bdf8', Y: '#fde047' };
+      const cakeSlicePalette = { K: '#431407', R: '#e11d48', G: '#22c55e', W: '#ffffff', P: '#f472b6', Y: '#fde047', S: '#e2e8f0' };
+      const popperPalette = { K: '#334155', G: '#facc15', P: '#ec4899', W: '#ffffff' };
+
+      const pandaFrames = [
+        [
+          '.......KYYK.......', '.......KHHK.......', '......KHHHHK......', '......KHYHHK......', '.....KHHHHHHK.....',
+          '..KKK.KYYYYK.KKK..', '.KKKKKKYYYYKKKKKK.', '.KKKKKKKKKKKKKKKK.', '.KKKWWWWWWWWWWKKK.', '..KWWWWWWWWWWWWK..',
+          '.KWWWWWWWWWWWWWWK.', '.KWWKKKWWWWKKKWWK.', '.KWWKEKWWWWKEKWWK.', '.KWWKKKWWWWKKKWWK.', '.KWPWWWWKKWWWWPWK.',
+          '.KWWWWWWNNWWWWWWK.', '..KSSWWWWWWWWSSK..', '...KKKKKKKKKKKK...', '..KKKKWWWWWWKKKK..', '.KKK.KWWWWWWK.KKK.',
+          '.KK..KWWWWWWK.....', '.....KKKKKKKK.....', '....KKK....KKK....', '...KKK......KKK...', '...SSS......SSS...'
+        ],
+        [
+          '.......KYYK.......', '.......KHHK.......', '......KHHHHK......', '......KHYHHK......', '.....KHHHHHHK.....',
+          '..KKK.KYYYYK.KKK..', '.KKKKKKYYYYKKKKKK.', '.KKKKKKKKKKKKKKKK.', '.KKKWWWWWWWWWWKKK.', '..KWWWWWWWWWWWWK..',
+          '.KWWWWWWWWWWWWWWK.', '.KWWKKKWWWWKKKWWK.', '.KWWKEKWWWWKEKWWK.', '.KWWKKKWWWWKKKWWK.', '.KWPWWWWKKWWWWPWK.',
+          '.KWWWWWWNNWWWWWWK.', '..KSSWWWWWWWWSSK..', '...KKKKKKKKKKKK...', '..KKKKWWWWWWKKKK..', '.KKK.KWWWWWWK.KKK.',
+          '.KK..KWWWWWWK.....', '.....KKKKKKKK.....', '.....KKK..KKK.....', '.....KKK..KKK.....', '.....SSS..SSS.....'
+        ]
+      ];
+      const pandaClapFrames = [
+        [
+          '.......KYYK.......', '.......KHHK.......', '......KHHHHK......', '......KHYHHK......', '.....KHHHHHHK.....',
+          '..KKK.KYYYYK.KKK..', '.KKKKKKYYYYKKKKKK.', '.KKKKKKKKKKKKKKKK.', '.KKKWWWWWWWWWWKKK.', '..KWWWWWWWWWWWWK..',
+          '.KWWWWWWWWWWWWWWK.', '.KWWKKKWWWWKKKWWK.', '.KWWKEKWWWWKEKWWK.', '.KWWKKKWWWWKKKWWK.', '.KWPWWWWKKWWWWPWK.',
+          '.KWWWWWWNNWWWWWWK.', '..KSSWWWWWWWWSSK..', '.KKKKKKKKKKKKKKKK.', 'KKK..KWWWWWWK..KKK', '.K...KWWWWWWK...K.',
+          '.....KWWWWWWK.....', '.....KKKKKKKK.....', '....KKK....KKK....', '...KKK......KKK...', '...SSS......SSS...'
+        ],
+        [
+          '.......KYYK.......', '.......KHHK.......', '......KHHHHK......', '......KHYHHK......', '.....KHHHHHHK.....',
+          '..KKK.KYYYYK.KKK..', '.KKKKKKYYYYKKKKKK.', '.KKKKKKKKKKKKKKKK.', '.KKKWWWWWWWWWWKKK.', '..KWWWWWWWWWWWWK..',
+          '.KWWWWWWWWWWWWWWK.', '.KWWKKKWWWWKKKWWK.', '.KWWKEKWWWWKEKWWK.', '.KWWKKKWWWWKKKWWK.', '.KWPWWWWKKWWWWPWK.',
+          '.KWWWWWWNNWWWWWWK.', '..KSSWWWWWWWWSSK..', '...KKKKKKKKKKKK...', '...KKKWWCCWWKKK...', '....KKKKCCKKKK....',
+          '.....KWWWWWWK.....', '.....KKKKKKKK.....', '.....KKK..KKK.....', '.....KKK..KKK.....', '.....SSS..SSS.....'
+        ]
+      ];
+      const catFrames = [
+        [
+          '.......KYYK.......', '.......KHHK.......', '......KHHHHK......', '......KHYHHK......', '.....KHHHHHHK.....',
+          '..KK..KYYYYK..KK..', '.KOIK.KYYYYK.KIOK.', '.KOOIKKKKKKKKIOOK.', '.KOOOOOKKKKOOOOOK.', '.KOOOOODDDDDOOOOK.',
+          '.KOOOOOODDOOOOOOK.', '.KDOOOOOOOOOOOODK.', '.KOOWEOOOOOOWEOOK.', '.KOOEEOOOOOOEEOOK.', '.KPOOOCCIIICCOOPK.',
+          '..KOOOCCKKCCOOOK..', '...KKKKKKKKKKKK...', '.KKKOOCCCCCCOOOK..', 'KODKOOCCCCCCOOOKKK', '.KKKOOCCCCCCOOOK..',
+          '...KDOCCCCCCODK...', '...KOOCCCCCCOOOK..', '...KKK.KKKK.KKK...', '...CCC......CCC...', '...KKK......KKK...'
+        ],
+        [
+          '.......KYYK.......', '.......KHHK.......', '......KHHHHK......', '......KHYHHK......', '.....KHHHHHHK.....',
+          '..KK..KYYYYK..KK..', '.KOIK.KYYYYK.KIOK.', '.KOOIKKKKKKKKIOOK.', '.KOOOOOKKKKOOOOOK.', '.KOOOOODDDDDOOOOK.',
+          '.KOOOOOODDOOOOOOK.', '.KDOOOOOOOOOOOODK.', '.KOOWEOOOOOOWEOOK.', '.KOOEEOOOOOOEEOOK.', '.KPOOOCCIIICCOOPK.',
+          'KKKOOOCCKKCCOOOK..', 'KODKKKKKKKKKKKK...', '.KKKOOCCCCCCOOOK..', '...KOOCCCCCCOOOKKK', '...KOOCCCCCCOOOK..',
+          '...KDOCCCCCCODK...', '...KOOCCCCCCOOOK..', '....KKK....KKK....', '....CCC....CCC....', '....KKK....KKK....'
+        ]
+      ];
+      const catBlownFrame = [
+        '.......KYYK.......', '.......KHHK.......', '......KHHHHK......', '......KHYHHK......', '.....KHHHHHHK.....',
+        '..KK..KYYYYK..KK..', '.KOIK.KYYYYK.KIOK.', '.KOOIKKKKKKKKIOOK.', '.KOOOOOKKKKOOOOOK.', '.KOOOOODDDDDOOOOK.',
+        '.KOOOOOODDOOOOOOK.', '.KDOWWOOOOOOWWODK.', '.KOOWEOOOOOOWEOOK.', '.KOOWWOOOOOOWWOOK.', '.KPOOOCCIIICCOOPK.',
+        'KKKOOOCCKKCCOOOK..', 'KODKKKKKKKKKKKK...', '.KKKOOCCCCCCOOOKKK', '...KOOCCCCCCOOOK..', '.KKKDOCCCCCCODK...',
+        '...KOOCCCCCCOOOK..', '...KKK.KKKK.KKK...', '..CCC........CCC..', '..KKK........KKK..', '..................'
+      ];
+      const catClapFrames = [
+        [
+          '.......KYYK.......', '.......KHHK.......', '......KHHHHK......', '......KHYHHK......', '.....KHHHHHHK.....',
+          '..KK..KYYYYK..KK..', '.KOIK.KYYYYK.KIOK.', '.KOOIKKKKKKKKIOOK.', '.KOOOOOKKKKOOOOOK.', '.KOOOOODDDDDOOOOK.',
+          '.KOOOOOODDOOOOOOK.', '.KDOOOOOOOOOOOODK.', '.KOOWEOOOOOOWEOOK.', '.KOOEEOOOOOOEEOOK.', '.KPOOOCCIIICCOOPK.',
+          '..KOOOCCKKCCOOOK..', '...KKKKKKKKKKKK...', '.KKKKKKKKKKKKKKKK.', 'KKK.OOCCCCCCOO.KKK', 'KODKOOCCCCCCOOOK.K',
+          '.KKKDOCCCCCCODK...', '...KOOCCCCCCOOOK..', '...KKK.KKKK.KKK...', '...CCC......CCC...', '...KKK......KKK...'
+        ],
+        [
+          '.......KYYK.......', '.......KHHK.......', '......KHHHHK......', '......KHYHHK......', '.....KHHHHHHK.....',
+          '..KK..KYYYYK..KK..', '.KOIK.KYYYYK.KIOK.', '.KOOIKKKKKKKKIOOK.', '.KOOOOOKKKKOOOOOK.', '.KOOOOODDDDDOOOOK.',
+          '.KOOOOOODDOOOOOOK.', '.KDOOOOOOOOOOOODK.', '.KOOWEOOOOOOWEOOK.', '.KOOEEOOOOOOEEOOK.', '.KPOOOCCIIICCOOPK.',
+          'KKKOOOCCKKCCOOOK..', 'KODKKKKKKKKKKKK...', '.KK.KKKKKKKKKKK...', '...KOOCCYYCCOOOK..', '....KKKKYYKKKK....',
+          '...KDOCCCCCCODK...', '...KOOCCCCCCOOOK..', '....KKK....KKK....', '....CCC....CCC....', '....KKK....KKK....'
+        ]
+      ];
+      const cakeSliceRows = [
+        '....KK...', '...KRRK..', '..KWWWGK.', '.KPPPPPPK', '.KYYYYYYK', '.KPPPPPPK', '.KYYYYYYK', 'KKKKKKKKK', '.SSSSSSS.'
+      ];
+      const popperRows = [
+        '....KKKK', '...KWWPK', '..KPGPPK', '.KGGPPK.', '.KGGPK..', 'KPGPK...', 'KGGK....', 'KKK.....'
+      ];
+
+      function buildConfettiBurst(ox, oy, baseDelay) {
+        const cols = ['#ec4899', '#fbbf24', '#38bdf8', '#34d399', '#a855f7', '#f43f5e'];
+        const tpls = [
+          { tx: 9, ty: -18, rot: 120, w: 2, h: 1 },
+          { tx: 13, ty: -14, rot: -150, w: 1, h: 2 },
+          { tx: 5, ty: -20, rot: 180, w: 2, h: 2 },
+          { tx: 15, ty: -9, rot: 95, w: 2, h: 1 },
+          { tx: 2, ty: -16, rot: -110, w: 1, h: 1 },
+          { tx: 11, ty: -21, rot: 210, w: 1, h: 2 }
+        ];
+        let out = '';
+        for (let w = 0; w < 3; w++) {
+          const waveDelay = (w * 1.65) / 3;
+          for (let t = 0; t < tpls.length; t++) {
+            const p = tpls[t];
+            const fill = cols[(w * 2 + t) % cols.length];
+            const tx = p.tx + (w % 2 === 0 ? 0 : 1);
+            const ty = p.ty - (w % 2 === 0 ? 0 : 1);
+            const delay = (baseDelay + waveDelay + t * 0.04).toFixed(2);
+            out += `<g class="pixel-confetti" style="transform-origin:${ox}px ${oy}px;animation-delay:${delay}s;--tx:${tx}px;--ty:${ty}px;--rot:${p.rot}deg;"><rect x="${ox}" y="${oy}" width="${p.w}" height="${p.h}" fill="${fill}"/></g>`;
+          }
+        }
+        return out;
+      }
+
+      const pandaQuips = [
+        'HBD Dina! Sehat terus yaa 🎂',
+        'Confetti terus sampai pagi! 🎉',
+        'Jangan lupa make a wish ✨',
+        'Panda kasih tepuk tangan! 👏',
+        'Semoga semua impianmu terkabul 💖'
+      ];
+      const catQuips = [
+        'Meow! Mana traktirannya? 😋',
+        'Topi ultahku keren kan? 🥳',
+        'Kue stroberi buat Dina! 🍰',
+        'Oyen doain yang terbaik 🐾',
+        'Awas ketiup angin kenceng~ 🌬️'
+      ];
+      const quipIdx = { panda: 0, cat: 0 };
+      const quipTimers = { panda: null, cat: null };
+
+      function showMascotSpeech(hostEl, who, align) {
+        if (!hostEl) return;
+        const list = who === 'panda' ? pandaQuips : catQuips;
+        const msg = list[quipIdx[who] % list.length];
+        quipIdx[who] = (quipIdx[who] + 1) % list.length;
+
+        const oldBubble = hostEl.querySelector('.pixel-speech-bubble');
+        if (oldBubble) oldBubble.remove();
+
+        const bubble = document.createElement('div');
+        bubble.className = `pixel-speech-bubble ${align}`;
+        bubble.textContent = msg;
+        hostEl.appendChild(bubble);
+
+        hostEl.classList.remove('mascot-hop');
+        void hostEl.offsetWidth;
+        hostEl.classList.add('mascot-hop');
+        sound.playChime();
+
+        if (quipTimers[who]) clearTimeout(quipTimers[who]);
+        quipTimers[who] = setTimeout(() => {
+          bubble.remove();
+        }, 2800);
+      }
+
+      if (cornerLayer) {
+        const popperRects = rowsToRects(popperRows, popperPalette);
+        cornerLayer.innerHTML = `
+          <button id="cornerPandaBtn" type="button" class="pixel-mascot-box" aria-label="Sapa Pixel Panda">
+            <svg viewBox="0 0 34 34" shape-rendering="crispEdges" style="width:100%;height:auto;overflow:visible;">
+              <g>${buildConfettiBurst(22, 20, 0)}</g>
+              <g transform="translate(0, 8)">
+                <g class="pixel-frame-a">${rowsToRects(pandaFrames[0], pandaPalette)}</g>
+                <g class="pixel-frame-b">${rowsToRects(pandaFrames[1], pandaPalette)}</g>
+              </g>
+              <g transform="translate(15, 20)"><g class="pixel-popper-kick">${popperRects}</g></g>
+            </svg>
+          </button>
+          <button id="cornerCatBtn" type="button" class="pixel-mascot-box" aria-label="Sapa Pixel Kucing Orange" style="animation-delay:0.28s">
+            <div style="transform:scaleX(-1)">
+              <svg viewBox="0 0 34 34" shape-rendering="crispEdges" style="width:100%;height:auto;overflow:visible;">
+                <g>${buildConfettiBurst(22, 19, 0.25)}</g>
+                <g transform="translate(0, 8)">
+                  <g class="pixel-frame-a" style="animation-delay:0.25s">${rowsToRects(catFrames[0], catPalette)}</g>
+                  <g class="pixel-frame-b" style="animation-delay:0.25s">${rowsToRects(catFrames[1], catPalette)}</g>
+                </g>
+                <g transform="translate(15, 19)"><g class="pixel-popper-kick" style="animation-delay:0.28s">${popperRects}</g></g>
+              </svg>
+            </div>
+          </button>
+        `;
+        document.getElementById('cornerPandaBtn').addEventListener('click', (e) => {
+          e.stopPropagation();
+          showMascotSpeech(e.currentTarget, 'panda', 'left');
+        });
+        document.getElementById('cornerCatBtn').addEventListener('click', (e) => {
+          e.stopPropagation();
+          showMascotSpeech(e.currentTarget, 'cat', 'right');
+        });
+      }
+
+      const cakeRects = rowsToRects(cakeSliceRows, cakeSlicePalette);
+
+      if (pandaSlot) {
+        pandaSlot.addEventListener('click', (e) => {
+          e.stopPropagation();
+          showMascotSpeech(pandaSlot, 'panda', 'left');
+        });
+      }
+      if (catSlot) {
+        catSlot.addEventListener('click', (e) => {
+          e.stopPropagation();
+          showMascotSpeech(catSlot, 'cat', 'right');
+        });
+      }
+
+      window.updateModalPixelMascots = function (state) {
+        if (!pandaSlot || !catSlot) return;
+
+        if (state === 'blowing') {
+          pandaSlot.innerHTML = `
+            <div class="pixel-clap-hop">
+              <svg viewBox="0 0 24 27" shape-rendering="crispEdges" style="width:100%;height:auto;overflow:visible;">
+                <g transform="translate(0, 1)">
+                  <g class="pixel-clap-a">${rowsToRects(pandaClapFrames[0], pandaPalette)}</g>
+                  <g class="pixel-clap-b">${rowsToRects(pandaClapFrames[1], pandaPalette)}</g>
+                </g>
+              </svg>
+            </div>
+          `;
+          catSlot.innerHTML = `
+            <div class="cat-wind-blown">
+              <div style="transform:scaleX(-1)">
+                <svg viewBox="0 0 24 27" shape-rendering="crispEdges" style="width:100%;height:auto;overflow:visible;">
+                  <g transform="translate(0, 1)">${rowsToRects(catBlownFrame, catPalette)}</g>
+                </svg>
+              </div>
+            </div>
+          `;
+        } else if (state === 'blown') {
+          pandaSlot.innerHTML = `
+            <div style="width:100%;animation:pixelStepBob 0.7s steps(2, end) infinite;">
+              <svg viewBox="0 0 24 27" shape-rendering="crispEdges" style="width:100%;height:auto;overflow:visible;">
+                <g transform="translate(0, 1)">
+                  <g class="pixel-frame-a">${rowsToRects(pandaFrames[0], pandaPalette)}</g>
+                  <g class="pixel-frame-b">${rowsToRects(pandaFrames[1], pandaPalette)}</g>
+                </g>
+                <g transform="translate(13, 12)"><g class="pixel-cake-bob">${cakeRects}</g></g>
+              </svg>
+            </div>
+          `;
+          catSlot.innerHTML = `
+            <div class="cat-walk-from-right">
+              <div style="transform:scaleX(-1)">
+                <svg viewBox="0 0 24 27" shape-rendering="crispEdges" style="width:100%;height:auto;overflow:visible;">
+                  <g transform="translate(0, 1)">
+                    <g class="pixel-walk-once-a">${rowsToRects(catFrames[0], catPalette)}</g>
+                    <g class="pixel-walk-once-b">${rowsToRects(catFrames[1], catPalette)}</g>
+                  </g>
+                  <g transform="translate(14, 11)"><g class="pixel-cake-bob">${cakeRects}</g></g>
+                </svg>
+              </div>
+            </div>
+          `;
+        } else {
+          pandaSlot.innerHTML = `
+            <div style="width:100%;animation:pixelStepBob 0.7s steps(2, end) infinite;">
+              <svg viewBox="0 0 24 27" shape-rendering="crispEdges" style="width:100%;height:auto;overflow:visible;">
+                <g transform="translate(0, 1)">
+                  <g class="pixel-frame-a">${rowsToRects(pandaFrames[0], pandaPalette)}</g>
+                  <g class="pixel-frame-b">${rowsToRects(pandaFrames[1], pandaPalette)}</g>
+                </g>
+              </svg>
+            </div>
+          `;
+          catSlot.innerHTML = `
+            <div style="width:100%;animation:pixelStepBob 0.7s steps(2, end) infinite;animation-delay:0.2s">
+              <div style="transform:scaleX(-1)">
+                <svg viewBox="0 0 24 27" shape-rendering="crispEdges" style="width:100%;height:auto;overflow:visible;">
+                  <g transform="translate(0, 1)">
+                    <g class="pixel-frame-a">${rowsToRects(catFrames[0], catPalette)}</g>
+                    <g class="pixel-frame-b">${rowsToRects(catFrames[1], catPalette)}</g>
+                  </g>
+                </svg>
+              </div>
+            </div>
+          `;
+        }
+      };
+
+      window.updateModalPixelMascots('idle');
+
+      window.renderPrizeMascots = function (pandaEl, catEl, phase) {
+        if (!pandaEl || !catEl) return;
+        const mode = phase === 'clapping' ? 'clap' : 'idle';
+        pandaEl.setAttribute('data-mode', mode);
+        catEl.setAttribute('data-mode', mode);
+
+        if (phase === 'clapping') {
+          pandaEl.innerHTML = `
+            <div class="pixel-clap-hop">
+              <svg viewBox="0 0 24 27" shape-rendering="crispEdges" style="width:100%;height:auto;overflow:visible;">
+                <g transform="translate(0, 1)">
+                  <g class="pixel-clap-a">${rowsToRects(pandaClapFrames[0], pandaPalette)}</g>
+                  <g class="pixel-clap-b">${rowsToRects(pandaClapFrames[1], pandaPalette)}</g>
+                </g>
+              </svg>
+            </div>
+          `;
+          catEl.innerHTML = `
+            <div class="pixel-clap-hop" style="animation-delay:0.12s">
+              <div style="transform:scaleX(-1)">
+                <svg viewBox="0 0 24 27" shape-rendering="crispEdges" style="width:100%;height:auto;overflow:visible;">
+                  <g transform="translate(0, 1)">
+                    <g class="pixel-clap-a" style="animation-delay:0.12s">${rowsToRects(catClapFrames[0], catPalette)}</g>
+                    <g class="pixel-clap-b" style="animation-delay:0.12s">${rowsToRects(catClapFrames[1], catPalette)}</g>
+                  </g>
+                </svg>
+              </div>
+            </div>
+          `;
+        } else {
+          pandaEl.innerHTML = `
+            <div style="width:100%;animation:pixelStepBob 0.7s steps(2, end) infinite;">
+              <svg viewBox="0 0 24 27" shape-rendering="crispEdges" style="width:100%;height:auto;overflow:visible;">
+                <g transform="translate(0, 1)">
+                  <g class="pixel-frame-a">${rowsToRects(pandaFrames[0], pandaPalette)}</g>
+                  <g class="pixel-frame-b">${rowsToRects(pandaFrames[1], pandaPalette)}</g>
+                </g>
+              </svg>
+            </div>
+          `;
+          catEl.innerHTML = `
+            <div style="width:100%;animation:pixelStepBob 0.7s steps(2, end) infinite;animation-delay:0.2s">
+              <div style="transform:scaleX(-1)">
+                <svg viewBox="0 0 24 27" shape-rendering="crispEdges" style="width:100%;height:auto;overflow:visible;">
+                  <g transform="translate(0, 1)">
+                    <g class="pixel-frame-a">${rowsToRects(catFrames[0], catPalette)}</g>
+                    <g class="pixel-frame-b">${rowsToRects(catFrames[1], catPalette)}</g>
+                  </g>
+                </svg>
+              </div>
+            </div>
+          `;
+        }
+      };
+    })();
+
+    /* ========================================================
+       6. BIRTHDAY ROULETTE GAME (Always lands on Sepatu)
+       ======================================================== */
+    (function initRouletteGame() {
+      const prizes = [
+        { lines: ['Sepatu'], emoji: '👟', fill: '#fbcfe8', color: '#831843' },
+        { lines: ['Iphone 18', 'Pro Max', 'Burgundy'], emoji: '📱', fill: '#fde68a', color: '#78350f' },
+        { lines: ['Emas', '2 kilo'], emoji: '🪙', fill: '#fed7aa', color: '#7c2d12' },
+        { lines: ['Rumah', 'di BSD'], emoji: '🏡', fill: '#bae6fd', color: '#0c4a6e' },
+        { lines: ['Jalan-jalan', 'ke Swiss'], emoji: '✈️', fill: '#ddd6fe', color: '#4c1d95' }
+      ];
+      const wheelEl = document.getElementById('rouletteWheel');
+      const modalEl = document.getElementById('rouletteModal');
+      const modalTitleEl = document.getElementById('rouletteModalTitle');
+      const wheelStageEl = document.getElementById('rouletteWheelStage');
+      const prizeStageEl = document.getElementById('roulettePrizeStage');
+      const prizePandaSlot = document.getElementById('prizePandaSlot');
+      const prizeShoeBox = document.getElementById('prizeShoeBox');
+      const prizeCatSlot = document.getElementById('prizeCatSlot');
+      const btnMainGame = document.getElementById('btnMainGame');
+      const btnSpin = document.getElementById('btnSpinRoulette');
+      const btnCloseX = document.getElementById('btnRouletteCloseX');
+      const btnAgain = document.getElementById('btnRouletteAgain');
+      const btnWinClose = document.getElementById('btnRouletteWinClose');
+      if (!wheelEl || !modalEl || !wheelStageEl || !prizeStageEl || !btnMainGame || !btnSpin) return;
+
+      const sliceDeg = 360 / prizes.length;
+      const toRad = (d) => ((d - 90) * Math.PI) / 180;
+      let slicesSvg = '<circle cx="160" cy="160" r="157" fill="#be185d" stroke="#f59e0b" stroke-width="4"/><circle cx="160" cy="160" r="144" fill="#fff1f2"/>';
+      prizes.forEach((p, i) => {
+        const s = i * sliceDeg, e = (i + 1) * sliceDeg, m = s + sliceDeg / 2;
+        const x1 = 160 + 142 * Math.cos(toRad(s)), y1 = 160 + 142 * Math.sin(toRad(s));
+        const x2 = 160 + 142 * Math.cos(toRad(e)), y2 = 160 + 142 * Math.sin(toRad(e));
+        const lx = 160 + 88 * Math.cos(toRad(m)), ly = 160 + 88 * Math.sin(toRad(m));
+        const linesSvg = p.lines.map((ln, idx) => `<text x="0" y="${idx * 12}" text-anchor="middle" fill="${p.color}" font-size="10.2" font-weight="700" font-family="Poppins,sans-serif">${ln}</text>`).join('');
+        slicesSvg += `<path d="M 160 160 L ${x1.toFixed(2)} ${y1.toFixed(2)} A 142 142 0 0 1 ${x2.toFixed(2)} ${y2.toFixed(2)} Z" fill="${p.fill}" stroke="#fff" stroke-width="2.4"/><g transform="translate(${lx.toFixed(2)},${ly.toFixed(2)}) rotate(${m})"><text x="0" y="-18" text-anchor="middle" font-size="16" dominant-baseline="middle">${p.emoji}</text>${linesSvg}</g>`;
+      });
+      slicesSvg += '<circle cx="160" cy="160" r="24" fill="#be185d" stroke="#fde68a" stroke-width="3.5"/><text x="160" y="161" text-anchor="middle" dominant-baseline="middle" font-size="16">🎁</text>';
+      wheelEl.innerHTML = `<svg viewBox="0 0 320 320" style="width:100%;height:100%;overflow:visible;">${slicesSvg}</svg>`;
+
+      let currentRot = 0;
+      let spinning = false;
+      let spinTimer = null;
+      let stageTimer = null;
+      let clapTimer = null;
+
+      function clearRouletteTimers() {
+        if (spinTimer) { clearTimeout(spinTimer); spinTimer = null; }
+        if (stageTimer) { clearTimeout(stageTimer); stageTimer = null; }
+        if (clapTimer) { clearTimeout(clapTimer); clapTimer = null; }
+      }
+
+      function resetPrizeStage() {
+        if (modalTitleEl) modalTitleEl.textContent = 'Semoga Beruntungggg!!!';
+        prizeStageEl.style.display = 'none';
+        wheelStageEl.style.display = 'block';
+        if (prizePandaSlot) prizePandaSlot.classList.remove('panda-walk-from-left');
+        if (prizeShoeBox) prizeShoeBox.classList.remove('shoe-drop-from-top');
+        if (prizeCatSlot) prizeCatSlot.classList.remove('cat-walk-prize-from-right');
+      }
+
+      function revealPrizeStage() {
+        if (modalTitleEl) modalTitleEl.textContent = 'Selamat kamu dapet';
+        wheelStageEl.style.display = 'none';
+        prizeStageEl.style.display = 'block';
+        if (prizePandaSlot) {
+          prizePandaSlot.classList.remove('panda-walk-from-left');
+          void prizePandaSlot.offsetWidth;
+          prizePandaSlot.classList.add('panda-walk-from-left');
+        }
+        if (prizeShoeBox) {
+          prizeShoeBox.classList.remove('shoe-drop-from-top');
+          void prizeShoeBox.offsetWidth;
+          prizeShoeBox.classList.add('shoe-drop-from-top');
+        }
+        if (prizeCatSlot) {
+          prizeCatSlot.classList.remove('cat-walk-prize-from-right');
+          void prizeCatSlot.offsetWidth;
+          prizeCatSlot.classList.add('cat-walk-prize-from-right');
+        }
+        if (window.renderPrizeMascots) {
+          window.renderPrizeMascots(prizePandaSlot, prizeCatSlot, 'walking');
+        }
+        launchConfetti(150);
+        sound.playChime();
+
+        clapTimer = setTimeout(() => {
+          if (window.renderPrizeMascots) {
+            window.renderPrizeMascots(prizePandaSlot, prizeCatSlot, 'clapping');
+          }
+        }, 1250);
+      }
+
+      function spinToSepatuNB() {
+        if (spinning) return;
+        clearRouletteTimers();
+        resetPrizeStage();
+        spinning = true;
+        btnSpin.disabled = true;
+        btnSpin.textContent = 'Memutar Roda...';
+        sound.playChime();
+
+        const jitter = (Math.random() - 0.5) * 20;
+        const targetPoint = 36 + jitter; // Slice 0 (Sepatu NB) center is 36 deg
+        const desiredMod = ((360 - (targetPoint % 360)) % 360 + 360) % 360;
+        const currentMod = ((currentRot % 360) + 360) % 360;
+        const deltaMod = ((desiredMod - currentMod) + 360) % 360;
+        currentRot = currentRot + 6 * 360 + deltaMod;
+
+        wheelEl.style.transition = 'transform 3.8s cubic-bezier(0.12, 0.88, 0.18, 1)';
+        wheelEl.style.transform = `rotate(${currentRot}deg)`;
+
+        spinTimer = setTimeout(() => {
+          spinning = false;
+          btnSpin.disabled = false;
+          btnSpin.textContent = '🎯 Putar Roulette!';
+          stageTimer = setTimeout(() => {
+            revealPrizeStage();
+          }, 280);
+        }, 3800);
+      }
+
+      function closeRouletteModal() {
+        if (spinning) return;
+        clearRouletteTimers();
+        resetPrizeStage();
+        modalEl.classList.remove('active');
+      }
+
+      btnMainGame.addEventListener('click', () => {
+        clearRouletteTimers();
+        resetPrizeStage();
+        const preloader = new Image();
+        preloader.src = 'assets/aistudio/Sepatu_NB_64664b7f.jpg';
+        sound.playChime();
+        modalEl.classList.add('active');
+      });
+      btnCloseX.addEventListener('click', closeRouletteModal);
+      btnSpin.addEventListener('click', spinToSepatuNB);
+      if (btnAgain) btnAgain.addEventListener('click', spinToSepatuNB);
+      if (btnWinClose) btnWinClose.addEventListener('click', closeRouletteModal);
+    })();
   </script>
 </body>
 </html>

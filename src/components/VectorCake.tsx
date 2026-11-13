@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 
 interface VectorCakeProps {
   candlesBlown: boolean;
@@ -6,7 +6,7 @@ interface VectorCakeProps {
   onBlow: () => void;
 }
 
-export const VectorCake: React.FC<VectorCakeProps> = ({
+export const VectorCake: React.FC<VectorCakeProps> = memo(({
   candlesBlown,
   isBlowing,
   onBlow,
@@ -128,7 +128,7 @@ export const VectorCake: React.FC<VectorCakeProps> = ({
 
       {/* Vector Cake SVG */}
       <div
-        className={`w-44 sm:w-48 transition-transform duration-500 ${
+        className={`w-36 sm:w-44 transition-transform duration-500 ${
           isBlowing
             ? 'animate-wind-sway'
             : !candlesBlown
@@ -409,4 +409,4 @@ export const VectorCake: React.FC<VectorCakeProps> = ({
       </div>
     </div>
   );
-};
+});

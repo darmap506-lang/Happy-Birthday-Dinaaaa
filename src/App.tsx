@@ -3,15 +3,19 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState, useEffect } from 'react';
+import { Suspense, lazy, useEffect, useState } from 'react';
 import { FallingPetals } from './components/FallingPetals';
 import { OpeningEnvelope } from './components/OpeningEnvelope';
 import { MainCard } from './components/MainCard';
-import { SurpriseModal } from './components/SurpriseModal';
 import { SparkleTrail } from './components/SparkleTrail';
 import { MusicToggle } from './components/MusicToggle';
+import { PixelMascots } from './components/PixelMascots';
 import { formatRecipientName } from './utils/greeting';
 import { sound } from './utils/audio';
+
+const SurpriseModal = lazy(() =>
+  import('./components/SurpriseModal').then((m) => ({ default: m.SurpriseModal }))
+);
 
 export default function App() {
   const [recipientName, setRecipientName] = useState('Dina Perwitasari');
@@ -34,6 +38,24 @@ export default function App() {
     }
   }, []);
 
+  // Warm-preload SurpriseModal chunk during idle time once user reaches the main card
+  useEffect(() => {
+    if (stage !== 'card' || typeof window === 'undefined') return;
+    const preload = () => {
+      void import('./components/SurpriseModal');
+    };
+    const w = window as unknown as {
+      requestIdleCallback?: (cb: () => void) => number;
+      cancelIdleCallback?: (id: number) => void;
+    };
+    if (typeof w.requestIdleCallback === 'function') {
+      const id = w.requestIdleCallback(preload);
+      return () => w.cancelIdleCallback?.(id);
+    }
+    const timer = window.setTimeout(preload, 450);
+    return () => window.clearTimeout(timer);
+  }, [stage]);
+
   return (
     <main className="relative min-h-screen w-full flex flex-col justify-center items-center overflow-x-hidden selection:bg-pink-300 selection:text-pink-900">
       {/* Background Music Toggle Button */}
@@ -42,10 +64,13 @@ export default function App() {
       {/* Falling Sakura Petals Background */}
       <FallingPetals count={26} />
 
+      {/* Pixel Panda (bottom-left) & Orange Cat (bottom-right) Shooting Confetti */}
+      {!isSurpriseOpen && <PixelMascots />}
+
       {/* Magical Mouse & Touch Sparkle Trail */}
       <SparkleTrail globalTrack={true} />
 
-      {/* Opening Envelope Screen (3D Flap & Rising Letter) */}
+      {/* Opening Envelope Screen (4-Sided Luxury Unfolding) */}
       {stage === 'envelope' && (
         <OpeningEnvelope
           recipientName={recipientName}
@@ -62,12 +87,16 @@ export default function App() {
         />
       )}
 
-      {/* Surprise Modal (with interactive blowable cake candles & special message) */}
-      <SurpriseModal
-        isOpen={isSurpriseOpen}
-        onClose={() => setIsSurpriseOpen(false)}
-        recipientName={recipientName}
-      />
+      {/* Lazy-loaded Surprise Modal (Cake, Make a Wish, Photo Carousel & Roulette Game) */}
+      {isSurpriseOpen && (
+        <Suspense fallback={null}>
+          <SurpriseModal
+            isOpen={isSurpriseOpen}
+            onClose={() => setIsSurpriseOpen(false)}
+            recipientName={recipientName}
+          />
+        </Suspense>
+      )}
     </main>
   );
 }

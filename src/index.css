@@ -14,83 +14,315 @@
   }
 }
 
-/* ================= 3D ENVELOPE ================= */
+/* ================= LUXURY 4-SIDED UNFOLDING STATIONERY ENVELOPE ================= */
 .envelope-perspective {
-  perspective: 1200px;
+  perspective: 1600px;
 }
 
-.envelope-wrapper {
+.luxury-envelope {
   position: relative;
-  width: 290px;
-  height: 185px;
-  background: #f06292;
-  border-radius: 0 0 14px 14px;
-  box-shadow: 0 20px 45px rgba(136, 14, 79, 0.25), 0 5px 15px rgba(136, 14, 79, 0.15);
+  width: min(74vw, 336px);
+  aspect-ratio: 352 / 224;
+  background: transparent;
+  border: none;
+  padding: 0;
   cursor: pointer;
-  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease;
+  transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1), filter 0.55s ease;
+}
+
+@media (min-width: 640px) {
+  .luxury-envelope {
+    width: 344px;
+  }
+}
+
+.luxury-envelope:not(.is-unsealing):hover {
+  transform: translateY(-7px) scale(1.015);
+}
+
+.luxury-envelope-body {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 16px;
+  perspective: 1400px;
+  box-shadow:
+    0 24px 52px -12px rgba(136, 14, 79, 0.24),
+    0 10px 24px -8px rgba(190, 24, 93, 0.14),
+    0 2px 6px rgba(212, 163, 115, 0.2);
+  transition:
+    transform 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.65s ease;
+}
+
+.luxury-envelope:not(.is-unsealing):hover .luxury-envelope-body {
+  box-shadow:
+    0 32px 64px -12px rgba(136, 14, 79, 0.28),
+    0 14px 30px -8px rgba(190, 24, 93, 0.18),
+    0 4px 12px rgba(212, 163, 115, 0.28);
+}
+
+.luxury-envelope.is-unsealing:not(.is-top-open) .luxury-envelope-body {
+  transform: translateY(4px) scale(0.99);
+}
+
+/* Gently zoom down on narrow mobile viewports as side flaps bloom outward so all 4 petals stay inside screen */
+.luxury-envelope.is-top-open .luxury-envelope-body {
+  transform: scale(0.68);
+}
+
+@media (min-width: 640px) {
+  .luxury-envelope.is-top-open .luxury-envelope-body {
+    transform: scale(0.88);
+  }
+}
+
+.luxury-envelope.is-revealing .luxury-envelope-body {
+  box-shadow:
+    0 18px 40px -14px rgba(136, 14, 79, 0.16),
+    0 6px 14px -8px rgba(190, 24, 93, 0.08);
+}
+
+/* Common 3D flap wrapper */
+.luxury-flap {
+  position: absolute;
   transform-style: preserve-3d;
-}
-
-.envelope-wrapper:hover {
-  transform: translateY(-6px) scale(1.02);
-  box-shadow: 0 25px 50px rgba(136, 14, 79, 0.3), 0 8px 20px rgba(136, 14, 79, 0.2);
-}
-
-.letter-content {
-  position: absolute;
-  bottom: 12px;
-  left: 15px;
-  width: 260px;
-  height: 160px;
-  background: #ffffff;
-  border-radius: 8px;
-  z-index: 2;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 16px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-  transition: transform 0.75s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s;
-  border: 1px solid rgba(248, 187, 208, 0.6);
-}
-
-.envelope-front-pocket {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 0;
-  height: 0;
-  z-index: 3;
-  border-left: 145px solid #f48fb1;
-  border-right: 145px solid #f48fb1;
-  border-bottom: 100px solid #ec407a;
-  border-top: 85px solid transparent;
-  border-radius: 0 0 14px 14px;
   pointer-events: none;
 }
 
-.envelope-flap-top {
+.luxury-flap-face {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 0;
-  height: 0;
-  z-index: 4;
-  border-left: 145px solid transparent;
-  border-right: 145px solid transparent;
-  border-top: 110px solid #d81b60;
-  transform-origin: top;
-  transition: transform 0.65s cubic-bezier(0.4, 0, 0.2, 1), z-index 0.2s ease 0.32s;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
-.envelope-wrapper.open .envelope-flap-top {
-  transform: rotateX(180deg);
+.luxury-flap-front-x {
+  transform: rotateX(0deg) translateZ(1px);
+}
+
+.luxury-flap-back-x {
+  transform: rotateX(180deg) translateZ(1px);
+}
+
+.luxury-flap-front-y {
+  transform: rotateY(0deg) translateZ(1px);
+}
+
+.luxury-flap-back-y {
+  transform: rotateY(180deg) translateZ(1px);
+}
+
+/* 1. Top Flap (Sisi Atas - Opens 1st) */
+.luxury-flap-top {
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 61.6%;
+  z-index: 6;
+  transform-origin: top center;
+  transition:
+    transform 0.58s cubic-bezier(0.22, 1, 0.36, 1),
+    z-index 0.01s linear 0.26s;
+}
+
+.luxury-envelope.is-top-open .luxury-flap-top {
+  transform: rotateX(174deg);
   z-index: 1;
 }
 
-.envelope-wrapper.open .letter-content {
-  transform: translateY(-90px);
+/* 2. Bottom Flap (Sisi Bawah - Opens 2nd) */
+.luxury-flap-bottom {
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 61.6%;
+  z-index: 5;
+  transform-origin: bottom center;
+  transition:
+    transform 0.58s cubic-bezier(0.22, 1, 0.36, 1),
+    z-index 0.01s linear 0.26s;
+}
+
+.luxury-envelope.is-bottom-open .luxury-flap-bottom {
+  transform: rotateX(-174deg);
+  z-index: 1;
+}
+
+/* 3. Right Flap (Sisi Kanan - Opens 3rd) */
+.luxury-flap-right {
+  top: 0;
+  right: 0;
+  width: 54%;
+  height: 100%;
+  z-index: 4;
+  transform-origin: right center;
+  transition:
+    transform 0.58s cubic-bezier(0.22, 1, 0.36, 1),
+    z-index 0.01s linear 0.26s;
+}
+
+.luxury-envelope.is-right-open .luxury-flap-right {
+  transform: rotateY(174deg);
+  z-index: 1;
+}
+
+/* 4. Left Flap (Sisi Kiri - Opens 4th) */
+.luxury-flap-left {
+  top: 0;
+  left: 0;
+  width: 54%;
+  height: 100%;
+  z-index: 3;
+  transform-origin: left center;
+  transition:
+    transform 0.58s cubic-bezier(0.22, 1, 0.36, 1),
+    z-index 0.01s linear 0.26s;
+}
+
+.luxury-envelope.is-left-open .luxury-flap-left {
+  transform: rotateY(-174deg);
+  z-index: 1;
+}
+
+.luxury-flap-sheen {
+  opacity: 0;
+  transition: opacity 0.45s ease;
+}
+
+.luxury-envelope:not(.is-unsealing):hover .luxury-flap-sheen {
+  opacity: 0.7;
+}
+
+/* Letterpress Invitation Card Inside */
+.luxury-letter-card {
+  position: absolute;
+  left: 7%;
+  right: 7%;
+  top: 8%;
+  bottom: 8%;
+  z-index: 2;
+  background: linear-gradient(165deg, #fffefb 0%, #fff8fa 100%);
+  border-radius: 12px;
+  padding: 10px;
+  border: 1px solid rgba(212, 163, 115, 0.45);
+  box-shadow: 0 6px 18px rgba(136, 14, 79, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translate3d(0, 0, 0) scale(0.98);
+  transition:
+    transform 0.68s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.68s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 0.52s ease,
+    z-index 0.01s linear;
+  pointer-events: none;
+}
+
+.luxury-letter-inner {
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+  border: 1px solid rgba(244, 114, 182, 0.25);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 14px;
+}
+
+.luxury-envelope.is-revealing .luxury-letter-card {
+  z-index: 7;
+  transform: translate3d(0, -14px, 0) scale(1.12);
+  box-shadow:
+    0 24px 48px -12px rgba(136, 14, 79, 0.24),
+    0 8px 20px -6px rgba(212, 163, 115, 0.24);
+}
+
+.luxury-envelope.is-exiting .luxury-letter-card {
+  z-index: 7;
+  transform: translate3d(0, -28px, 0) scale(1.16);
+  opacity: 0;
+}
+
+/* Sculpted Velvet-Rose Wax Seal */
+.luxury-wax-seal {
+  position: absolute;
+  top: 52%;
+  left: 50%;
+  width: 56px;
+  height: 56px;
+  z-index: 8;
+  transform: translate(-50%, -50%) scale(1);
+  pointer-events: none;
+  transition:
+    transform 0.36s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.28s ease;
+}
+
+.luxury-envelope:not(.is-unsealing):hover .luxury-wax-seal {
+  transform: translate(-50%, -50%) scale(1.07);
+}
+
+.luxury-seal-ring {
+  position: absolute;
+  inset: -6px;
+  border-radius: 9999px;
+  border: 1.5px solid rgba(243, 216, 155, 0.85);
+  opacity: 0;
+  transform: scale(0.75);
+  pointer-events: none;
+}
+
+.luxury-envelope.is-unsealing .luxury-wax-seal {
+  transform: translate(-50%, -68%) scale(0.82);
+  opacity: 0;
+}
+
+.luxury-envelope.is-unsealing .luxury-seal-ring {
+  animation: sealGoldenBurst 0.48s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes sealGoldenBurst {
+  0% {
+    opacity: 0.9;
+    transform: scale(0.78);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.75);
+  }
+}
+
+/* Main Card Graceful Entrance (cross-dissolve handoff from unfolded envelope) */
+@keyframes cardGracefulEnter {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 14px, 0) scale(0.97);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+.animate-card-enter {
+  animation: cardGracefulEnter 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .luxury-envelope,
+  .luxury-envelope-body,
+  .luxury-flap,
+  .luxury-letter-card,
+  .luxury-wax-seal,
+  .animate-card-enter {
+    transition-duration: 0.2s !important;
+    animation-duration: 0.2s !important;
+  }
 }
 
 /* ================= PETAL ANIMATION ================= */
@@ -199,7 +431,7 @@
 }
 
 .animate-wind-stream {
-  animation: windGustStream 0.75s cubic-bezier(0.2, 0.9, 0.4, 1) forwards;
+  animation: windGustStream 0.95s cubic-bezier(0.2, 0.9, 0.4, 1) forwards;
 }
 
 @keyframes windBlowSway {
@@ -239,4 +471,382 @@
 .animate-smoke-wisp {
   animation: smokeWisp 1.4s ease-out forwards;
 }
+
+/* ================= FLYING BALLOONS ANIMATION ================= */
+@keyframes balloonRise {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(0.9);
+    opacity: 0;
+  }
+  8% {
+    opacity: 0.96;
+    transform: translate3d(calc(var(--balloon-sway, 16px) * 0.25), -10vh, 0) rotate(calc(var(--balloon-tilt, 4deg) * 0.5)) scale(1);
+  }
+  35% {
+    transform: translate3d(var(--balloon-sway, 16px), -45vh, 0) rotate(var(--balloon-tilt, 4deg)) scale(1);
+  }
+  70% {
+    transform: translate3d(calc(var(--balloon-sway, 16px) * -0.6), -90vh, 0) rotate(calc(var(--balloon-tilt, 4deg) * -0.8)) scale(1);
+    opacity: 0.94;
+  }
+  100% {
+    transform: translate3d(calc(var(--balloon-sway, 16px) * 0.4), -135vh, 0) rotate(var(--balloon-tilt, 4deg)) scale(0.96);
+    opacity: 0;
+  }
+}
+
+.animate-balloon-rise {
+  opacity: 0;
+  animation-name: balloonRise;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+/* ================= PIXEL PANDA & ORANGE CAT ANIMATIONS ================= */
+@keyframes pixelFrameToggleA {
+  0%, 49.9% {
+    opacity: 1;
+  }
+  50%, 100% {
+    opacity: 0;
+  }
+}
+
+@keyframes pixelFrameToggleB {
+  0%, 49.9% {
+    opacity: 0;
+  }
+  50%, 100% {
+    opacity: 1;
+  }
+}
+
+.animate-pixel-frame-a {
+  animation: pixelFrameToggleA 0.7s steps(1, end) infinite;
+}
+
+.animate-pixel-frame-b {
+  animation: pixelFrameToggleB 0.7s steps(1, end) infinite;
+}
+
+/* Rapid clapping animation for Panda when blowing candles */
+.animate-pixel-clap-a {
+  animation: pixelFrameToggleA 0.24s steps(1, end) infinite;
+}
+
+.animate-pixel-clap-b {
+  animation: pixelFrameToggleB 0.24s steps(1, end) infinite;
+}
+
+@keyframes pixelClapHop {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.animate-pixel-clap-hop {
+  animation: pixelClapHop 0.24s steps(2, end) infinite;
+}
+
+/* Cat walking stride that runs while entering from the right, then settles in standing pose */
+.animate-pixel-walk-once-a {
+  animation: pixelFrameToggleA 0.36s steps(1, end) 6 forwards;
+}
+
+.animate-pixel-walk-once-b {
+  animation: pixelFrameToggleB 0.36s steps(1, end) 6 forwards;
+}
+
+@keyframes pixelStepBob {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+.animate-pixel-step-bob {
+  animation: pixelStepBob 0.7s steps(2, end) infinite;
+}
+
+@keyframes pixelConfettiShoot {
+  0% {
+    transform: translate3d(0, 0, 0) scale(0.55) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+    transform: translate3d(calc(var(--tx, 8px) * 0.35), calc(var(--ty, -14px) * 0.5), 0) scale(1.15) rotate(calc(var(--rot, 120deg) * 0.3));
+  }
+  65% {
+    opacity: 1;
+    transform: translate3d(var(--tx, 8px), var(--ty, -14px), 0) scale(1) rotate(var(--rot, 120deg));
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(calc(var(--tx, 8px) * 1.15), calc(var(--ty, -14px) + 6px), 0) scale(0.75) rotate(calc(var(--rot, 120deg) * 1.35));
+  }
+}
+
+.animate-pixel-confetti {
+  opacity: 0;
+  animation-name: pixelConfettiShoot;
+  animation-timing-function: cubic-bezier(0.22, 0.85, 0.45, 1);
+  animation-iteration-count: infinite;
+}
+
+@keyframes pixelPopperRecoil {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  18% {
+    transform: translateY(-2px);
+  }
+  35% {
+    transform: translateY(0);
+  }
+}
+
+.animate-pixel-popper-recoil {
+  animation: pixelPopperRecoil 0.55s steps(2, end) infinite;
+}
+
+@keyframes pixelPopperKick {
+  0%, 100% {
+    transform: translate(0, 0);
+  }
+  20% {
+    transform: translate(-1px, 1px);
+  }
+  45% {
+    transform: translate(0.5px, -0.5px);
+  }
+}
+
+.animate-pixel-popper-kick {
+  animation: pixelPopperKick 0.55s steps(2, end) infinite;
+}
+
+@keyframes pixelCakeBob {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-0.8px);
+  }
+}
+
+.animate-pixel-cake-bob {
+  animation: pixelCakeBob 0.9s steps(2, end) infinite;
+}
+
+/* Page 3 -> Blown by wind: Cat flies upward & rightward across the screen */
+@keyframes catWindBlown {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
+    opacity: 1;
+  }
+  20% {
+    transform: translate3d(24px, -22px, 0) rotate(16deg) scale(1.04);
+    opacity: 1;
+  }
+  55% {
+    transform: translate3d(160px, -70px, 0) rotate(36deg) scale(0.95);
+    opacity: 0.95;
+  }
+  100% {
+    transform: translate3d(48vw, -120px, 0) rotate(68deg) scale(0.75);
+    opacity: 0;
+  }
+}
+
+.animate-cat-wind-blown {
+  animation: catWindBlown 0.95s cubic-bezier(0.25, 0.85, 0.45, 1) forwards;
+}
+
+/* Page 4: Cat walks from right side of the page carrying cake slice, then stands beside the cake */
+@keyframes catWalkFromRight {
+  0% {
+    transform: translate3d(52vw, 0, 0);
+    opacity: 0.95;
+  }
+  15% {
+    transform: translate3d(42vw, -3px, 0);
+    opacity: 1;
+  }
+  30% {
+    transform: translate3d(33vw, 0, 0);
+  }
+  45% {
+    transform: translate3d(24vw, -3px, 0);
+  }
+  60% {
+    transform: translate3d(16vw, 0, 0);
+  }
+  75% {
+    transform: translate3d(9vw, -3px, 0);
+  }
+  90% {
+    transform: translate3d(3vw, 0, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+  }
+}
+
+.animate-cat-walk-from-right {
+  animation: catWalkFromRight 2.15s linear forwards;
+}
+
+/* ================= MASCOT EASTER EGG & MAKE-A-WISH ANIMATIONS ================= */
+@keyframes mascotEasterHop {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+  }
+  30% {
+    transform: translateY(-10px) scale(1.06);
+  }
+  65% {
+    transform: translateY(-3px) scale(0.98);
+  }
+}
+
+.animate-mascot-easter-hop {
+  animation: mascotEasterHop 0.48s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes pixelBubbleIn {
+  0% {
+    opacity: 0;
+    transform: translateY(6px) scale(0.86);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-pixel-bubble-in {
+  animation: pixelBubbleIn 0.24s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes easterSparkUp {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(0.8);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-22px) scale(1.25);
+  }
+}
+
+.animate-easter-spark-up {
+  animation: easterSparkUp 0.9s ease-out forwards;
+}
+
+@keyframes wishStarFloat {
+  0%, 100% {
+    transform: translateY(0) rotate(-3deg);
+  }
+  50% {
+    transform: translateY(-3px) rotate(4deg);
+  }
+}
+
+.animate-wish-star-float {
+  animation: wishStarFloat 2.4s ease-in-out infinite;
+}
+
+/* ================= ROULETTE PRIZE STAGE ANIMATIONS ================= */
+@keyframes shoeDropFromTop {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, -180px, 0) scale(0.84) rotate(-4deg);
+  }
+  68% {
+    opacity: 1;
+    transform: translate3d(0, 10px, 0) scale(1.03) rotate(1.5deg);
+  }
+  84% {
+    transform: translate3d(0, -4px, 0) scale(0.99) rotate(-0.5deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
+  }
+}
+
+.animate-shoe-drop-from-top {
+  animation: shoeDropFromTop 0.95s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes pandaWalkFromLeft {
+  0% {
+    transform: translate3d(-150px, 0, 0);
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+    transform: translate3d(-115px, -3px, 0);
+  }
+  35% {
+    transform: translate3d(-85px, 0, 0);
+  }
+  55% {
+    transform: translate3d(-55px, -3px, 0);
+  }
+  75% {
+    transform: translate3d(-28px, 0, 0);
+  }
+  90% {
+    transform: translate3d(-10px, -2px, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+  }
+}
+
+.animate-panda-walk-from-left {
+  animation: pandaWalkFromLeft 1.25s linear forwards;
+}
+
+@keyframes catWalkPrizeFromRight {
+  0% {
+    transform: translate3d(150px, 0, 0);
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+    transform: translate3d(115px, -3px, 0);
+  }
+  35% {
+    transform: translate3d(85px, 0, 0);
+  }
+  55% {
+    transform: translate3d(55px, -3px, 0);
+  }
+  75% {
+    transform: translate3d(28px, 0, 0);
+  }
+  90% {
+    transform: translate3d(10px, -2px, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+  }
+}
+
+.animate-cat-walk-prize-from-right {
+  animation: catWalkPrizeFromRight 1.25s linear forwards;
+}
+
+
 

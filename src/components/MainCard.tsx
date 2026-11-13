@@ -19,7 +19,7 @@ export const MainCard: React.FC<MainCardProps> = ({
   };
 
   return (
-    <div className="relative z-10 w-full max-w-[460px] mx-auto px-4 py-6 animate-in fade-in zoom-in-95 duration-700">
+    <div className="relative z-10 w-full max-w-[460px] mx-auto px-4 py-6 animate-card-enter">
       <div
         className="relative bg-white/90 backdrop-blur-xl rounded-[24px] px-6 py-8 sm:px-9 sm:py-10 text-center shadow-[0_15px_35px_rgba(136,14,79,0.15)] border-2 border-white/80 transition-all hover:shadow-[0_20px_45px_rgba(136,14,79,0.22)]"
       >
@@ -40,7 +40,7 @@ export const MainCard: React.FC<MainCardProps> = ({
 
         {/* Main Name Heading */}
         <h1 className="font-serif-display text-[#880e4f] text-3xl sm:text-4xl font-bold mb-4 tracking-tight">
-          {recipientName} 🎉
+          {recipientName}
         </h1>
 
         {/* Warm Greeting Message */}

@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { memo, useRef, useEffect } from 'react';
 import { ConfettiParticle, createConfettiBurst, updateConfettiParticle } from '../utils/confetti';
 
 interface ConfettiCanvasProps {
@@ -6,7 +6,9 @@ interface ConfettiCanvasProps {
   triggerKey: number;
 }
 
-export const ConfettiCanvas: React.FC<ConfettiCanvasProps> = ({ triggerKey }) => {
+const MAX_CONFETTI_PARTICLES = 240;
+
+export const ConfettiCanvas: React.FC<ConfettiCanvasProps> = memo(({ triggerKey }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const particlesRef = useRef<ConfettiParticle[]>([]);
   const animFrameRef = useRef<number | null>(null);
@@ -25,12 +27,20 @@ export const ConfettiCanvas: React.FC<ConfettiCanvasProps> = ({ triggerKey }) =>
     const originY = window.innerHeight * 0.42;
 
     const newParticles = createConfettiBurst(originX, originY, 110);
-    particlesRef.current.push(...newParticles);
+    const merged = [...particlesRef.current, ...newParticles];
+    particlesRef.current =
+      merged.length > MAX_CONFETTI_PARTICLES
+        ? merged.slice(merged.length - MAX_CONFETTI_PARTICLES)
+        : merged;
 
-    // Setup / update canvas size
-    const dpr = window.devicePixelRatio || 1;
-    canvas.width = window.innerWidth * dpr;
-    canvas.height = window.innerHeight * dpr;
+    // Setup / update canvas size only when needed (cap DPR at 2 for high-DPI efficiency)
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const targetWidth = Math.round(window.innerWidth * dpr);
+    const targetHeight = Math.round(window.innerHeight * dpr);
+    if (canvas.width !== targetWidth || canvas.height !== targetHeight) {
+      canvas.width = targetWidth;
+      canvas.height = targetHeight;
+    }
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
     const loop = (time: number) => {
@@ -114,8 +124,8 @@ export const ConfettiCanvas: React.FC<ConfettiCanvasProps> = ({ triggerKey }) =>
   return (
     <canvas
       ref={canvasRef}
-      className="fixed inset-0 pointer-events-none z-[60] w-full h-full overflow-hidden"
+      className="fixed inset-0 pointer-events-none z-[80] w-full h-full overflow-hidden"
       aria-hidden="true"
     />
   );
-};
+});

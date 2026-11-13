@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { memo, useRef, useEffect } from 'react';
 import { SparkleParticle, createSparkle, updateSparkle } from '../utils/sparkles';
 
 interface SparkleTrailProps {
@@ -6,7 +6,9 @@ interface SparkleTrailProps {
   globalTrack?: boolean;
 }
 
-export const SparkleTrail: React.FC<SparkleTrailProps> = ({ globalTrack = true }) => {
+const MAX_SPARKLE_PARTICLES = 140;
+
+export const SparkleTrail: React.FC<SparkleTrailProps> = memo(({ globalTrack = true }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const particlesRef = useRef<SparkleParticle[]>([]);
   const animFrameRef = useRef<number | null>(null);
@@ -20,11 +22,11 @@ export const SparkleTrail: React.FC<SparkleTrailProps> = ({ globalTrack = true }
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Resize canvas to full window
+    // Resize canvas to full window (cap DPR at 2 for mobile smoothness)
     const updateSize = () => {
-      const dpr = window.devicePixelRatio || 1;
-      canvas.width = window.innerWidth * dpr;
-      canvas.height = window.innerHeight * dpr;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = Math.round(window.innerWidth * dpr);
+      canvas.height = Math.round(window.innerHeight * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     };
 
@@ -130,6 +132,11 @@ export const SparkleTrail: React.FC<SparkleTrailProps> = ({ globalTrack = true }
           createSparkle(clientX, clientY, { burst: isBurst })
         );
       }
+      if (particlesRef.current.length > MAX_SPARKLE_PARTICLES) {
+        particlesRef.current = particlesRef.current.slice(
+          particlesRef.current.length - MAX_SPARKLE_PARTICLES
+        );
+      }
       startLoopIfNeeded();
     };
 
@@ -196,4 +203,4 @@ export const SparkleTrail: React.FC<SparkleTrailProps> = ({ globalTrack = true }
       aria-hidden="true"
     />
   );
-};
+});
