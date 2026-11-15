@@ -21,15 +21,14 @@ export interface ConfettiParticle {
 }
 
 export const CONFETTI_COLORS = [
-  '#f72585', // bright magenta
-  '#7209b7', // purple
-  '#3a0ca3', // deep blue
-  '#4cc9f0', // sky blue
-  '#ffb703', // golden yellow
-  '#fb8500', // orange
-  '#ff758f', // sweet pink
-  '#ffccd5', // blush
-  '#52b788', // emerald mint
+  '#e6be7e', // champagne gold
+  '#f3d89b', // pale gold foil
+  '#d4a373', // rose bronze
+  '#be185d', // velvet rose
+  '#ec4899', // satin pink
+  '#f9a8d4', // dusty blush
+  '#ffccd5', // petal pink
+  '#fff1f2', // ivory pearl
 ];
 
 let confettiCounter = 0;
@@ -47,7 +46,7 @@ export function createConfettiBurst(
   for (let i = 0; i < count; i++) {
     confettiCounter = (confettiCounter + 1) % 100000;
     const angle = Math.random() * Math.PI * 2;
-    const speed = Math.random() * 9 + 4; // 4 to 13
+    const speed = Math.random() * 8 + 3.5; // gentle spread
     const shapes: Array<'rect' | 'circle' | 'star'> = ['rect', 'rect', 'circle', 'star'];
     const shape = shapes[Math.floor(Math.random() * shapes.length)];
     const color = CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)];
@@ -56,15 +55,15 @@ export function createConfettiBurst(
       id: confettiCounter,
       x: originX,
       y: originY,
-      vx: Math.cos(angle) * speed + (Math.random() - 0.5) * 2,
-      vy: Math.sin(angle) * speed - (Math.random() * 5 + 4), // biased upwards
-      width: Math.random() * 6 + 6, // 6 to 12
-      height: Math.random() * 4 + 4,
+      vx: Math.cos(angle) * speed + (Math.random() - 0.5) * 1.6,
+      vy: Math.sin(angle) * speed - (Math.random() * 4.5 + 3.5),
+      width: Math.random() * 5 + 6, // 6 to 11 (within 6..12)
+      height: Math.random() * 3.5 + 3.5,
       color,
       rotation: Math.random() * 360,
-      vRot: (Math.random() - 0.5) * 15,
+      vRot: (Math.random() - 0.5) * 10,
       wobble: Math.random() * Math.PI * 2,
-      vWobble: Math.random() * 0.15 + 0.05,
+      vWobble: Math.random() * 0.1 + 0.04,
       opacity: 1.0,
       shape,
     });
@@ -80,15 +79,15 @@ export function updateConfettiParticle(
   p: ConfettiParticle,
   deltaRatio: number = 1
 ): ConfettiParticle | null {
-  const newOpacity = p.opacity - 0.007 * deltaRatio;
+  const newOpacity = p.opacity - 0.0055 * deltaRatio;
   if (newOpacity <= 0) return null;
 
   return {
     ...p,
     x: p.x + p.vx * deltaRatio,
     y: p.y + p.vy * deltaRatio,
-    vx: p.vx * Math.pow(0.98, deltaRatio), // air drag
-    vy: p.vy * Math.pow(0.98, deltaRatio) + 0.22 * deltaRatio, // gravity
+    vx: p.vx * Math.pow(0.975, deltaRatio), // silky air drag
+    vy: p.vy * Math.pow(0.975, deltaRatio) + 0.16 * deltaRatio, // gentler gravity float
     rotation: p.rotation + p.vRot * deltaRatio,
     wobble: p.wobble + p.vWobble * deltaRatio,
     opacity: newOpacity,

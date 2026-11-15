@@ -1014,37 +1014,35 @@
 /* ================= CONFETTI POPPER OPENING ANIMATIONS ================= */
 @keyframes popperFloat {
   0%, 100% {
-    transform: translate3d(0, 0, 0) rotate(-1.5deg);
+    transform: translate3d(0, 0, 0) rotate(-0.8deg);
   }
   50% {
-    transform: translate3d(0, -6px, 0) rotate(1.5deg);
+    transform: translate3d(0, -7px, 0) rotate(0.8deg);
   }
 }
 
 .animate-popper-float {
-  animation: popperFloat 2.8s ease-in-out infinite;
+  will-change: transform;
+  animation: popperFloat 4.2s cubic-bezier(0.37, 0, 0.63, 1) infinite;
 }
 
 @keyframes popperWiggle {
   0%, 100% {
-    transform: rotate(0deg);
+    transform: rotate(0deg) scale(1);
   }
-  20% {
-    transform: rotate(-7deg) scale(1.03);
+  22% {
+    transform: rotate(-4deg) scale(1.015);
   }
-  40% {
-    transform: rotate(7deg) scale(1.03);
+  48% {
+    transform: rotate(4deg) scale(1.015);
   }
-  60% {
-    transform: rotate(-5deg);
-  }
-  80% {
-    transform: rotate(4deg);
+  74% {
+    transform: rotate(-2deg) scale(1.005);
   }
 }
 
 .animate-popper-wiggle {
-  animation: popperWiggle 0.48s ease-in-out;
+  animation: popperWiggle 0.65s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 @keyframes pullTasselIdle {
@@ -1052,12 +1050,13 @@
     transform: translate3d(0, 0, 0);
   }
   50% {
-    transform: translate3d(0, 6px, 0);
+    transform: translate3d(0, 5px, 0);
   }
 }
 
 .animate-pull-tassel-idle {
-  animation: pullTasselIdle 1.6s ease-in-out infinite;
+  will-change: transform;
+  animation: pullTasselIdle 2.2s cubic-bezier(0.37, 0, 0.63, 1) infinite;
 }
 
 @keyframes capFlyAway {
@@ -1065,26 +1064,47 @@
     transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
     opacity: 1;
   }
+  45% {
+    opacity: 0.92;
+  }
   100% {
-    transform: translate3d(18px, -110px, 0) rotate(28deg) scale(0.75);
+    transform: translate3d(14px, -96px, 0) rotate(18deg) scale(0.82);
     opacity: 0;
   }
 }
 
 .animate-cap-fly-away {
-  animation: capFlyAway 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: capFlyAway 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes popperRimShimmer {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.95;
+  }
+  100% {
+    transform: scale(2.15);
+    opacity: 0;
+  }
+}
+
+.animate-popper-rim-shimmer {
+  animation: popperRimShimmer 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 @keyframes popperStreamerBurst {
   0% {
-    transform: translate3d(0, 0, 0) scale(0.4) rotate(0deg);
+    transform: translate3d(0, 0, 0) scale(0.45) rotate(0deg);
+    opacity: 0;
+  }
+  14% {
     opacity: 1;
   }
-  55% {
-    opacity: 1;
+  72% {
+    opacity: 0.95;
   }
   100% {
-    transform: translate3d(var(--sx, 0px), var(--sy, -120px), 0) scale(1.1) rotate(var(--srot, 180deg));
+    transform: translate3d(var(--sx, 0px), var(--sy, -120px), 0) scale(1.02) rotate(var(--srot, 160deg));
     opacity: 0;
   }
 }
@@ -1095,17 +1115,13 @@
   left: 0;
   opacity: 0;
   will-change: transform, opacity;
-  animation: popperStreamerBurst 0.95s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: popperStreamerBurst 1.35s cubic-bezier(0.12, 0.88, 0.24, 1) forwards;
 }
 
 @keyframes confettiBannerIn {
   0% {
     opacity: 0;
-    transform: translate3d(0, 22px, 0) scale(0.82);
-  }
-  65% {
-    opacity: 1;
-    transform: translate3d(0, -4px, 0) scale(1.03);
+    transform: translate3d(0, 18px, 0) scale(0.94);
   }
   100% {
     opacity: 1;
@@ -1114,9 +1130,5 @@
 }
 
 .animate-confetti-banner-in {
-  animation: confettiBannerIn 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: confettiBannerIn 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
-
-
-
-

@@ -164,53 +164,56 @@ export const OpeningConfetti: React.FC<OpeningConfettiProps> = ({ onOpenComplete
     <div
       data-testid="opening-confetti"
       data-popper-phase={phase}
-      className={`fixed inset-0 z-20 flex flex-col items-center justify-center px-3 pt-14 pb-20 min-[390px]:px-4 min-[390px]:pb-24 sm:p-6 sm:pb-8 overflow-y-auto overscroll-contain transition-all duration-500 ease-out ${
-        isExiting ? 'opacity-0 scale-[1.03] pointer-events-none' : 'opacity-100 scale-100'
+      className={`fixed inset-0 z-20 flex flex-col items-center justify-center px-3 pt-14 pb-20 min-[390px]:px-4 min-[390px]:pb-24 sm:p-6 sm:pb-8 overflow-y-auto overscroll-contain transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+        isExiting ? 'opacity-0 scale-[1.02] pointer-events-none' : 'opacity-100 scale-100'
       }`}
     >
       {/* Fullscreen celebratory confetti canvas triggered when string is pulled */}
       <ConfettiCanvas triggerKey={confettiKey} />
 
       <div className="relative flex flex-col items-center justify-center w-full max-w-[360px]">
-        {/* Ambient Rose & Champagne Glow */}
+        {/* Ambient Pearl-Blush & Champagne Halo */}
         <div
           aria-hidden="true"
-          className={`pointer-events-none absolute -inset-10 rounded-full blur-3xl transition-all duration-700 ${
+          className={`pointer-events-none absolute -inset-12 rounded-full blur-3xl transition-all duration-1000 ease-out ${
             isPopped
-              ? 'bg-gradient-to-tr from-pink-300/65 via-amber-200/55 to-rose-300/65 scale-125 opacity-100'
-              : 'bg-gradient-to-tr from-pink-200/45 via-rose-100/35 to-amber-100/40 opacity-85'
+              ? 'bg-gradient-to-tr from-rose-200/65 via-amber-100/60 to-pink-200/65 scale-125 opacity-100'
+              : 'bg-gradient-to-tr from-rose-200/40 via-amber-50/45 to-pink-100/40 opacity-80'
           }`}
         />
 
         {/* Instruction Caption Above Popper (visible before pop) */}
         {!isPopped && (
-          <div className="relative z-10 mb-3 text-center select-none">
+          <div className="relative z-10 mb-3.5 text-center select-none">
             <p
-              className={`text-xs sm:text-sm font-semibold transition-colors ${
-                showPullHint ? 'text-rose-600 animate-bounce' : 'text-pink-700/90'
+              className={`font-serif-display text-sm sm:text-[15px] tracking-wide transition-colors duration-300 ${
+                showPullHint ? 'text-[#9d174d] font-semibold' : 'text-[#880e4f]/85 font-medium'
               }`}
             >
               {showPullHint
-                ? 'Tarik talinya ke bawah ya! ↓'
-                : progress > 0.15
-                ? `Tarik terus ke bawah... ${Math.round(progress * 100)}%`
-                : 'Tarik tali di bawah untuk membuka ✨'}
+                ? 'Tarik talinya perlahan ke bawah ↓'
+                : progress > 0.12
+                ? `Tarik ke bawah... ${Math.round(progress * 100)}%`
+                : 'Tarik tali di bawah untuk membuka'}
             </p>
           </div>
         )}
 
-        {/* Confetti Popper Stage (Cone + Streamers + Pull String) */}
+        {/* Confetti Popper Stage (Champagne & Rose-Gold Cone + Streamers + Silk Ribbon) */}
         <div
-          className={`relative flex flex-col items-center transition-all duration-500 ${
-            isRevealed ? 'scale-75 -translate-y-4 opacity-30 pointer-events-none' : 'scale-100 opacity-100'
+          className={`relative flex flex-col items-center transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+            isRevealed
+              ? 'scale-[0.72] -translate-y-5 opacity-20 pointer-events-none'
+              : 'scale-100 opacity-100'
           }`}
         >
-          {/* Erupting SVG Streamers from Popper Rim */}
+          {/* Champagne Shimmer Pulse + Erupting Metallic Streamers from Popper Rim */}
           {isPopped && (
             <div
               aria-hidden="true"
               className="pointer-events-none absolute left-1/2 top-[34px] z-20 -translate-x-1/2"
             >
+              <span className="animate-popper-rim-shimmer block -ml-10 -mt-3 w-20 h-6 rounded-full border border-[#e6be7e]/80" />
               {streamers.map((s) => {
                 const rad = ((s.angleDeg - 90) * Math.PI) / 180;
                 const tx = Math.cos(rad) * s.distancePx;
@@ -225,12 +228,9 @@ export const OpeningConfetti: React.FC<OpeningConfettiProps> = ({ onOpenComplete
                         width: `${s.widthPx}px`,
                         height: `${s.heightPx}px`,
                         backgroundColor: s.color,
+                        boxShadow: '0 1px 4px rgba(136, 14, 79, 0.12)',
                         borderRadius:
-                          s.shape === 'circle'
-                            ? '9999px'
-                            : s.shape === 'ribbon'
-                            ? '9999px'
-                            : '2px',
+                          s.shape === 'circle' || s.shape === 'ribbon' ? '9999px' : '1.5px',
                         animationDelay: `${s.delayMs}ms`,
                         '--sx': `${tx.toFixed(1)}px`,
                         '--sy': `${ty.toFixed(1)}px`,
@@ -243,150 +243,282 @@ export const OpeningConfetti: React.FC<OpeningConfettiProps> = ({ onOpenComplete
             </div>
           )}
 
-          {/* Confetti Popper Cone Illustration (clicking cone nudges user to pull string) */}
+          {/* Luxury Ivory-Pearl & Champagne-Foil Popper Cone */}
           <div
             key={`cone-nudge-${hintNudgeSeq}`}
             onClick={triggerPullNudge}
             role="presentation"
-            className={`relative z-10 cursor-pointer select-none transition-transform duration-150 ${
-              hintNudgeSeq > 0 && !isPopped ? 'animate-popper-wiggle' : ''
-            }`}
+            className={`relative z-10 cursor-pointer select-none ${
+              isDragging
+                ? 'transition-none'
+                : 'transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]'
+            } ${hintNudgeSeq > 0 && !isPopped ? 'animate-popper-wiggle' : ''}`}
             style={{
               transform: !isPopped
-                ? `scale(${1 + progress * 0.04}, ${1 - progress * 0.05}) rotate(${
-                    isDragging ? (progress * 3 - 1.5).toFixed(2) : 0
+                ? `scale(${1 + progress * 0.032}, ${1 - progress * 0.04}) rotate(${
+                    isDragging ? (progress * 2.2 - 1.1).toFixed(2) : 0
                   }deg)`
                 : undefined,
             }}
           >
             <svg
-              viewBox="0 0 180 180"
-              className={`w-[138px] min-[360px]:w-[152px] min-[390px]:w-[168px] sm:w-[184px] h-auto overflow-visible drop-shadow-[0_14px_24px_rgba(136,14,79,0.22)] ${
+              viewBox="0 0 180 184"
+              className={`w-[138px] min-[360px]:w-[152px] min-[390px]:w-[166px] sm:w-[182px] h-auto overflow-visible drop-shadow-[0_18px_28px_rgba(136,14,79,0.16)] ${
                 !isDragging && !isPopped ? 'animate-popper-float' : ''
               }`}
               aria-hidden="true"
             >
               <defs>
-                <linearGradient id="popperBodyGrad" x1="0" y1="0" x2="1" y2="0.4">
-                  <stop offset="0%" stopColor="#fdf2f8" />
-                  <stop offset="45%" stopColor="#fbcfe8" />
-                  <stop offset="100%" stopColor="#f472b6" />
+                {/* Pearl Ivory & Satin Rose Body Gradient (3D cylindrical shading) */}
+                <linearGradient id="popperBodyGrad" x1="0" y1="0" x2="1" y2="0.2">
+                  <stop offset="0%" stopColor="#fffdf9" />
+                  <stop offset="32%" stopColor="#fff5f7" />
+                  <stop offset="68%" stopColor="#fce7f3" />
+                  <stop offset="100%" stopColor="#f5c2d7" />
                 </linearGradient>
-                <linearGradient id="popperStripeGrad" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0%" stopColor="#ec4899" />
-                  <stop offset="100%" stopColor="#be185d" />
-                </linearGradient>
+
+                {/* Brushed Champagne Gold Foil Gradient */}
                 <linearGradient id="popperGoldGrad" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0%" stopColor="#fef08a" />
-                  <stop offset="50%" stopColor="#f59e0b" />
-                  <stop offset="100%" stopColor="#d97706" />
+                  <stop offset="0%" stopColor="#f9ebc7" />
+                  <stop offset="38%" stopColor="#e6be7e" />
+                  <stop offset="72%" stopColor="#d4a373" />
+                  <stop offset="100%" stopColor="#b8844c" />
                 </linearGradient>
-                <radialGradient id="popperCapGrad" cx="45%" cy="35%" r="70%">
-                  <stop offset="0%" stopColor="#fff1f2" />
-                  <stop offset="65%" stopColor="#f9a8d4" />
-                  <stop offset="100%" stopColor="#db2777" />
+
+                {/* Velvet Dusty Rose Ribbon Gradient */}
+                <linearGradient id="popperRoseRibbonGrad" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stopColor="#f472b6" />
+                  <stop offset="55%" stopColor="#db2777" />
+                  <stop offset="100%" stopColor="#9d174d" />
+                </linearGradient>
+
+                {/* Pearl Enamel Wax Seal Cap Gradient */}
+                <radialGradient id="popperCapGrad" cx="42%" cy="32%" r="72%">
+                  <stop offset="0%" stopColor="#fffdf9" />
+                  <stop offset="58%" stopColor="#fce7f3" />
+                  <stop offset="100%" stopColor="#eab8ce" />
                 </radialGradient>
+
                 <clipPath id="coneClip">
-                  <path d="M 38 48 L 142 48 L 96 164 Q 90 174 84 164 Z" />
+                  <path d="M 40 48 L 140 48 L 95 162 Q 90 172 85 162 Z" />
                 </clipPath>
               </defs>
 
-              {/* Floating Sparkle Accents */}
-              <g className={isPopped ? 'opacity-0' : 'opacity-90'}>
-                <path d="M 24 68 L 27 60 L 30 68 L 38 71 L 30 74 L 27 82 L 24 74 L 16 71 Z" fill="#fbbf24" />
-                <path d="M 152 62 L 154 56 L 156 62 L 162 64 L 156 66 L 154 72 L 152 66 L 146 64 Z" fill="#f472b6" />
-                <circle cx="34" cy="112" r="3.5" fill="#fb7185" opacity="0.7" />
-                <circle cx="148" cy="108" r="3" fill="#fbbf24" opacity="0.8" />
+              {/* Subtle Editorial Starlight Accents (clean champagne & rose glints) */}
+              <g className={`transition-opacity duration-500 ${isPopped ? 'opacity-0' : 'opacity-85'}`}>
+                <path
+                  d="M 24 72 L 26 65 L 28 72 L 35 74 L 28 76 L 26 83 L 24 76 L 17 74 Z"
+                  fill="url(#popperGoldGrad)"
+                />
+                <path
+                  d="M 154 64 L 155.8 59 L 157.6 64 L 162.6 65.8 L 157.6 67.6 L 155.8 72.6 L 154 67.6 L 149 65.8 Z"
+                  fill="#db2777"
+                  opacity="0.7"
+                />
+                <circle cx="34" cy="116" r="2.2" fill="#e6be7e" opacity="0.85" />
+                <circle cx="148" cy="112" r="2" fill="#db2777" opacity="0.45" />
               </g>
 
-              {/* Top Peeking Confetti Cap (flies upward when popped!) */}
+              {/* Top Pearl & Champagne Confetti Lid (lifts smoothly when pulled) */}
               <g
                 className={isPopped ? 'animate-cap-fly-away' : ''}
-                style={{ transformOrigin: '90px 44px' }}
+                style={{ transformOrigin: '90px 45px' }}
               >
-                <ellipse cx="90" cy="45" rx="52" ry="13" fill="url(#popperCapGrad)" stroke="#be185d" strokeWidth="1.5" />
-                {/* Colorful confetti tufts peeking from rim */}
-                <circle cx="64" cy="41" r="6" fill="#fbbf24" />
-                <circle cx="80" cy="37" r="7" fill="#38bdf8" />
-                <circle cx="98" cy="37" r="6.5" fill="#34d399" />
-                <circle cx="114" cy="41" r="6" fill="#a855f7" />
-                <rect x="85" y="29" width="7" height="10" rx="2" transform="rotate(-14 88 34)" fill="#f43f5e" />
-                <rect x="102" y="31" width="6" height="9" rx="2" transform="rotate(18 105 35)" fill="#fde047" />
+                {/* Soft Foil Confetti Petals Nestled Under Rim */}
+                <circle cx="67" cy="41" r="4.5" fill="#f3d89b" opacity="0.9" />
+                <circle cx="81" cy="37" r="5" fill="#fbcfe8" opacity="0.95" />
+                <circle cx="99" cy="37" r="4.8" fill="#e6be7e" opacity="0.92" />
+                <circle cx="113" cy="41" r="4.2" fill="#f472b6" opacity="0.8" />
+                <rect
+                  x="86"
+                  y="30"
+                  width="5.5"
+                  height="9"
+                  rx="2"
+                  transform="rotate(-12 88 34)"
+                  fill="url(#popperGoldGrad)"
+                />
+                <rect
+                  x="101"
+                  y="31"
+                  width="5"
+                  height="8.5"
+                  rx="2"
+                  transform="rotate(15 103 35)"
+                  fill="#db2777"
+                  opacity="0.85"
+                />
+
+                {/* Sculpted Pearl & Gold Cap */}
+                <ellipse
+                  cx="90"
+                  cy="46"
+                  rx="50"
+                  ry="11.5"
+                  fill="url(#popperCapGrad)"
+                  stroke="url(#popperGoldGrad)"
+                  strokeWidth="1.6"
+                />
+                <ellipse
+                  cx="90"
+                  cy="45.5"
+                  rx="41"
+                  ry="7.5"
+                  fill="none"
+                  stroke="#ffffff"
+                  strokeWidth="0.9"
+                  opacity="0.85"
+                />
               </g>
 
-              {/* Inner Dark Mouth visible after cap pops open */}
+              {/* Inner Velvet Mouth Revealed After Pop */}
               {isPopped && (
-                <ellipse cx="90" cy="48" rx="48" ry="11" fill="#831843" stroke="#fde047" strokeWidth="2" />
+                <ellipse
+                  cx="90"
+                  cy="48"
+                  rx="46"
+                  ry="10"
+                  fill="#701a45"
+                  stroke="url(#popperGoldGrad)"
+                  strokeWidth="1.8"
+                />
               )}
 
-              {/* Confetti Cone Body */}
+              {/* Confetti Cone Main Stationery Body */}
               <g clipPath="url(#coneClip)">
-                <path d="M 38 48 L 142 48 L 96 164 Q 90 174 84 164 Z" fill="url(#popperBodyGrad)" />
-                {/* Diagonal Festive Stripes */}
-                <path d="M 30 74 L 150 48 L 150 66 L 30 92 Z" fill="url(#popperStripeGrad)" opacity="0.92" />
-                <path d="M 40 108 L 142 84 L 142 100 L 40 124 Z" fill="url(#popperGoldGrad)" opacity="0.9" />
-                <path d="M 52 138 L 128 120 L 128 135 L 52 153 Z" fill="url(#popperStripeGrad)" opacity="0.92" />
-                {/* Specular Gloss Highlight */}
-                <path d="M 52 50 L 66 50 L 87 166 L 80 166 Z" fill="#ffffff" opacity="0.34" />
+                <path
+                  d="M 40 48 L 140 48 L 95 162 Q 90 172 85 162 Z"
+                  fill="url(#popperBodyGrad)"
+                />
+
+                {/* Refined Diagonal Champagne Gold & Satin Rose Foil Bands */}
+                <path
+                  d="M 30 76 L 152 47 L 152 58 L 30 87 Z"
+                  fill="url(#popperRoseRibbonGrad)"
+                  opacity="0.86"
+                />
+                <path
+                  d="M 30 87 L 152 58 L 152 61.5 L 30 90.5 Z"
+                  fill="url(#popperGoldGrad)"
+                  opacity="0.95"
+                />
+
+                <path
+                  d="M 42 114 L 140 90 L 140 100 L 42 124 Z"
+                  fill="url(#popperGoldGrad)"
+                  opacity="0.88"
+                />
+
+                <path
+                  d="M 55 142 L 126 125 L 126 135 L 55 152 Z"
+                  fill="url(#popperRoseRibbonGrad)"
+                  opacity="0.84"
+                />
+                <path
+                  d="M 55 152 L 126 135 L 126 138 L 55 155 Z"
+                  fill="url(#popperGoldGrad)"
+                  opacity="0.95"
+                />
+
+                {/* Cylindrical Specular Satin Highlight */}
+                <path
+                  d="M 54 50 L 66 50 L 87 165 L 81 165 Z"
+                  fill="#ffffff"
+                  opacity="0.52"
+                />
+                <path
+                  d="M 46 50 L 50 50 L 79 165 L 77 165 Z"
+                  fill="#ffffff"
+                  opacity="0.28"
+                />
               </g>
 
-              {/* Gold Scalloped Rim Band */}
+              {/* Center Foil Medallion Diamond Accent */}
+              <g transform="translate(90 88)" opacity="0.92">
+                <path
+                  d="M 0 -8 L 6 0 L 0 8 L -6 0 Z"
+                  fill="#fffdf9"
+                  stroke="url(#popperGoldGrad)"
+                  strokeWidth="1.2"
+                />
+                <circle cx="0" cy="0" r="1.8" fill="url(#popperGoldGrad)" />
+              </g>
+
+              {/* Curved Brushed Gold Rim Collar */}
               <path
-                d="M 36 48 Q 90 61 144 48"
+                d="M 38 48 Q 90 59.5 142 48"
                 fill="none"
                 stroke="url(#popperGoldGrad)"
-                strokeWidth="5"
+                strokeWidth="3.6"
                 strokeLinecap="round"
               />
-
-              {/* Cone Outline & Bottom Gold Ferrule */}
               <path
-                d="M 38 48 L 142 48 L 96 164 Q 90 174 84 164 Z"
+                d="M 40 47.2 Q 90 58 140 47.2"
                 fill="none"
-                stroke="#9d174d"
-                strokeWidth="2"
-                strokeLinejoin="round"
+                stroke="#fffdf9"
+                strokeWidth="0.9"
+                strokeLinecap="round"
+                opacity="0.7"
               />
-              <circle cx="90" cy="168" r="6" fill="url(#popperGoldGrad)" stroke="#9d174d" strokeWidth="1.5" />
+
+              {/* Delicate Gold Hairline Cone Contour */}
+              <path
+                d="M 40 48 L 140 48 L 95 162 Q 90 172 85 162 Z"
+                fill="none"
+                stroke="#c9935b"
+                strokeWidth="1.35"
+                strokeLinejoin="round"
+                opacity="0.85"
+              />
+
+              {/* Turned Gold Finial Bead at Tip */}
+              <circle
+                cx="90"
+                cy="167"
+                r="5.2"
+                fill="url(#popperGoldGrad)"
+                stroke="#fffdf9"
+                strokeWidth="1.1"
+              />
             </svg>
           </div>
 
-          {/* Interactive Pull String & Gold Tassel Ring */}
+          {/* Interactive Silk Pull Cord & Brushed-Gold Pull Medallion */}
           {!isPopped && (
             <div className="relative z-20 flex flex-col items-center -mt-3">
-              {/* Dynamic Stretching Braided Cord */}
+              {/* Slender Satin Silk Ribbon Cord */}
               <svg
                 width="36"
-                height={48 + pullPx}
-                viewBox={`0 0 36 ${48 + pullPx}`}
+                height={50 + pullPx}
+                viewBox={`0 0 36 ${50 + pullPx}`}
                 className="overflow-visible pointer-events-none"
                 aria-hidden="true"
               >
                 <defs>
                   <linearGradient id="pullCordGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#d97706" />
-                    <stop offset="50%" stopColor="#fbbf24" />
-                    <stop offset="100%" stopColor="#db2777" />
+                    <stop offset="0%" stopColor="#b8844c" />
+                    <stop offset="50%" stopColor="#e6be7e" />
+                    <stop offset="100%" stopColor="#be185d" />
                   </linearGradient>
                 </defs>
                 <path
-                  d={`M 18 0 Q ${18 + (isDragging ? 0 : 4)} ${(48 + pullPx) * 0.45}, 18 ${44 + pullPx}`}
+                  d={`M 18 0 Q ${18 + (isDragging ? 0 : 3.2)} ${(50 + pullPx) * 0.48}, 18 ${46 + pullPx}`}
                   fill="none"
                   stroke="url(#pullCordGrad)"
-                  strokeWidth="4"
+                  strokeWidth="2.4"
                   strokeLinecap="round"
                 />
                 <path
-                  d={`M 18 0 Q ${18 + (isDragging ? 0 : 4)} ${(48 + pullPx) * 0.45}, 18 ${44 + pullPx}`}
+                  d={`M 18 0 Q ${18 + (isDragging ? 0 : 3.2)} ${(50 + pullPx) * 0.48}, 18 ${46 + pullPx}`}
                   fill="none"
-                  stroke="#fef08a"
-                  strokeWidth="1.5"
-                  strokeDasharray="4 4"
+                  stroke="#fffdf9"
+                  strokeWidth="0.8"
                   strokeLinecap="round"
+                  opacity="0.7"
                 />
               </svg>
 
-              {/* Grabbable Pull Ring & Tassel Handle */}
+              {/* Grabbable Pull Medallion (44px+ touch hitbox) */}
               <button
                 type="button"
                 data-testid="confetti-pull-handle"
@@ -398,25 +530,39 @@ export const OpeningConfetti: React.FC<OpeningConfettiProps> = ({ onOpenComplete
                 onKeyDown={handleKeyDown}
                 style={{
                   touchAction: 'none',
-                  transform: `translate3d(0, 0, 0) scale(${isDragging ? 1.08 : 1})`,
+                  transform: `translate3d(0, 0, 0) scale(${isDragging ? 1.06 : 1})`,
                 }}
-                className={`group relative -mt-2 w-14 h-14 flex items-center justify-center rounded-full cursor-grab active:cursor-grabbing select-none focus:outline-none focus-visible:ring-4 focus-visible:ring-pink-400 transition-transform ${
-                  !isDragging ? 'animate-pull-tassel-idle' : ''
-                }`}
+                className={`group relative -mt-2 w-14 h-14 flex items-center justify-center rounded-full cursor-grab active:cursor-grabbing select-none focus:outline-none focus-visible:ring-4 focus-visible:ring-pink-300 ${
+                  isDragging ? 'transition-none' : 'transition-transform duration-300 ease-out'
+                } ${!isDragging ? 'animate-pull-tassel-idle' : ''}`}
               >
                 {/* Live Pull Progress Halo */}
                 <span
                   aria-hidden="true"
-                  className="absolute inset-0 rounded-full border-2 border-amber-400/70 transition-all"
+                  className="absolute inset-0.5 rounded-full border border-[#d4a373]/75 transition-transform duration-150"
                   style={{
-                    opacity: 0.45 + progress * 0.55,
-                    transform: `scale(${1 + progress * 0.28})`,
+                    opacity: 0.35 + progress * 0.65,
+                    transform: `scale(${1 + progress * 0.24})`,
                   }}
                 />
-                {/* Gold Pull Ring + Rose Bead */}
-                <span className="relative flex flex-col items-center justify-center w-11 h-11 rounded-full bg-gradient-to-br from-amber-200 via-amber-400 to-rose-500 p-[3px] shadow-[0_6px_16px_rgba(190,24,93,0.32)]">
-                  <span className="w-full h-full rounded-full bg-white/95 flex items-center justify-center text-base font-bold text-[#be185d]">
-                    ↓
+                {/* Brushed Champagne Gold & Pearl-Enamel Ring */}
+                <span className="relative flex items-center justify-center w-11 h-11 rounded-full bg-gradient-to-br from-[#f9ebc7] via-[#e6be7e] to-[#c9935b] p-[2.5px] shadow-[0_8px_18px_rgba(136,14,79,0.22)] group-hover:shadow-[0_10px_22px_rgba(136,14,79,0.3)] transition-shadow">
+                  <span className="w-full h-full rounded-full bg-[#fffdf9] border border-[#f3d89b]/70 flex items-center justify-center text-[#9d174d]">
+                    <svg
+                      width="15"
+                      height="15"
+                      viewBox="0 0 16 16"
+                      fill="none"
+                      aria-hidden="true"
+                    >
+                      <path
+                        d="M8 3.25V12.25M8 12.25L4.25 8.5M8 12.25L11.75 8.5"
+                        stroke="currentColor"
+                        strokeWidth="1.75"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
                   </span>
                 </span>
               </button>
@@ -424,25 +570,27 @@ export const OpeningConfetti: React.FC<OpeningConfettiProps> = ({ onOpenComplete
           )}
         </div>
 
-        {/* Celebratory Message Revealed Immediately After Confetti Burst */}
+        {/* Celebratory Ivory Stationery Reveal Card */}
         {isRevealed && (
           <div
             data-testid="confetti-reveal-message"
-            className="relative z-30 mt-2 w-full max-w-[300px] min-[360px]:max-w-[340px] bg-white/95 border-2 border-pink-200 rounded-[24px] sm:rounded-[26px] px-5 py-6 min-[390px]:px-6 min-[390px]:py-7 text-center shadow-[0_20px_48px_rgba(136,14,79,0.22)] animate-confetti-banner-in"
+            className="relative z-30 mt-2 w-full max-w-[300px] min-[360px]:max-w-[344px] bg-[#fffdf9]/96 backdrop-blur-md border border-[#e6be7e]/65 rounded-[24px] sm:rounded-[26px] p-1.5 shadow-[0_22px_52px_rgba(136,14,79,0.2)] animate-confetti-banner-in"
           >
-            <div
-              className="flex items-center justify-center gap-2 mb-2.5 text-[#c99b63] text-xs tracking-[4px]"
-              aria-hidden="true"
-            >
-              <span>— ✦ 🎉 ✦ —</span>
-            </div>
+            <div className="rounded-[18px] sm:rounded-[20px] border border-pink-200/70 px-5 py-6 min-[390px]:px-6 min-[390px]:py-7 text-center">
+              <div
+                className="flex items-center justify-center gap-2.5 mb-2.5 text-[#c99b63] text-[11px] tracking-[5px]"
+                aria-hidden="true"
+              >
+                <span>— ✦ —</span>
+              </div>
 
-            <p className="font-serif-display text-lg min-[390px]:text-xl font-semibold text-[#ad1457] tracking-wide">
-              {openingText.line1}
-            </p>
-            <h2 className="font-serif-display mt-1.5 text-2xl min-[390px]:text-[28px] font-bold text-[#880e4f] leading-tight text-balance">
-              {openingText.line2}
-            </h2>
+              <p className="font-serif-display text-lg min-[390px]:text-xl font-semibold text-[#ad1457] tracking-wide">
+                {openingText.line1}
+              </p>
+              <h2 className="font-serif-display mt-1.5 text-2xl min-[390px]:text-[28px] font-bold text-[#880e4f] leading-tight text-balance">
+                {openingText.line2}
+              </h2>
+            </div>
           </div>
         )}
       </div>

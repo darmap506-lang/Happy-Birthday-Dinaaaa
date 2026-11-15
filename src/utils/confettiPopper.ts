@@ -15,9 +15,9 @@ export interface PopperTimeline {
 }
 
 export const POPPER_TIMELINE: PopperTimeline = {
-  bannerAtMs: 320,
-  exitAtMs: 2800,
-  completeAtMs: 3350,
+  bannerAtMs: 420,
+  exitAtMs: 3100,
+  completeAtMs: 3800,
 };
 
 export interface PopperStreamer {
@@ -33,13 +33,13 @@ export interface PopperStreamer {
 }
 
 const STREAMER_COLORS = [
-  '#ec4899',
-  '#f43f5e',
-  '#fbbf24',
-  '#a855f7',
-  '#38bdf8',
-  '#34d399',
-  '#fb7185',
+  '#e6be7e', // champagne gold
+  '#d4a373', // warm bronze gold
+  '#f3d89b', // pale gold foil
+  '#be185d', // velvet rose
+  '#ec4899', // satin rose
+  '#fbcfe8', // pearl blush
+  '#fff5f7', // ivory pearl
 ];
 
 /**
@@ -87,18 +87,18 @@ export function generatePopperStreamers(count = 24): PopperStreamer[] {
 
   for (let i = 0; i < safeCount; i++) {
     const spread = safeCount > 1 ? i / (safeCount - 1) - 0.5 : 0;
-    const angleDeg = spread * 124 + ((i % 3) - 1) * 6;
-    const distancePx = 95 + ((i * 37) % 115);
+    const angleDeg = spread * 116 + ((i % 3) - 1) * 5;
+    const distancePx = 105 + ((i * 37) % 120);
 
     list.push({
       id: i,
       angleDeg: Number(angleDeg.toFixed(1)),
       distancePx,
       color: STREAMER_COLORS[i % STREAMER_COLORS.length],
-      widthPx: i % 3 === 0 ? 7 : 9,
-      heightPx: i % 3 === 0 ? 18 : i % 3 === 1 ? 10 : 9,
-      delayMs: (i % 4) * 28,
-      rotateDeg: (i % 2 === 0 ? 1 : -1) * (140 + ((i * 53) % 200)),
+      widthPx: i % 3 === 0 ? 5 : i % 3 === 1 ? 8 : 7,
+      heightPx: i % 3 === 0 ? 18 : i % 3 === 1 ? 8 : 7,
+      delayMs: (i % 5) * 32,
+      rotateDeg: (i % 2 === 0 ? 1 : -1) * (120 + ((i * 47) % 180)),
       shape: shapes[i % shapes.length],
     });
   }
