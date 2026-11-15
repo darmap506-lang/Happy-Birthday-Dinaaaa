@@ -281,7 +281,7 @@ export const PixelMascots: React.FC = () => {
       data-testid="pixel-mascots"
       className="fixed inset-x-0 bottom-[max(0.45rem,env(safe-area-inset-bottom))] sm:bottom-4 overflow-visible pointer-events-none select-none z-[12]"
     >
-      <div className="w-full flex items-end justify-between px-2.5 sm:px-8">
+      <div className="w-full flex items-end justify-between px-2 min-[390px]:px-2.5 sm:px-8">
         {/* Bottom-Left: Party-hat Panda shooting pixel confetti (clickable Easter Egg) */}
         <button
           type="button"
@@ -289,7 +289,7 @@ export const PixelMascots: React.FC = () => {
           data-testid="pixel-mascot-panda"
           aria-label="Sapa Pixel Panda"
           title="Ketuk Panda untuk kejutan kecil!"
-          className="relative w-[78px] min-[390px]:w-[88px] sm:w-[120px] pointer-events-auto cursor-pointer touch-manipulation bg-transparent border-0 p-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-pink-400 rounded-2xl animate-pixel-popper-recoil"
+          className="relative w-[68px] min-[360px]:w-[78px] min-[390px]:w-[88px] sm:w-[120px] pointer-events-auto cursor-pointer touch-manipulation bg-transparent border-0 p-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-pink-400 rounded-2xl animate-pixel-popper-recoil"
         >
           <PixelSpeechBubble
             text={pandaEgg.activeQuip}
@@ -344,7 +344,7 @@ export const PixelMascots: React.FC = () => {
           data-testid="pixel-mascot-orange-cat"
           aria-label="Sapa Pixel Kucing Orange"
           title="Ketuk Kucing Orange untuk kejutan kecil!"
-          className="relative w-[78px] min-[390px]:w-[88px] sm:w-[120px] pointer-events-auto cursor-pointer touch-manipulation bg-transparent border-0 p-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-pink-400 rounded-2xl animate-pixel-popper-recoil"
+          className="relative w-[68px] min-[360px]:w-[78px] min-[390px]:w-[88px] sm:w-[120px] pointer-events-auto cursor-pointer touch-manipulation bg-transparent border-0 p-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-pink-400 rounded-2xl animate-pixel-popper-recoil"
           style={{ animationDelay: '0.28s' }}
         >
           <PixelSpeechBubble

@@ -1,6 +1,12 @@
-import React from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Gift, Sparkles } from 'lucide-react';
 import { sound } from '../utils/audio';
+import {
+  MAIN_GREETING_MESSAGE,
+  getTypewriterSlice,
+  getTypewriterVisibleCount,
+  splitGraphemes,
+} from '../utils/greeting';
 
 interface MainCardProps {
   recipientName: string;
@@ -13,15 +19,68 @@ export const MainCard: React.FC<MainCardProps> = ({
   onOpenSurprise,
   onCloseEnvelope,
 }) => {
+  const graphemes = useMemo(() => splitGraphemes(MAIN_GREETING_MESSAGE), []);
+  const totalUnits = graphemes.length;
+
+  const [visibleCount, setVisibleCount] = useState<number>(() => {
+    if (
+      typeof window !== 'undefined' &&
+      typeof window.matchMedia === 'function' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    ) {
+      return totalUnits;
+    }
+    return 0;
+  });
+
+  useEffect(() => {
+    if (
+      typeof window !== 'undefined' &&
+      typeof window.matchMedia === 'function' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    ) {
+      setVisibleCount(totalUnits);
+      return;
+    }
+
+    let rafId = 0;
+    const startTime = performance.now();
+
+    const step = (now: number) => {
+      const nextCount = getTypewriterVisibleCount(now - startTime, totalUnits);
+      setVisibleCount((prev) => (nextCount > prev ? nextCount : prev));
+      if (nextCount < totalUnits) {
+        rafId = window.requestAnimationFrame(step);
+      }
+    };
+
+    rafId = window.requestAnimationFrame(step);
+    return () => {
+      window.cancelAnimationFrame(rafId);
+    };
+  }, [totalUnits]);
+
+  const isTypingComplete = visibleCount >= totalUnits;
+  const typedText = useMemo(
+    () => getTypewriterSlice(graphemes, visibleCount),
+    [graphemes, visibleCount]
+  );
+
+  const handleRevealFullGreeting = () => {
+    if (!isTypingComplete) {
+      setVisibleCount(totalUnits);
+    }
+  };
+
   const handleSurpriseClick = () => {
     sound.playSparkle();
     onOpenSurprise();
   };
 
   return (
-    <div className="relative z-10 w-full max-w-[460px] mx-auto px-1 sm:px-4 py-2 sm:py-6 animate-card-enter">
+    <div className="relative z-10 main-card-wrapper animate-card-enter">
       <div
-        className="relative bg-white/92 backdrop-blur-xl rounded-[24px] px-5 py-6 min-[390px]:px-6 min-[390px]:py-7 sm:px-9 sm:py-10 text-center shadow-[0_15px_35px_rgba(136,14,79,0.15)] border-2 border-white/80 transition-all hover:shadow-[0_20px_45px_rgba(136,14,79,0.22)]"
+        className="main-card-surface bg-white/92 backdrop-blur-xl shadow-[0_15px_35px_rgba(136,14,79,0.15)] border-2 border-white/80 transition-all hover:shadow-[0_20px_45px_rgba(136,14,79,0.22)]"
       >
         {/* Decorative corner blossom */}
         <div className="absolute -top-3 -right-2.5 sm:-top-3.5 sm:-right-3.5 text-xl sm:text-2xl select-none animate-bounce pointer-events-none" style={{ animationDuration: '3s' }}>
@@ -32,20 +91,34 @@ export const MainCard: React.FC<MainCardProps> = ({
         </div>
 
         {/* Subtitle */}
-        <div className="text-[11px] sm:text-sm font-semibold text-[#ad1457] uppercase tracking-[2px] sm:tracking-[2.5px] mb-2.5 sm:mb-3 select-none flex items-center justify-center gap-1.5">
+        <div className="main-card-subtitle font-semibold text-[#ad1457] uppercase select-none flex items-center justify-center gap-1.5 animate-greeting-fade-in">
           <Sparkles className="w-3.5 h-3.5 text-pink-500 shrink-0" />
           <span>Selamat Ulang Tahun</span>
           <Sparkles className="w-3.5 h-3.5 text-pink-500 shrink-0" />
         </div>
 
         {/* Main Name Heading */}
-        <h1 className="font-serif-display text-[#880e4f] text-[26px] min-[390px]:text-3xl sm:text-4xl font-bold mb-3.5 sm:mb-4 tracking-tight text-balance">
+        <h1 className="main-card-heading font-serif-display text-[#880e4f] font-bold tracking-tight animate-greeting-fade-in">
           {recipientName}
         </h1>
 
-        {/* Warm Greeting Message */}
-        <p className="text-[#4a4a4a] text-[13.5px] min-[390px]:text-sm sm:text-base leading-relaxed sm:leading-[1.7] mb-6 sm:mb-8 font-normal whitespace-pre-line">
-          {`Happy birthday!!!Dinaaaa.  I hope this year brings u new opportunities and plenty of happiness. Sehat terus yaa dan sukses selaluuuu, semoga segala harapan yang belum tercapai segera tercapaii.\nBe happy, be awesome. May peace be upon u!!!🤲✌☺️✌`}
+        {/* Warm Greeting Message with smooth fade-in + typewriter reveal */}
+        <p
+          onClick={handleRevealFullGreeting}
+          data-typing-complete={isTypingComplete ? 'true' : 'false'}
+          className="main-card-body relative text-[#4a4a4a] font-normal whitespace-pre-line animate-greeting-fade-in"
+        >
+          <span className="sr-only">{MAIN_GREETING_MESSAGE}</span>
+          {/* Invisible layout-preserving spacer so card height never jumps while typing */}
+          <span aria-hidden="true" className="invisible block select-none">
+            {MAIN_GREETING_MESSAGE}
+          </span>
+          <span aria-hidden="true" className="absolute inset-0 block">
+            {typedText}
+            <span
+              className={`typewriter-caret ${isTypingComplete ? 'is-complete' : ''}`}
+            />
+          </span>
         </p>
 
         {/* Primary CTA Button: pencet lerrrr */}
@@ -61,15 +134,15 @@ export const MainCard: React.FC<MainCardProps> = ({
           </button>
         </div>
 
-        {/* Option to close envelope and return to first screen */}
+        {/* Option to close greeting card and return to confetti popper */}
         <div className="mt-3.5 sm:mt-5 flex justify-center">
           <button
             type="button"
             onClick={onCloseEnvelope}
-            aria-label="Tutup dan kembali ke amplop"
-            className="min-h-[44px] min-w-[88px] inline-flex items-center justify-center gap-1.5 text-xs sm:text-sm text-pink-700/85 hover:text-pink-950 font-medium transition-colors hover:underline px-4 py-2 touch-manipulation active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-pink-300 rounded-full"
+            aria-label="Tutup dan kembali ke pembuka confetti"
+            className="min-h-[44px] min-w-[88px] inline-flex items-center justify-center gap-1.5 text-xs sm:text-sm text-pink-700/85 hover:text-pink-950 font-medium transition-colors hover:underline px-4 py-2 touch-manipulation active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-pink-300 rounded-full cursor-pointer whitespace-nowrap"
           >
-            <span>✉️</span>
+            <span>🎉</span>
             <span>Tutup</span>
           </button>
         </div>

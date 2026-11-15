@@ -22,7 +22,7 @@ export const MusicToggle: React.FC = () => {
       onClick={handleToggle}
       aria-label={isPlaying ? 'Matikan background musik' : 'Nyalakan background musik'}
       title={isPlaying ? 'Matikan Background Musik' : 'Nyalakan Background Musik'}
-      className={`fixed top-[max(0.75rem,env(safe-area-inset-top))] right-[max(0.75rem,env(safe-area-inset-right))] z-40 inline-flex items-center gap-1.5 min-h-[42px] px-3.5 py-2 rounded-full border shadow-sm backdrop-blur-md text-xs font-medium transition-all cursor-pointer touch-manipulation select-none active:scale-95 focus:outline-none focus-visible:ring-3 focus-visible:ring-pink-300 ${
+      className={`fixed top-[max(0.625rem,env(safe-area-inset-top))] right-[max(0.625rem,env(safe-area-inset-right))] sm:top-[max(0.75rem,env(safe-area-inset-top))] sm:right-[max(0.75rem,env(safe-area-inset-right))] z-40 inline-flex items-center gap-1.5 min-h-[44px] px-3.5 py-2 rounded-full border shadow-sm backdrop-blur-md text-xs font-medium transition-all cursor-pointer touch-manipulation select-none active:scale-95 focus:outline-none focus-visible:ring-3 focus-visible:ring-pink-300 ${
         isPlaying
           ? 'bg-white/92 hover:bg-white text-pink-900 border-pink-300 shadow-pink-200/50'
           : 'bg-white/80 hover:bg-white text-slate-600 border-pink-200/80'

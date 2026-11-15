@@ -51,24 +51,38 @@ export function validateBirthdayWish(rawText: string): WishValidationResult {
   };
 }
 
-function getSafeStorage(storage?: StorageLike | null): StorageLike | null {
-  if (storage) return storage;
+const ephemeralWishStore = new Map<string, string>();
+
+const memoryStorage: StorageLike = {
+  getItem: (key) => ephemeralWishStore.get(key) ?? null,
+  setItem: (key, value) => {
+    ephemeralWishStore.set(key, value);
+  },
+  removeItem: (key) => {
+    ephemeralWishStore.delete(key);
+  },
+};
+
+function clearLegacyLocalStorage(): void {
   try {
     if (typeof window !== 'undefined' && window.localStorage) {
-      return window.localStorage;
+      window.localStorage.removeItem(BIRTHDAY_WISH_STORAGE_KEY);
     }
   } catch {
-    return null;
+    // Ignore storage errors in restricted environments
   }
-  return null;
+}
+
+function getSafeStorage(storage?: StorageLike | null): StorageLike {
+  if (storage) return storage;
+  return memoryStorage;
 }
 
 /**
- * Loads the persisted birthday wish from localStorage safely.
+ * Loads the birthday wish from ephemeral session memory (resets when app closes).
  */
 export function loadSavedWish(storage?: StorageLike | null): SavedBirthdayWish | null {
   const target = getSafeStorage(storage);
-  if (!target) return null;
 
   try {
     const raw = target.getItem(BIRTHDAY_WISH_STORAGE_KEY);
@@ -87,7 +101,7 @@ export function loadSavedWish(storage?: StorageLike | null): SavedBirthdayWish |
 }
 
 /**
- * Saves a validated birthday wish into localStorage safely.
+ * Saves a validated birthday wish into ephemeral memory for the active open session.
  */
 export function saveBirthdayWish(
   rawText: string,
@@ -103,23 +117,23 @@ export function saveBirthdayWish(
   };
 
   const target = getSafeStorage(storage);
-  if (target) {
-    try {
-      target.setItem(BIRTHDAY_WISH_STORAGE_KEY, JSON.stringify(entry));
-    } catch {
-      // Ignore storage quota / private mode failures gracefully
-    }
+  try {
+    target.setItem(BIRTHDAY_WISH_STORAGE_KEY, JSON.stringify(entry));
+  } catch {
+    // Ignore storage failures gracefully
   }
 
   return entry;
 }
 
 /**
- * Clears the stored birthday wish if needed.
+ * Clears the stored birthday wish (both active memory and any legacy localStorage entry).
  */
 export function clearSavedWish(storage?: StorageLike | null): void {
+  if (!storage) {
+    clearLegacyLocalStorage();
+  }
   const target = getSafeStorage(storage);
-  if (!target) return;
   try {
     target.removeItem(BIRTHDAY_WISH_STORAGE_KEY);
   } catch {

@@ -299,7 +299,7 @@ export const SurpriseModal: React.FC<SurpriseModalProps> = ({
       role="dialog"
       aria-modal="true"
       aria-label="Kejutan Ulang Tahun"
-      className="fixed inset-0 z-50 flex items-center justify-center p-2.5 sm:p-4 bg-rose-950/55 animate-in fade-in duration-300"
+      className="fixed inset-0 z-50 surprise-modal-backdrop flex items-center justify-center bg-rose-950/55 animate-in fade-in duration-300"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
@@ -307,7 +307,7 @@ export const SurpriseModal: React.FC<SurpriseModalProps> = ({
       {/* Flying Balloons rising from the bottom of the screen */}
       <FlyingBalloons runKey={balloonRunKey} count={12} />
 
-      <div className="relative z-10 bg-white/97 border-2 border-pink-200/90 rounded-[24px] sm:rounded-3xl p-4 min-[390px]:p-5 sm:p-7 max-w-md w-full max-h-[90dvh] overflow-y-auto overscroll-contain text-center shadow-2xl transition-all transform scale-100 animate-in zoom-in-95 duration-200">
+      <div className="relative z-10 surprise-modal-dialog bg-white border-2 border-pink-200/90 text-center shadow-2xl transition-all transform scale-100 animate-in zoom-in-95 duration-200">
         {/* Close icon top-right */}
         <button
           type="button"
@@ -320,7 +320,7 @@ export const SurpriseModal: React.FC<SurpriseModalProps> = ({
 
         {/* Interactive Vector Cake flanked by Pixel Panda (left) & Orange Cat (right) */}
         <div className="my-0.5 flex flex-col items-center">
-          <div className="relative flex items-end justify-center gap-1 min-[390px]:gap-2 sm:gap-3 w-full pt-4 sm:pt-3">
+          <div className="relative surprise-cake-stage flex items-end justify-center w-full">
             <div className="mb-1 shrink-0">
               <PixelPanda mode={candlesBlown ? 'cake' : isBlowing ? 'clap' : 'idle'} />
             </div>
@@ -430,9 +430,9 @@ export const SurpriseModal: React.FC<SurpriseModalProps> = ({
                   onClick={handleRelight}
                   title="Nyalakan lilin kembali"
                   aria-label="Nyalakan lilin kembali"
-                  className="p-1 text-slate-400 hover:text-pink-600 rounded-full hover:bg-pink-50 transition-colors cursor-pointer"
+                  className="min-w-[44px] min-h-[44px] sm:min-w-[38px] sm:min-h-[38px] flex items-center justify-center p-2 text-slate-400 hover:text-pink-600 rounded-full hover:bg-pink-50 active:scale-95 transition-all touch-manipulation cursor-pointer"
                 >
-                  <RotateCcw className="w-3.5 h-3.5" />
+                  <RotateCcw className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
                 </button>
               </div>
             )}
@@ -463,7 +463,7 @@ export const SurpriseModal: React.FC<SurpriseModalProps> = ({
                     setIsEditingWish(true);
                     setWishError(null);
                   }}
-                  className="min-h-[36px] inline-flex items-center gap-1 text-[11px] font-semibold text-pink-700 hover:text-pink-900 bg-white/85 hover:bg-white px-3 py-1 rounded-full border border-pink-200 transition-colors touch-manipulation cursor-pointer"
+                  className="min-h-[40px] sm:min-h-[34px] inline-flex items-center gap-1 text-xs sm:text-[11px] font-semibold text-pink-700 hover:text-pink-900 bg-white/85 hover:bg-white px-3.5 py-1.5 sm:px-3 sm:py-1 rounded-full border border-pink-200 transition-colors touch-manipulation active:scale-95 cursor-pointer"
                 >
                   <Pencil className="w-3 h-3" />
                   <span>Ubah</span>
@@ -473,7 +473,7 @@ export const SurpriseModal: React.FC<SurpriseModalProps> = ({
 
             {!savedWish || isEditingWish ? (
               <form onSubmit={handleWishSubmit} className="space-y-1.5">
-                <div className="flex items-center gap-1.5">
+                <div className="flex flex-col min-[360px]:flex-row items-stretch min-[360px]:items-center gap-2 min-[360px]:gap-1.5">
                   <input
                     type="text"
                     value={wishDraft}
@@ -482,13 +482,13 @@ export const SurpriseModal: React.FC<SurpriseModalProps> = ({
                       if (wishError) setWishError(null);
                     }}
                     maxLength={MAX_BIRTHDAY_WISH_LENGTH}
-                    placeholder="Tulis harapan ulang tahunmu..."
+                    placeholder="Tulis harapanmu..."
                     aria-label="Tulis harapan ulang tahunmu"
-                    className="flex-1 min-w-0 min-h-[44px] bg-white/95 border border-pink-200 rounded-xl px-3 py-2 text-base sm:text-xs text-slate-700 placeholder:text-pink-300 focus:outline-none focus:ring-2 focus:ring-pink-400"
+                    className="flex-1 min-w-0 min-h-[44px] bg-white border border-pink-200 rounded-xl px-3 py-2 text-base sm:text-xs text-slate-700 placeholder:text-sm sm:placeholder:text-xs placeholder:text-pink-300 focus:outline-none focus:ring-2 focus:ring-pink-400"
                   />
                   <button
                     type="submit"
-                    className="shrink-0 min-h-[44px] inline-flex items-center justify-center gap-1 px-3.5 py-2 bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700 text-white text-xs sm:text-sm font-semibold rounded-xl shadow-sm transition-all active:scale-95 touch-manipulation cursor-pointer"
+                    className="shrink-0 min-h-[44px] inline-flex items-center justify-center gap-1 px-4 py-2 bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700 text-white text-xs sm:text-sm font-semibold rounded-xl shadow-sm transition-all active:scale-95 touch-manipulation cursor-pointer"
                   >
                     <Sparkles className="w-3.5 h-3.5" />
                     <span>Simpan</span>
@@ -506,7 +506,7 @@ export const SurpriseModal: React.FC<SurpriseModalProps> = ({
                       setIsEditingWish(false);
                       setWishError(null);
                     }}
-                    className="text-[11px] text-slate-500 hover:text-pink-700 underline cursor-pointer"
+                    className="min-h-[40px] sm:min-h-[32px] inline-flex items-center px-2.5 py-1 text-xs sm:text-[11px] text-slate-500 hover:text-pink-700 underline touch-manipulation cursor-pointer"
                   >
                     Batal
                   </button>
@@ -547,7 +547,7 @@ export const SurpriseModal: React.FC<SurpriseModalProps> = ({
                   else handlePrevSlide();
                 }
               }}
-              className="relative bg-white p-2.5 sm:p-3 pb-3 rounded-2xl shadow-xl border border-pink-200/90 transform rotate-[-0.5deg] hover:rotate-0 transition-transform duration-300 max-w-[228px] min-[390px]:max-w-[254px] sm:max-w-[290px] w-full touch-pan-y"
+              className="relative surprise-photo-card bg-white rounded-2xl shadow-xl border border-pink-200/90 transform rotate-[-0.5deg] hover:rotate-0 transition-transform duration-300 touch-pan-y"
             >
               {/* Prev Slide Arrow */}
               <button
@@ -555,7 +555,7 @@ export const SurpriseModal: React.FC<SurpriseModalProps> = ({
                 onClick={handlePrevSlide}
                 aria-label="Foto sebelumnya"
                 title="Foto sebelumnya"
-                className="absolute -left-3.5 sm:-left-3 top-[40%] -translate-y-1/2 z-20 w-10 h-10 sm:w-9 sm:h-9 rounded-full bg-white/95 hover:bg-pink-50 text-pink-700 shadow-md border border-pink-200 flex items-center justify-center transition-all hover:scale-110 active:scale-95 touch-manipulation focus:outline-none focus-visible:ring-2 focus-visible:ring-pink-400 cursor-pointer"
+                className="surprise-photo-arrow-prev absolute -left-3 sm:-left-3 top-[40%] -translate-y-1/2 z-20 w-11 h-11 sm:w-9 sm:h-9 rounded-full bg-white/95 hover:bg-pink-50 text-pink-700 shadow-md border border-pink-200 flex items-center justify-center transition-all hover:scale-110 active:scale-95 touch-manipulation focus:outline-none focus-visible:ring-2 focus-visible:ring-pink-400 cursor-pointer"
               >
                 <ChevronLeft className="w-5 h-5 sm:w-4 sm:h-4" />
               </button>
@@ -566,7 +566,7 @@ export const SurpriseModal: React.FC<SurpriseModalProps> = ({
                 onClick={handleNextSlide}
                 aria-label="Foto selanjutnya"
                 title="Foto selanjutnya"
-                className="absolute -right-3.5 sm:-right-3 top-[40%] -translate-y-1/2 z-20 w-10 h-10 sm:w-9 sm:h-9 rounded-full bg-white/95 hover:bg-pink-50 text-pink-700 shadow-md border border-pink-200 flex items-center justify-center transition-all hover:scale-110 active:scale-95 touch-manipulation focus:outline-none focus-visible:ring-2 focus-visible:ring-pink-400 cursor-pointer"
+                className="surprise-photo-arrow-next absolute -right-3 sm:-right-3 top-[40%] -translate-y-1/2 z-20 w-11 h-11 sm:w-9 sm:h-9 rounded-full bg-white/95 hover:bg-pink-50 text-pink-700 shadow-md border border-pink-200 flex items-center justify-center transition-all hover:scale-110 active:scale-95 touch-manipulation focus:outline-none focus-visible:ring-2 focus-visible:ring-pink-400 cursor-pointer"
               >
                 <ChevronRight className="w-5 h-5 sm:w-4 sm:h-4" />
               </button>
@@ -582,24 +582,21 @@ export const SurpriseModal: React.FC<SurpriseModalProps> = ({
                 />
               </div>
 
-              {/* Name & Dynamic Caption for Current Slide */}
+              {/* Dynamic Caption for Current Slide */}
               <div className="mt-2 text-center px-1">
-                <p className="font-serif-display text-pink-900 font-bold text-sm tracking-wide">
-                  {recipientName} 🌸✨
-                </p>
-                <p className="text-xs text-pink-600 font-semibold mt-0.5 min-h-[1.25rem]">
+                <p className="text-xs text-pink-600 font-semibold min-h-[1.25rem]">
                   {activeSlide.caption}
                 </p>
 
                 {/* Dot Indicators */}
-                <div className="flex items-center justify-center gap-0.5 mt-1.5">
+                <div className="flex items-center justify-center gap-0.5 mt-1">
                   {DEFAULT_PHOTO_SLIDES.map((_, idx) => (
                     <button
                       key={idx}
                       type="button"
                       onClick={() => handleSelectSlide(idx)}
                       aria-label={`Lihat foto ${idx + 1}`}
-                      className="p-1.5 flex items-center justify-center cursor-pointer touch-manipulation focus:outline-none focus-visible:ring-2 focus-visible:ring-pink-400 rounded-full"
+                      className="min-w-[36px] min-h-[36px] sm:min-w-[28px] sm:min-h-[28px] p-2 flex items-center justify-center cursor-pointer touch-manipulation focus:outline-none focus-visible:ring-2 focus-visible:ring-pink-400 rounded-full"
                     >
                       <span
                         className={`block h-2 transition-all rounded-full ${
@@ -617,7 +614,7 @@ export const SurpriseModal: React.FC<SurpriseModalProps> = ({
         )}
 
         {/* Action Buttons */}
-        <div className="flex items-center justify-center gap-2.5 sm:gap-3 mt-4">
+        <div className="surprise-action-row flex items-center justify-center">
           {candlesBlown && (
             <button
               type="button"

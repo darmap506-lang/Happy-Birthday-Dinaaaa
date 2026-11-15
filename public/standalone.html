@@ -80,13 +80,13 @@
     /* Floating Music Toggle */
     .music-btn {
       position: fixed;
-      top: max(12px, env(safe-area-inset-top));
-      right: max(12px, env(safe-area-inset-right));
+      top: max(10px, env(safe-area-inset-top));
+      right: max(10px, env(safe-area-inset-right));
       z-index: 50;
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      min-height: 42px;
+      min-height: 44px;
       background: rgba(255, 255, 255, 0.92);
       border: 1px solid rgba(244, 114, 182, 0.45);
       padding: 8px 14px;
@@ -98,14 +98,20 @@
       cursor: pointer;
       transition: all 0.2s ease;
     }
+    @media (min-width: 640px) {
+      .music-btn {
+        top: max(12px, env(safe-area-inset-top));
+        right: max(12px, env(safe-area-inset-right));
+      }
+    }
     .music-btn:hover {
       background: #ffffff;
       transform: translateY(-1px);
       box-shadow: 0 6px 16px rgba(190, 24, 93, 0.25);
     }
 
-    /* Luxury 4-Sided Unfolding Stationery Envelope */
-    .envelope-screen {
+    /* Interactive Pull-String Confetti Popper Opening */
+    .confetti-opening-screen {
       position: fixed;
       inset: 0;
       z-index: 20;
@@ -113,163 +119,209 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 16px 16px 96px;
-      perspective: 1600px;
-      transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+      padding: 56px 12px 84px;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      transition: opacity 0.55s ease-out, transform 0.55s ease-out;
+    }
+    @media (min-width: 390px) {
+      .confetti-opening-screen { padding: 56px 16px 96px; }
     }
     @media (min-width: 640px) {
-      .envelope-screen { padding: 16px; }
+      .confetti-opening-screen { padding: 16px; }
     }
-    .envelope-screen.hidden {
+    .confetti-opening-screen.hidden {
       opacity: 0;
       transform: scale(1.03);
       pointer-events: none;
     }
 
-    .envelope-wrapper {
+    .popper-stage {
       position: relative;
-      width: min(74vw, 336px);
-      aspect-ratio: 352 / 224;
-      background: transparent;
-      cursor: pointer;
-      transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
-    }
-    @media (min-width: 640px) {
-      .envelope-wrapper { width: 344px; }
-    }
-    .envelope-wrapper:not(.is-unsealing):hover {
-      transform: translateY(-7px) scale(1.015);
-    }
-
-    .envelope-body {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      border-radius: 16px;
-      perspective: 1400px;
-      box-shadow: 0 24px 52px -12px rgba(136, 14, 79, 0.24), 0 10px 24px -8px rgba(190, 24, 93, 0.14);
-      transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.8s cubic-bezier(0.22, 1, 0.36, 1);
-    }
-    .envelope-wrapper.is-unsealing:not(.is-top-open) .envelope-body {
-      transform: translateY(4px) scale(0.99);
-    }
-    .envelope-wrapper.is-top-open .envelope-body {
-      transform: scale(0.68);
-    }
-    @media (min-width: 640px) {
-      .envelope-wrapper.is-top-open .envelope-body { transform: scale(0.88); }
-    }
-
-    .env-flap {
-      position: absolute;
-      transform-style: preserve-3d;
-      pointer-events: none;
-    }
-    .flap-face {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      backface-visibility: hidden;
-      -webkit-backface-visibility: hidden;
-    }
-    .flap-front-x { transform: rotateX(0deg) translateZ(1px); }
-    .flap-back-x { transform: rotateX(180deg) translateZ(1px); }
-    .flap-front-y { transform: rotateY(0deg) translateZ(1px); }
-    .flap-back-y { transform: rotateY(180deg) translateZ(1px); }
-
-    .flap-top {
-      top: 0; left: 0; width: 100%; height: 61.6%; z-index: 6;
-      transform-origin: top center;
-      transition: transform 0.58s cubic-bezier(0.22, 1, 0.36, 1), z-index 0.01s linear 0.26s;
-    }
-    .envelope-wrapper.is-top-open .flap-top { transform: rotateX(174deg); z-index: 1; }
-
-    .flap-bottom {
-      bottom: 0; left: 0; width: 100%; height: 61.6%; z-index: 5;
-      transform-origin: bottom center;
-      transition: transform 0.58s cubic-bezier(0.22, 1, 0.36, 1), z-index 0.01s linear 0.26s;
-    }
-    .envelope-wrapper.is-bottom-open .flap-bottom { transform: rotateX(-174deg); z-index: 1; }
-
-    .flap-right {
-      top: 0; right: 0; width: 54%; height: 100%; z-index: 4;
-      transform-origin: right center;
-      transition: transform 0.58s cubic-bezier(0.22, 1, 0.36, 1), z-index 0.01s linear 0.26s;
-    }
-    .envelope-wrapper.is-right-open .flap-right { transform: rotateY(174deg); z-index: 1; }
-
-    .flap-left {
-      top: 0; left: 0; width: 54%; height: 100%; z-index: 3;
-      transform-origin: left center;
-      transition: transform 0.58s cubic-bezier(0.22, 1, 0.36, 1), z-index 0.01s linear 0.26s;
-    }
-    .envelope-wrapper.is-left-open .flap-left { transform: rotateY(-174deg); z-index: 1; }
-
-    .letter {
-      position: absolute;
-      left: 7%;
-      right: 7%;
-      top: 8%;
-      bottom: 8%;
-      background: linear-gradient(165deg, #fffefb 0%, #fff8fa 100%);
-      border-radius: 12px;
-      border: 1px solid rgba(212, 163, 115, 0.45);
-      box-shadow: 0 6px 18px rgba(136, 14, 79, 0.08);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 10px;
-      z-index: 2;
-      transform: translate3d(0, 0, 0) scale(0.98);
-      transition: transform 0.68s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.68s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.52s ease, z-index 0.01s linear;
-    }
-    .letter-inner {
-      width: 100%;
-      height: 100%;
-      border-radius: 8px;
-      border: 1px solid rgba(244, 114, 182, 0.25);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 14px;
+      width: 100%;
+      max-width: 350px;
+    }
+    .popper-caption {
       text-align: center;
+      margin-bottom: 12px;
+      user-select: none;
     }
-    .envelope-wrapper.is-revealing .letter {
-      transform: translate3d(0, -14px, 0) scale(1.12);
-      box-shadow: 0 24px 48px -12px rgba(136, 14, 79, 0.24);
-      z-index: 7;
-    }
-    .envelope-wrapper.is-exiting .letter {
-      transform: translate3d(0, -28px, 0) scale(1.16);
-      opacity: 0;
-      z-index: 7;
-    }
-    .letter h3 {
+    .popper-caption-title {
       font-family: 'Playfair Display', serif;
+      font-size: 22px;
+      font-weight: 700;
       color: #880e4f;
-      font-size: 18px;
-      margin: 0;
     }
-
-    .wax-seal {
-      position: absolute;
-      top: 52%;
-      left: 50%;
+    .popper-caption-sub {
+      margin-top: 4px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #be185d;
+    }
+    .popper-cone-wrap {
+      position: relative;
+      z-index: 10;
+      cursor: pointer;
+      user-select: none;
+      transition: transform 0.15s ease;
+    }
+    .popper-cone-svg {
+      width: 138px;
+      height: auto;
+      display: block;
+      filter: drop-shadow(0 14px 24px rgba(136, 14, 79, 0.22));
+      animation: popperFloat 2.8s ease-in-out infinite;
+    }
+    @media (min-width: 360px) {
+      .popper-cone-svg { width: 152px; }
+    }
+    @media (min-width: 390px) {
+      .popper-cone-svg { width: 164px; }
+    }
+    @media (min-width: 640px) {
+      .popper-cone-svg { width: 180px; }
+    }
+    .popper-cone-wrap.is-popped .popper-cone-svg {
+      animation: none;
+    }
+    .popper-cone-wrap.is-wiggle {
+      animation: popperWiggle 0.48s ease-in-out;
+    }
+    .popper-cone-stage.is-revealed {
+      transform: scale(0.75) translateY(-14px);
+      opacity: 0.28;
+      pointer-events: none;
+      transition: all 0.5s ease;
+    }
+    .pull-string-wrap {
+      position: relative;
+      z-index: 20;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: -12px;
+    }
+    .pull-tassel-btn {
+      position: relative;
+      margin-top: -8px;
       width: 56px;
       height: 56px;
-      z-index: 8;
-      transform: translate(-50%, -50%) scale(1);
+      border-radius: 9999px;
+      background: transparent;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: grab;
+      touch-action: none;
+      user-select: none;
+      animation: pullTasselIdle 1.6s ease-in-out infinite;
+    }
+    .pull-tassel-btn:active { cursor: grabbing; }
+    .pull-tassel-btn.is-dragging { animation: none; transform: scale(1.08); }
+    .pull-tassel-ring {
+      width: 44px;
+      height: 44px;
+      border-radius: 9999px;
+      padding: 3px;
+      background: linear-gradient(135deg, #fde68a, #fbbf24, #f43f5e);
+      box-shadow: 0 6px 16px rgba(190, 24, 93, 0.32);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .pull-tassel-core {
+      width: 100%;
+      height: 100%;
+      border-radius: 9999px;
+      background: rgba(255, 255, 255, 0.96);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: 700;
+      color: #be185d;
+    }
+    .pull-hint-label {
+      margin-top: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #9d174d;
+      background: rgba(255, 255, 255, 0.85);
+      border: 1px solid #fbcfe8;
+      padding: 4px 12px;
+      border-radius: 9999px;
       pointer-events: none;
-      transition: transform 0.36s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.28s ease;
     }
-    .envelope-wrapper:not(.is-unsealing):hover .wax-seal {
-      transform: translate(-50%, -50%) scale(1.07);
+    .popper-streamers-box {
+      position: absolute;
+      left: 50%;
+      top: 34px;
+      z-index: 25;
+      pointer-events: none;
     }
-    .envelope-wrapper.is-unsealing .wax-seal {
-      transform: translate(-50%, -68%) scale(0.82);
+    .popper-streamer {
+      position: absolute;
+      top: 0;
+      left: 0;
       opacity: 0;
+      will-change: transform, opacity;
+      animation: popperStreamerBurst 0.95s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    .confetti-reveal-banner {
+      display: none;
+      position: relative;
+      z-index: 30;
+      margin-top: 8px;
+      width: 100%;
+      max-width: 340px;
+      background: rgba(255, 255, 255, 0.96);
+      border: 2px solid #fbcfe8;
+      border-radius: 26px;
+      padding: 26px 22px;
+      text-align: center;
+      box-shadow: 0 20px 48px rgba(136, 14, 79, 0.22);
+      animation: confettiBannerIn 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+    .confetti-reveal-banner.active {
+      display: block;
+    }
+    @keyframes popperFloat {
+      0%, 100% { transform: translate3d(0, 0, 0) rotate(-1.5deg); }
+      50% { transform: translate3d(0, -6px, 0) rotate(1.5deg); }
+    }
+    @keyframes popperWiggle {
+      0%, 100% { transform: rotate(0deg); }
+      25% { transform: rotate(-7deg) scale(1.03); }
+      50% { transform: rotate(7deg) scale(1.03); }
+      75% { transform: rotate(-4deg); }
+    }
+    @keyframes pullTasselIdle {
+      0%, 100% { transform: translate3d(0, 0, 0); }
+      50% { transform: translate3d(0, 6px, 0); }
+    }
+    @keyframes capFlyAway {
+      0% { transform: translate3d(0, 0, 0) rotate(0deg) scale(1); opacity: 1; }
+      100% { transform: translate3d(18px, -110px, 0) rotate(28deg) scale(0.75); opacity: 0; }
+    }
+    .cap-fly-away {
+      animation: capFlyAway 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+    @keyframes popperStreamerBurst {
+      0% { transform: translate3d(0, 0, 0) scale(0.4) rotate(0deg); opacity: 1; }
+      55% { opacity: 1; }
+      100% { transform: translate3d(var(--sx, 0px), var(--sy, -120px), 0) scale(1.1) rotate(var(--srot, 180deg)); opacity: 0; }
+    }
+    @keyframes confettiBannerIn {
+      0% { opacity: 0; transform: translate3d(0, 22px, 0) scale(0.82); }
+      65% { opacity: 1; transform: translate3d(0, -4px, 0) scale(1.03); }
+      100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
     }
 
     /* Main Greeting Card */
@@ -328,13 +380,55 @@
     }
 
     .card-message {
+      position: relative;
       font-size: 13.5px;
       line-height: 1.68;
       color: #4a4a4a;
       margin-bottom: 24px;
+      white-space: pre-line;
+      animation: greetingSoftFadeIn 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.18s both;
     }
     @media (min-width: 640px) {
       .card-message { font-size: 14.5px; line-height: 1.7; margin-bottom: 28px; }
+    }
+
+    @keyframes greetingSoftFadeIn {
+      from { opacity: 0; transform: translate3d(0, 6px, 0); }
+      to { opacity: 1; transform: translate3d(0, 0, 0); }
+    }
+
+    .card-message-spacer {
+      display: block;
+      visibility: hidden;
+      user-select: none;
+    }
+
+    .card-message-typed {
+      position: absolute;
+      inset: 0;
+      display: block;
+    }
+
+    .typewriter-caret {
+      display: inline-block;
+      width: 2px;
+      height: 1.05em;
+      margin-left: 2px;
+      vertical-align: -0.14em;
+      border-radius: 9999px;
+      background-color: #d81b60;
+      animation: caretBlink 0.78s ease-in-out infinite;
+      transition: opacity 0.35s ease;
+    }
+
+    .typewriter-caret.is-complete {
+      animation: none;
+      opacity: 0;
+    }
+
+    @keyframes caretBlink {
+      0%, 45% { opacity: 0.9; }
+      55%, 100% { opacity: 0.15; }
     }
 
     /* Buttons */
@@ -404,17 +498,21 @@
     .modal-content {
       position: relative;
       background: #ffffff;
-      border-radius: 26px;
-      padding: 20px 16px;
+      border-radius: 22px;
+      padding: 18px 14px;
       max-width: 420px;
       width: 100%;
       max-height: 90dvh;
       overflow-y: auto;
+      overflow-x: clip;
       overscroll-behavior: contain;
       text-align: center;
       box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
       border: 2px solid #fbcfe8;
       animation: zoomModal 0.25s ease-out forwards;
+    }
+    @media (min-width: 360px) {
+      .modal-content { padding: 20px 16px; }
     }
     @media (min-width: 640px) {
       .modal-content { border-radius: 28px; padding: 24px 20px; }
@@ -501,10 +599,11 @@
       gap: 6px;
       background: #d1fae5;
       color: #047857;
-      font-size: 12px;
+      font-size: 11.5px;
       font-weight: 700;
-      padding: 7px 14px;
+      padding: 6px 12px;
       border-radius: 9999px;
+      white-space: nowrap;
       animation: bounce 1s infinite;
       margin-top: 6px;
     }
@@ -516,10 +615,14 @@
       background: none;
       border: none;
       cursor: pointer;
-      min-width: 38px;
-      min-height: 38px;
-      font-size: 14px;
-      margin-left: 4px;
+      min-width: 44px;
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 9999px;
+      font-size: 15px;
+      margin-left: 2px;
       color: #6b7280;
     }
 
@@ -533,9 +636,12 @@
       border: 1px solid #fce7f3;
       margin: 12px auto 8px;
       width: 100%;
-      max-width: 244px;
+      max-width: 214px;
       transform: rotate(-1deg);
       animation: popPhoto 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+    @media (min-width: 360px) {
+      .photo-frame { max-width: 240px; }
     }
     @media (min-width: 390px) {
       .photo-frame { max-width: 260px; }
@@ -618,13 +724,16 @@
     }
     .pixel-mascot-box {
       position: relative;
-      width: 78px;
+      width: 68px;
       pointer-events: auto;
       cursor: pointer;
       background: transparent;
       border: none;
       padding: 0;
       animation: pixelPopperRecoil 0.55s steps(2, end) infinite;
+    }
+    @media (min-width: 360px) {
+      .pixel-mascot-box { width: 78px; }
     }
     @media (min-width: 390px) {
       .pixel-mascot-box { width: 88px; }
@@ -787,8 +896,15 @@
     }
     .wish-form {
       display: flex;
+      flex-direction: column;
       gap: 8px;
-      align-items: center;
+      align-items: stretch;
+    }
+    @media (min-width: 360px) {
+      .wish-form {
+        flex-direction: row;
+        align-items: center;
+      }
     }
     .wish-input {
       flex: 1;
@@ -914,8 +1030,8 @@
     }
     .roulette-wheel-wrap {
       position: relative;
-      width: min(70vw, 268px);
-      height: min(70vw, 268px);
+      width: min(75vw, 268px);
+      height: min(75vw, 268px);
       margin: 0 auto;
       display: flex;
       align-items: center;
@@ -957,113 +1073,65 @@
   <!-- Pixel Panda (bottom-left) & Orange Cat (bottom-right) Carrying Balloons -->
   <div id="pixelMascotsLayer" class="pixel-mascots-layer" aria-hidden="true"></div>
 
-  <!-- Luxury 4-Sided Unfolding Stationery Envelope Screen -->
-  <div id="envelopeScreen" class="envelope-screen">
-    <div id="envelopeWrapper" class="envelope-wrapper" title="Ketuk untuk membuka amplop">
-      <div class="envelope-body">
-        <svg viewBox="0 0 352 224" style="position:absolute;inset:0;width:100%;height:100%;border-radius:16px;overflow:hidden;" aria-hidden="true">
-          <defs>
-            <linearGradient id="stBack" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fdf0f5"/><stop offset="100%" stop-color="#f8dce7"/></linearGradient>
-            <linearGradient id="stLiner" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#f6cade"/><stop offset="100%" stop-color="#e89eba"/></linearGradient>
-            <linearGradient id="stGold" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#d8b272" stop-opacity="0.4"/><stop offset="50%" stop-color="#f2d694" stop-opacity="0.95"/><stop offset="100%" stop-color="#d8b272" stop-opacity="0.4"/></linearGradient>
-            <pattern id="stLattice" width="24" height="24" patternUnits="userSpaceOnUse">
-              <path d="M 12 0 L 24 12 L 12 24 L 0 12 Z" fill="none" stroke="#fff5eb" stroke-width="0.7" stroke-opacity="0.45"/>
-              <circle cx="12" cy="12" r="1.4" fill="#fde68a" fill-opacity="0.55"/>
-            </pattern>
-          </defs>
-          <rect width="352" height="224" rx="16" fill="url(#stBack)"/>
-          <rect x="8" y="8" width="336" height="208" rx="12" fill="url(#stLiner)"/>
-          <rect x="8" y="8" width="336" height="208" rx="12" fill="url(#stLattice)"/>
-          <rect x="1" y="1" width="350" height="222" rx="15" fill="none" stroke="rgba(216,178,114,0.42)" stroke-width="1.2"/>
-        </svg>
-        <div class="letter">
-          <div class="letter-inner">
-            <div style="color:#c99b63;font-size:10px;margin-bottom:6px;letter-spacing:4px;">— ✦ —</div>
-            <h3>from Darto to Wita 🌸</h3>
-          </div>
-        </div>
-        <!-- Sisi Kiri (4th) -->
-        <div class="env-flap flap-left" aria-hidden="true">
-          <div class="flap-face flap-front-y">
-            <svg viewBox="0 0 190 224" style="width:100%;height:100%;">
-              <defs><linearGradient id="stLeftGrad" x1="0" y1="0" x2="1" y2="0.4"><stop offset="0%" stop-color="#fff6f9"/><stop offset="100%" stop-color="#f5d1df"/></linearGradient></defs>
-              <path d="M 14 0 Q 0 0 0 14 L 0 210 Q 0 224 14 224 L 172 124 Q 186 112 172 100 Z" fill="url(#stLeftGrad)"/>
-              <path d="M 6 12 L 166 103 Q 178 112 166 121 L 6 212" fill="none" stroke="url(#stGold)" stroke-width="1.2" stroke-linecap="round"/>
-            </svg>
-          </div>
-          <div class="flap-face flap-back-y">
-            <svg viewBox="0 0 190 224" style="width:100%;height:100%;">
-              <path d="M 14 0 Q 0 0 0 14 L 0 210 Q 0 224 14 224 L 172 124 Q 186 112 172 100 Z" fill="url(#stLiner)"/>
-              <path d="M 12 8 Q 6 8 6 16 L 6 208 Q 6 216 12 216 L 166 122 Q 178 112 166 102 Z" fill="url(#stLattice)"/>
-            </svg>
-          </div>
-        </div>
-        <!-- Sisi Kanan (3rd) -->
-        <div class="env-flap flap-right" aria-hidden="true">
-          <div class="flap-face flap-front-y">
-            <svg viewBox="0 0 190 224" style="width:100%;height:100%;">
-              <defs><linearGradient id="stRightGrad" x1="1" y1="0" x2="0" y2="0.4"><stop offset="0%" stop-color="#fef2f6"/><stop offset="100%" stop-color="#f2c6d7"/></linearGradient></defs>
-              <path d="M 176 0 Q 190 0 190 14 L 190 210 Q 190 224 176 224 L 18 124 Q 4 112 18 100 Z" fill="url(#stRightGrad)"/>
-              <path d="M 184 12 L 24 103 Q 12 112 24 121 L 184 212" fill="none" stroke="url(#stGold)" stroke-width="1.2" stroke-linecap="round"/>
-            </svg>
-          </div>
-          <div class="flap-face flap-back-y">
-            <svg viewBox="0 0 190 224" style="width:100%;height:100%;">
-              <path d="M 176 0 Q 190 0 190 14 L 190 210 Q 190 224 176 224 L 18 124 Q 4 112 18 100 Z" fill="url(#stLiner)"/>
-              <path d="M 178 8 Q 184 8 184 16 L 184 208 Q 184 216 178 216 L 24 122 Q 12 112 24 102 Z" fill="url(#stLattice)"/>
-            </svg>
-          </div>
-        </div>
-        <!-- Sisi Bawah (2nd) -->
-        <div class="env-flap flap-bottom" aria-hidden="true">
-          <div class="flap-face flap-front-x">
-            <svg viewBox="0 0 352 138" style="width:100%;height:100%;">
-              <defs><linearGradient id="stBottomGrad" x1="0" y1="1" x2="0" y2="0"><stop offset="0%" stop-color="#f5cfe0"/><stop offset="55%" stop-color="#fce8f0"/><stop offset="100%" stop-color="#fff7fa"/></linearGradient></defs>
-              <path d="M 0 124 Q 0 138 14 138 L 338 138 Q 352 138 352 124 L 194 16 Q 176 4 158 16 Z" fill="url(#stBottomGrad)"/>
-              <path d="M 10 128 L 160 21 Q 176 10 192 21 L 342 128" fill="none" stroke="url(#stGold)" stroke-width="1.25" stroke-linecap="round"/>
-            </svg>
-          </div>
-          <div class="flap-face flap-back-x">
-            <svg viewBox="0 0 352 138" style="width:100%;height:100%;">
-              <path d="M 0 124 Q 0 138 14 138 L 338 138 Q 352 138 352 124 L 194 16 Q 176 4 158 16 Z" fill="url(#stLiner)"/>
-              <path d="M 8 126 Q 8 132 16 132 L 336 132 Q 344 132 344 126 L 192 20 Q 176 9 160 20 Z" fill="url(#stLattice)"/>
-            </svg>
-          </div>
-        </div>
-        <!-- Sisi Atas (1st) -->
-        <div class="env-flap flap-top" aria-hidden="true">
-          <div class="flap-face flap-front-x">
-            <svg viewBox="0 0 352 138" style="width:100%;height:100%;">
-              <defs><linearGradient id="stFlap" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fff8fa"/><stop offset="65%" stop-color="#fbe3ec"/><stop offset="100%" stop-color="#f4c7d8"/></linearGradient></defs>
-              <path d="M 0 12 Q 0 0 14 0 L 338 0 Q 352 0 352 12 L 194 122 Q 176 134 158 122 Z" fill="url(#stFlap)"/>
-              <path d="M 12 6 L 160 113 Q 176 124 192 113 L 340 6" fill="none" stroke="url(#stGold)" stroke-width="1.2" stroke-linecap="round"/>
-            </svg>
-          </div>
-          <div class="flap-face flap-back-x">
-            <svg viewBox="0 0 352 138" style="width:100%;height:100%;">
-              <path d="M 0 12 Q 0 0 14 0 L 338 0 Q 352 0 352 12 L 194 122 Q 176 134 158 122 Z" fill="url(#stLiner)"/>
-              <path d="M 8 10 Q 8 4 16 4 L 336 4 Q 344 4 344 10 L 192 117 Q 176 128 160 117 Z" fill="url(#stLattice)"/>
-            </svg>
-          </div>
-        </div>
-        <div class="wax-seal" aria-hidden="true">
-          <svg viewBox="0 0 64 64" style="width:100%;height:100%;filter:drop-shadow(0 6px 12px rgba(136,14,79,0.32));">
+  <!-- Interactive Pull-String Confetti Popper Opening -->
+  <div id="confettiOpeningScreen" class="confetti-opening-screen">
+    <div class="popper-stage">
+      <div id="popperCaption" class="popper-caption">
+        <p id="popperCaptionSub" class="popper-caption-sub">Tarik tali di bawah untuk membuka ✨</p>
+      </div>
+
+      <div id="popperConeStage" class="popper-cone-stage" style="position:relative;display:flex;flex-direction:column;align-items:center;">
+        <div id="popperStreamersBox" class="popper-streamers-box" aria-hidden="true"></div>
+        <div id="popperConeWrap" class="popper-cone-wrap" title="Tarik tali di bawah!">
+          <svg viewBox="0 0 180 180" class="popper-cone-svg" style="overflow:visible;" aria-hidden="true">
             <defs>
-              <radialGradient id="stWax" cx="38%" cy="32%" r="68%"><stop offset="0%" stop-color="#e11d74"/><stop offset="52%" stop-color="#be185d"/><stop offset="100%" stop-color="#831843"/></radialGradient>
-              <linearGradient id="stSealGold" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#fef08a"/><stop offset="50%" stop-color="#eab308"/><stop offset="100%" stop-color="#d97706"/></linearGradient>
+              <linearGradient id="stPopBody" x1="0" y1="0" x2="1" y2="0.4"><stop offset="0%" stop-color="#fdf2f8"/><stop offset="45%" stop-color="#fbcfe8"/><stop offset="100%" stop-color="#f472b6"/></linearGradient>
+              <linearGradient id="stPopStripe" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#ec4899"/><stop offset="100%" stop-color="#be185d"/></linearGradient>
+              <linearGradient id="stPopGold" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#fef08a"/><stop offset="50%" stop-color="#f59e0b"/><stop offset="100%" stop-color="#d97706"/></linearGradient>
+              <radialGradient id="stPopCap" cx="45%" cy="35%" r="70%"><stop offset="0%" stop-color="#fff1f2"/><stop offset="65%" stop-color="#f9a8d4"/><stop offset="100%" stop-color="#db2777"/></radialGradient>
+              <clipPath id="stConeClip"><path d="M 38 48 L 142 48 L 96 164 Q 90 174 84 164 Z"/></clipPath>
             </defs>
-            <path d="M 32 4 C 38 4, 42 7, 46 8 C 51 9, 55 13, 56 18 C 57 22, 60 27, 60 32 C 60 37, 57 42, 56 46 C 54 51, 50 55, 45 56 C 41 57, 37 60, 32 60 C 27 60, 22 57, 18 56 C 13 54, 9 50, 8 45 C 7 41, 4 37, 4 32 C 4 27, 7 22, 8 18 C 10 13, 14 9, 19 8 C 23 7, 27 4, 32 4 Z" fill="url(#stWax)"/>
-            <circle cx="32" cy="32" r="19.5" fill="#9d174d" stroke="url(#stSealGold)" stroke-width="1.2"/>
-            <g transform="translate(32, 32)" fill="url(#stSealGold)">
-              <path d="M 0 -10.5 C 3 -8.5, 3.6 -4, 0 -1.5 C -3.6 -4, -3 -8.5, 0 -10.5 Z"/>
-              <path d="M 0 -10.5 C 3 -8.5, 3.6 -4, 0 -1.5 C -3.6 -4, -3 -8.5, 0 -10.5 Z" transform="rotate(72)"/>
-              <path d="M 0 -10.5 C 3 -8.5, 3.6 -4, 0 -1.5 C -3.6 -4, -3 -8.5, 0 -10.5 Z" transform="rotate(144)"/>
-              <path d="M 0 -10.5 C 3 -8.5, 3.6 -4, 0 -1.5 C -3.6 -4, -3 -8.5, 0 -10.5 Z" transform="rotate(216)"/>
-              <path d="M 0 -10.5 C 3 -8.5, 3.6 -4, 0 -1.5 C -3.6 -4, -3 -8.5, 0 -10.5 Z" transform="rotate(288)"/>
-              <circle cx="0" cy="0" r="2.3" fill="#fef3c7"/>
+            <g id="popperCapGroup" style="transform-origin:90px 44px;">
+              <ellipse cx="90" cy="45" rx="52" ry="13" fill="url(#stPopCap)" stroke="#be185d" stroke-width="1.5"/>
+              <circle cx="64" cy="41" r="6" fill="#fbbf24"/>
+              <circle cx="80" cy="37" r="7" fill="#38bdf8"/>
+              <circle cx="98" cy="37" r="6.5" fill="#34d399"/>
+              <circle cx="114" cy="41" r="6" fill="#a855f7"/>
+              <rect x="85" y="29" width="7" height="10" rx="2" transform="rotate(-14 88 34)" fill="#f43f5e"/>
+              <rect x="102" y="31" width="6" height="9" rx="2" transform="rotate(18 105 35)" fill="#fde047"/>
             </g>
+            <ellipse id="popperOpenMouth" cx="90" cy="48" rx="48" ry="11" fill="#831843" stroke="#fde047" stroke-width="2" style="display:none;"/>
+            <g clip-path="url(#stConeClip)">
+              <path d="M 38 48 L 142 48 L 96 164 Q 90 174 84 164 Z" fill="url(#stPopBody)"/>
+              <path d="M 30 74 L 150 48 L 150 66 L 30 92 Z" fill="url(#stPopStripe)" opacity="0.92"/>
+              <path d="M 40 108 L 142 84 L 142 100 L 40 124 Z" fill="url(#stPopGold)" opacity="0.9"/>
+              <path d="M 52 138 L 128 120 L 128 135 L 52 153 Z" fill="url(#stPopStripe)" opacity="0.92"/>
+              <path d="M 52 50 L 66 50 L 87 166 L 80 166 Z" fill="#ffffff" opacity="0.34"/>
+            </g>
+            <path d="M 36 48 Q 90 61 144 48" fill="none" stroke="url(#stPopGold)" stroke-width="5" stroke-linecap="round"/>
+            <path d="M 38 48 L 142 48 L 96 164 Q 90 174 84 164 Z" fill="none" stroke="#9d174d" stroke-width="2" stroke-linejoin="round"/>
+            <circle cx="90" cy="168" r="6" fill="url(#stPopGold)" stroke="#9d174d" stroke-width="1.5"/>
           </svg>
         </div>
+
+        <div id="pullStringWrap" class="pull-string-wrap">
+          <svg id="pullCordSvg" width="36" height="48" viewBox="0 0 36 48" style="overflow:visible;pointer-events:none;" aria-hidden="true">
+            <defs>
+              <linearGradient id="stCordGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#d97706"/><stop offset="50%" stop-color="#fbbf24"/><stop offset="100%" stop-color="#db2777"/></linearGradient>
+            </defs>
+            <path id="pullCordOuter" d="M 18 0 Q 22 22, 18 44" fill="none" stroke="url(#stCordGrad)" stroke-width="4" stroke-linecap="round"/>
+            <path id="pullCordInner" d="M 18 0 Q 22 22, 18 44" fill="none" stroke="#fef08a" stroke-width="1.5" stroke-dasharray="4 4" stroke-linecap="round"/>
+          </svg>
+          <button id="confettiPullHandle" type="button" class="pull-tassel-btn" aria-label="Tarik tali confetti ke bawah untuk membuka pesan">
+            <span class="pull-tassel-ring"><span class="pull-tassel-core">↓</span></span>
+          </button>
+        </div>
+      </div>
+
+      <div id="confettiRevealBanner" class="confetti-reveal-banner">
+        <div style="color:#c99b63;font-size:12px;margin-bottom:8px;letter-spacing:4px;">— ✦ 🎉 ✦ —</div>
+        <p style="font-family:'Playfair Display',serif;font-size:19px;font-weight:600;color:#ad1457;margin:0;">From Darto to Dina</p>
+        <h2 style="font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:#880e4f;margin:6px 0 0;line-height:1.2;">Happy birthday Dina</h2>
       </div>
     </div>
   </div>
@@ -1072,8 +1140,8 @@
   <main id="mainCard" class="card-container">
     <div class="card-subtitle">✨ Selamat Ulang Tahun ✨</div>
     <h1 class="card-title">Dina Perwitasari</h1>
-    <p class="card-message" style="white-space: pre-line;">Happy birthday!!!Dinaaaa.  I hope this year brings u new opportunities and plenty of happiness. Sehat terus yaa dan sukses selaluuuu, semoga segala harapan yang belum tercapai segera tercapaii.
-Be happy, be awesome. May peace be upon u!!!🤲✌☺️✌</p>
+    <p id="cardGreetingMessage" class="card-message"><span class="card-message-spacer" aria-hidden="true">Happy birthday!!!Dinaaaa.  I hope this year brings u new opportunities and plenty of happiness. Sehat terus yaa dan sukses selaluuuu, semoga segala harapan yang belum tercapai segera tercapaii.
+Be happy, be awesome. May peace be upon u!!!🤲✌☺️✌</span><span class="card-message-typed" aria-hidden="true"><span id="cardTypedText"></span><span id="cardTypedCaret" class="typewriter-caret"></span></span></p>
 
     <!-- Primary Action Button -->
     <div>
@@ -1082,10 +1150,10 @@ Be happy, be awesome. May peace be upon u!!!🤲✌☺️✌</p>
       </button>
     </div>
 
-    <!-- Close Envelope Button -->
+    <!-- Close Greeting Card Button -->
     <div>
-      <button id="btnCloseEnvelope" class="btn-close-envelope" type="button">
-        <span>✉️ Tutup</span>
+      <button id="btnCloseEnvelope" class="btn-close-envelope" type="button" aria-label="Tutup dan kembali ke pembuka confetti">
+        <span>🎉 Tutup</span>
       </button>
     </div>
   </main>
@@ -1128,33 +1196,32 @@ Be happy, be awesome. May peace be upon u!!!🤲✌☺️✌</p>
       <section id="wishSection" class="wish-box" aria-label="Make a Wish">
         <div class="wish-header">
           <span class="wish-title">🌟 Make a Wish</span>
-          <button id="btnEditWish" type="button" style="display:none;background:#fff;border:1px solid #fbcfe8;color:#be185d;font-size:11px;font-weight:600;padding:2px 8px;border-radius:9999px;cursor:pointer;">✏️ Ubah</button>
+          <button id="btnEditWish" type="button" style="display:none;min-height:40px;background:#fff;border:1px solid #fbcfe8;color:#be185d;font-size:12px;font-weight:600;padding:6px 12px;border-radius:9999px;cursor:pointer;">✏️ Ubah</button>
         </div>
         <div id="wishBody"></div>
       </section>
 
       <!-- Photo Revealed After Blowing Candles (3-Photo Slide Carousel) -->
       <div id="photoFrame" class="photo-frame" style="position: relative;">
-        <button id="btnPrevSlide" type="button" aria-label="Foto sebelumnya" style="position: absolute; left: -12px; top: 40%; transform: translateY(-50%); width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.96); border: 1px solid #fbcfe8; color: #be185d; font-size: 18px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.12); z-index: 20; display: flex; align-items: center; justify-content: center;">‹</button>
-        <button id="btnNextSlide" type="button" aria-label="Foto selanjutnya" style="position: absolute; right: -12px; top: 40%; transform: translateY(-50%); width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.96); border: 1px solid #fbcfe8; color: #be185d; font-size: 18px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.12); z-index: 20; display: flex; align-items: center; justify-content: center;">›</button>
+        <button id="btnPrevSlide" type="button" aria-label="Foto sebelumnya" style="position: absolute; left: -10px; top: 40%; transform: translateY(-50%); width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,0.96); border: 1px solid #fbcfe8; color: #be185d; font-size: 18px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.12); z-index: 20; display: flex; align-items: center; justify-content: center;">‹</button>
+        <button id="btnNextSlide" type="button" aria-label="Foto selanjutnya" style="position: absolute; right: -10px; top: 40%; transform: translateY(-50%); width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,0.96); border: 1px solid #fbcfe8; color: #be185d; font-size: 18px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.12); z-index: 20; display: flex; align-items: center; justify-content: center;">›</button>
 
         <img id="dinaImg" src="assets/aistudio/IMG-20261110-WA0692_a3015910.jpg" alt="Foto Dina" class="photo-img">
-        <div class="photo-name">Dina 🌸✨</div>
-        <div id="dinaCaption" class="photo-caption" style="min-height: 18px;">Happy Birthday!!! 😋</div>
+        <div id="dinaCaption" class="photo-caption" style="min-height: 18px; margin-top: 8px;">Happy Birthday!!! 😋</div>
 
-        <div id="slideDots" style="display: flex; justify-content: center; gap: 4px; margin-top: 6px;">
-          <button type="button" class="slide-dot-btn" data-index="0" aria-label="Foto 1" style="background:transparent;border:none;padding:6px 4px;cursor:pointer;display:flex;align-items:center;"><span class="slide-dot" style="display:block;width:22px;height:7px;border-radius:9999px;background:#be185d;transition:all 0.2s;"></span></button>
-          <button type="button" class="slide-dot-btn" data-index="1" aria-label="Foto 2" style="background:transparent;border:none;padding:6px 4px;cursor:pointer;display:flex;align-items:center;"><span class="slide-dot" style="display:block;width:7px;height:7px;border-radius:9999px;background:#fbcfe8;transition:all 0.2s;"></span></button>
-          <button type="button" class="slide-dot-btn" data-index="2" aria-label="Foto 3" style="background:transparent;border:none;padding:6px 4px;cursor:pointer;display:flex;align-items:center;"><span class="slide-dot" style="display:block;width:7px;height:7px;border-radius:9999px;background:#fbcfe8;transition:all 0.2s;"></span></button>
+        <div id="slideDots" style="display: flex; justify-content: center; gap: 4px; margin-top: 4px;">
+          <button type="button" class="slide-dot-btn" data-index="0" aria-label="Foto 1" style="background:transparent;border:none;min-width:34px;min-height:34px;padding:10px 6px;cursor:pointer;display:flex;align-items:center;justify-content:center;"><span class="slide-dot" style="display:block;width:22px;height:7px;border-radius:9999px;background:#be185d;transition:all 0.2s;"></span></button>
+          <button type="button" class="slide-dot-btn" data-index="1" aria-label="Foto 2" style="background:transparent;border:none;min-width:34px;min-height:34px;padding:10px 6px;cursor:pointer;display:flex;align-items:center;justify-content:center;"><span class="slide-dot" style="display:block;width:7px;height:7px;border-radius:9999px;background:#fbcfe8;transition:all 0.2s;"></span></button>
+          <button type="button" class="slide-dot-btn" data-index="2" aria-label="Foto 3" style="background:transparent;border:none;min-width:34px;min-height:34px;padding:10px 6px;cursor:pointer;display:flex;align-items:center;justify-content:center;"><span class="slide-dot" style="display:block;width:7px;height:7px;border-radius:9999px;background:#fbcfe8;transition:all 0.2s;"></span></button>
         </div>
       </div>
 
       <!-- Modal Bottom Action Buttons -->
       <div style="margin-top: 14px; display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: nowrap;">
-        <button id="btnMainGame" type="button" style="display: none; align-items: center; justify-content: center; gap: 6px; min-height: 44px; padding: 10px 18px; font-size: 13.5px; font-weight: 600; color: #fff; background: linear-gradient(135deg, #f59e0b, #ec4899, #e11d48); border: none; border-radius: 9999px; box-shadow: 0 6px 18px rgba(236, 72, 153, 0.35); cursor: pointer; white-space: nowrap;">
+        <button id="btnMainGame" type="button" style="display: none; flex: 1; align-items: center; justify-content: center; gap: 6px; min-height: 44px; padding: 10px 14px; font-size: 13.5px; font-weight: 600; color: #fff; background: linear-gradient(135deg, #f59e0b, #ec4899, #e11d48); border: none; border-radius: 9999px; box-shadow: 0 6px 18px rgba(236, 72, 153, 0.35); cursor: pointer; white-space: nowrap;">
           🎮 Main game
         </button>
-        <button id="btnModalClose" class="btn-primary" style="min-height: 44px; padding: 10px 24px; font-size: 13.5px; white-space: nowrap;" type="button">
+        <button id="btnModalClose" class="btn-primary" style="flex: 1; min-height: 44px; padding: 10px 20px; font-size: 13.5px; white-space: nowrap;" type="button">
           Tutup
         </button>
       </div>
@@ -1163,9 +1230,9 @@ Be happy, be awesome. May peace be upon u!!!🤲✌☺️✌</p>
 
   <!-- Roulette Game Modal -->
   <div id="rouletteModal" class="modal-backdrop" style="z-index: 150;">
-    <div class="modal-content" style="max-width: 440px; z-index: 10; overflow-x: hidden;">
+    <div class="modal-content" style="max-width: 440px; z-index: 10; overflow-x: clip;">
       <button id="btnRouletteCloseX" class="close-x-btn" aria-label="Tutup">&times;</button>
-      <h2 id="rouletteModalTitle" style="font-family:'Playfair Display',serif;font-size:21px;color:#880e4f;margin-bottom:12px;padding:0 34px;">Semoga Beruntungggg!!!</h2>
+      <h2 id="rouletteModalTitle" style="font-family:'Playfair Display',serif;font-size:21px;color:#880e4f;margin-bottom:12px;padding:0 36px;">Semoga Beruntungggg!!!</h2>
 
       <div id="rouletteWheelStage">
         <div class="roulette-wheel-wrap">
@@ -1186,14 +1253,14 @@ Be happy, be awesome. May peace be upon u!!!🤲✌☺️✌</p>
 
       <div id="roulettePrizeStage" style="display:none;position:relative;overflow:hidden;padding:8px 0;">
         <div style="display:flex;align-items:flex-end;justify-content:center;gap:6px;width:100%;">
-          <div id="prizePandaSlot" style="width:clamp(54px,16vw,72px);flex-shrink:0;margin-bottom:4px;"></div>
+          <div id="prizePandaSlot" style="width:clamp(48px,15vw,72px);flex-shrink:0;margin-bottom:4px;"></div>
           <div id="prizeShoeBox" style="flex:1;min-width:0;max-width:min(46vw,196px);">
             <div style="border-radius:16px;overflow:hidden;border:2px solid #fbcfe8;aspect-ratio:4/3;background:#fdf2f8;box-shadow:0 10px 24px rgba(136,14,79,0.16);">
               <img src="assets/aistudio/Sepatu_NB_64664b7f.jpg" alt="Sepatu" loading="eager" decoding="async" style="width:100%;height:100%;object-fit:cover;object-position:center;">
             </div>
             <p style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:#880e4f;margin-top:8px;">Sepatu 👟✨</p>
           </div>
-          <div id="prizeCatSlot" style="width:clamp(54px,16vw,72px);flex-shrink:0;margin-bottom:4px;"></div>
+          <div id="prizeCatSlot" style="width:clamp(48px,15vw,72px);flex-shrink:0;margin-bottom:4px;"></div>
         </div>
 
         <div style="display:flex;gap:10px;margin-top:18px;justify-content:center;">
@@ -1599,8 +1666,20 @@ Be happy, be awesome. May peace be upon u!!!🤲✌☺️✌</p>
        ======================================================== */
     const musicBtn = document.getElementById('musicToggleBtn');
     const musicStatusText = document.getElementById('musicStatusText');
-    const envelopeScreen = document.getElementById('envelopeScreen');
-    const envelopeWrapper = document.getElementById('envelopeWrapper');
+    const confettiOpeningScreen = document.getElementById('confettiOpeningScreen');
+    const popperCaption = document.getElementById('popperCaption');
+    const popperCaptionSub = document.getElementById('popperCaptionSub');
+    const popperConeStage = document.getElementById('popperConeStage');
+    const popperConeWrap = document.getElementById('popperConeWrap');
+    const popperCapGroup = document.getElementById('popperCapGroup');
+    const popperOpenMouth = document.getElementById('popperOpenMouth');
+    const popperStreamersBox = document.getElementById('popperStreamersBox');
+    const pullStringWrap = document.getElementById('pullStringWrap');
+    const pullCordSvg = document.getElementById('pullCordSvg');
+    const pullCordOuter = document.getElementById('pullCordOuter');
+    const pullCordInner = document.getElementById('pullCordInner');
+    const confettiPullHandle = document.getElementById('confettiPullHandle');
+    const confettiRevealBanner = document.getElementById('confettiRevealBanner');
     const mainCard = document.getElementById('mainCard');
     const btnPencet = document.getElementById('btnPencet');
     const btnCloseEnvelope = document.getElementById('btnCloseEnvelope');
@@ -1625,46 +1704,224 @@ Be happy, be awesome. May peace be upon u!!!🤲✌☺️✌</p>
       musicStatusText.textContent = isOn ? 'Musik: On' : 'Musik: Off';
     });
 
-    let isOpeningEnvelope = false;
+    let isPoppedOpening = false;
+    let pullStartY = null;
+    let activePullPointerId = null;
+    let currentPullPx = 0;
+    let openingTimers = [];
 
-    // Open Envelope (4-sided sequential: Top -> Bottom -> Right -> Left -> Reveal -> Exit)
-    envelopeWrapper.addEventListener('click', () => {
-      if (isOpeningEnvelope) return;
-      isOpeningEnvelope = true;
-      envelopeWrapper.classList.add('is-unsealing');
+    function updateCordVisual(pullPx, dragging) {
+      const h = 48 + pullPx;
+      const tipY = 44 + pullPx;
+      const curveX = 18 + (dragging ? 0 : 4);
+      const d = `M 18 0 Q ${curveX} ${h * 0.45}, 18 ${tipY}`;
+      pullCordSvg.setAttribute('height', String(h));
+      pullCordSvg.setAttribute('viewBox', `0 0 36 ${h}`);
+      pullCordOuter.setAttribute('d', d);
+      pullCordInner.setAttribute('d', d);
+
+      const prog = Math.min(1, Math.max(0, pullPx / 56));
+      popperConeWrap.style.transform = `scale(${1 + prog * 0.04}, ${1 - prog * 0.05})`;
+      if (prog > 0.15) {
+        popperCaptionSub.textContent = `Tarik terus ke bawah... ${Math.round(prog * 100)}%`;
+      } else {
+        popperCaptionSub.textContent = 'Tarik tali di bawah untuk membuka ✨';
+      }
+    }
+
+    function spawnPopperStreamers() {
+      const palette = ['#ec4899', '#f43f5e', '#fbbf24', '#a855f7', '#38bdf8', '#34d399', '#fb7185'];
+      popperStreamersBox.innerHTML = '';
+      for (let i = 0; i < 24; i++) {
+        const spread = i / 23 - 0.5;
+        const angleDeg = spread * 124 + ((i % 3) - 1) * 6;
+        const rad = ((angleDeg - 90) * Math.PI) / 180;
+        const dist = 95 + ((i * 37) % 115);
+        const span = document.createElement('span');
+        span.className = 'popper-streamer';
+        span.style.width = (i % 3 === 0 ? 7 : 9) + 'px';
+        span.style.height = (i % 3 === 0 ? 18 : 10) + 'px';
+        span.style.backgroundColor = palette[i % palette.length];
+        span.style.borderRadius = i % 3 === 1 ? '2px' : '9999px';
+        span.style.animationDelay = ((i % 4) * 28) + 'ms';
+        span.style.setProperty('--sx', (Math.cos(rad) * dist).toFixed(1) + 'px');
+        span.style.setProperty('--sy', (Math.sin(rad) * dist).toFixed(1) + 'px');
+        span.style.setProperty('--srot', ((i % 2 === 0 ? 1 : -1) * (140 + ((i * 53) % 200))) + 'deg');
+        popperStreamersBox.appendChild(span);
+      }
+    }
+
+    function nudgePullHint() {
+      if (isPoppedOpening) return;
+      popperCaptionSub.textContent = 'Tarik talinya ke bawah ya! ↓';
+      popperConeWrap.classList.remove('is-wiggle');
+      void popperConeWrap.offsetWidth;
+      popperConeWrap.classList.add('is-wiggle');
+      sound.playChime();
+    }
+
+    function triggerConfettiOpening() {
+      if (isPoppedOpening) return;
+      isPoppedOpening = true;
+      pullStartY = null;
+      activePullPointerId = null;
+      currentPullPx = 0;
+      confettiPullHandle.classList.remove('is-dragging');
+      popperConeWrap.classList.add('is-popped');
+      popperConeWrap.style.transform = '';
+      popperCaption.style.display = 'none';
+      pullStringWrap.style.display = 'none';
+      popperCapGroup.classList.add('cap-fly-away');
+      popperOpenMouth.style.display = 'block';
+
+      spawnPopperStreamers();
+      launchConfetti(140);
       sound.playChime();
       if (!sound.isMuted() && !sound.isPlaying()) {
         sound.startMelody({ delaySec: ENVELOPE_CHIME_SYNC_DELAY_SEC });
       }
 
-      setTimeout(() => envelopeWrapper.classList.add('is-top-open'), 240);
-      setTimeout(() => envelopeWrapper.classList.add('is-bottom-open'), 620);
-      setTimeout(() => envelopeWrapper.classList.add('is-right-open'), 1000);
-      setTimeout(() => envelopeWrapper.classList.add('is-left-open'), 1380);
-      setTimeout(() => envelopeWrapper.classList.add('is-revealing'), 1780);
-      setTimeout(() => {
-        envelopeWrapper.classList.add('is-exiting');
-        envelopeScreen.classList.add('hidden');
-        setTimeout(() => {
+      openingTimers.push(setTimeout(() => {
+        popperConeStage.classList.add('is-revealed');
+        confettiRevealBanner.classList.add('active');
+      }, 320));
+
+      openingTimers.push(setTimeout(() => {
+        confettiOpeningScreen.classList.add('hidden');
+        openingTimers.push(setTimeout(() => {
           mainCard.style.display = 'block';
-        }, 530);
-      }, 2320);
+          startCardMessageTypewriter();
+        }, 520));
+      }, 2800));
+    }
+
+    const cardGreetingMessage = document.getElementById('cardGreetingMessage');
+    const cardTypedText = document.getElementById('cardTypedText');
+    const cardTypedCaret = document.getElementById('cardTypedCaret');
+    const FULL_GREETING_MESSAGE = "Happy birthday!!!Dinaaaa.  I hope this year brings u new opportunities and plenty of happiness. Sehat terus yaa dan sukses selaluuuu, semoga segala harapan yang belum tercapai segera tercapaii.\nBe happy, be awesome. May peace be upon u!!!🤲✌☺️✌";
+    const greetingGraphemes = (typeof Intl !== 'undefined' && typeof Intl.Segmenter === 'function')
+      ? Array.from(new Intl.Segmenter(undefined, { granularity: 'grapheme' }).segment(FULL_GREETING_MESSAGE), (p) => p.segment)
+      : Array.from(FULL_GREETING_MESSAGE);
+    let greetingTypewriterRaf = 0;
+
+    function stopCardMessageTypewriter() {
+      if (greetingTypewriterRaf) {
+        cancelAnimationFrame(greetingTypewriterRaf);
+        greetingTypewriterRaf = 0;
+      }
+    }
+
+    function finishCardMessageTypewriter() {
+      stopCardMessageTypewriter();
+      if (cardTypedText) cardTypedText.textContent = FULL_GREETING_MESSAGE;
+      if (cardTypedCaret) cardTypedCaret.classList.add('is-complete');
+    }
+
+    function startCardMessageTypewriter() {
+      stopCardMessageTypewriter();
+      if (!cardTypedText || !cardTypedCaret) return;
+      if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        finishCardMessageTypewriter();
+        return;
+      }
+      cardTypedText.textContent = '';
+      cardTypedCaret.classList.remove('is-complete');
+      const total = greetingGraphemes.length;
+      const startTime = performance.now();
+      const step = (now) => {
+        const elapsed = now - startTime;
+        const count = elapsed <= 320 ? 0 : Math.min(total, Math.floor((elapsed - 320) / 40) + 1);
+        cardTypedText.textContent = greetingGraphemes.slice(0, count).join('');
+        if (count < total) {
+          greetingTypewriterRaf = requestAnimationFrame(step);
+        } else {
+          greetingTypewriterRaf = 0;
+          cardTypedCaret.classList.add('is-complete');
+        }
+      };
+      greetingTypewriterRaf = requestAnimationFrame(step);
+    }
+
+    if (cardGreetingMessage) {
+      cardGreetingMessage.addEventListener('click', finishCardMessageTypewriter);
+    }
+
+    popperConeWrap.addEventListener('click', nudgePullHint);
+
+    confettiPullHandle.addEventListener('pointerdown', (e) => {
+      if (isPoppedOpening) return;
+      e.preventDefault();
+      confettiPullHandle.setPointerCapture(e.pointerId);
+      activePullPointerId = e.pointerId;
+      pullStartY = e.clientY;
+      confettiPullHandle.classList.add('is-dragging');
     });
 
-    // Close Envelope
+    confettiPullHandle.addEventListener('pointermove', (e) => {
+      if (isPoppedOpening || pullStartY === null || activePullPointerId !== e.pointerId) return;
+      const raw = e.clientY - pullStartY;
+      const clamped = raw <= 0 ? 0 : raw <= 56 ? raw : Math.min(88, 56 + (raw - 56) * 0.45);
+      currentPullPx = clamped;
+      updateCordVisual(clamped, true);
+      if (clamped >= 56) {
+        try { confettiPullHandle.releasePointerCapture(e.pointerId); } catch (err) {}
+        triggerConfettiOpening();
+      }
+    });
+
+    function endPullDrag(e) {
+      if (activePullPointerId !== e.pointerId) return;
+      try {
+        if (confettiPullHandle.hasPointerCapture(e.pointerId)) {
+          confettiPullHandle.releasePointerCapture(e.pointerId);
+        }
+      } catch (err) {}
+      const finalPull = currentPullPx;
+      pullStartY = null;
+      activePullPointerId = null;
+      confettiPullHandle.classList.remove('is-dragging');
+
+      if (!isPoppedOpening) {
+        if (finalPull >= 56) {
+          triggerConfettiOpening();
+        } else {
+          if (finalPull < 14) nudgePullHint();
+          currentPullPx = 0;
+          updateCordVisual(0, false);
+        }
+      }
+    }
+
+    confettiPullHandle.addEventListener('pointerup', endPullDrag);
+    confettiPullHandle.addEventListener('pointercancel', endPullDrag);
+    confettiPullHandle.addEventListener('keydown', (e) => {
+      if (!isPoppedOpening && (e.key === 'Enter' || e.key === ' ' || e.key === 'ArrowDown')) {
+        e.preventDefault();
+        triggerConfettiOpening();
+      }
+    });
+
+    // Return to Pull-String Confetti Opening and reset Make-a-Wish
     btnCloseEnvelope.addEventListener('click', () => {
-      isOpeningEnvelope = false;
+      openingTimers.forEach((id) => clearTimeout(id));
+      openingTimers = [];
+      stopCardMessageTypewriter();
+      isPoppedOpening = false;
+      currentPullPx = 0;
       mainCard.style.display = 'none';
-      envelopeScreen.classList.remove('hidden');
-      envelopeWrapper.classList.remove(
-        'is-unsealing',
-        'is-top-open',
-        'is-bottom-open',
-        'is-right-open',
-        'is-left-open',
-        'is-revealing',
-        'is-exiting'
-      );
+      confettiOpeningScreen.classList.remove('hidden');
+      popperCaption.style.display = 'block';
+      popperCaptionSub.textContent = 'Tarik tali di bawah untuk membuka ✨';
+      popperConeStage.classList.remove('is-revealed');
+      popperConeWrap.classList.remove('is-popped', 'is-wiggle');
+      popperConeWrap.style.transform = '';
+      popperCapGroup.classList.remove('cap-fly-away');
+      popperOpenMouth.style.display = 'none';
+      popperStreamersBox.innerHTML = '';
+      pullStringWrap.style.display = 'flex';
+      updateCordVisual(0, false);
+      confettiRevealBanner.classList.remove('active');
+      if (typeof resetWishState === 'function') resetWishState();
     });
 
     function spawnBalloons() {
@@ -1822,9 +2079,23 @@ Be happy, be awesome. May peace be upon u!!!🤲✌☺️✌</p>
       }
     }
 
-    // Make-a-Wish with localStorage persistence
+    // Make-a-Wish ephemeral session state (resets whenever the app or modal closes)
     const WISH_KEY = 'dina_birthday_wish_v1';
+    let savedWish = null;
     let isEditingWish = false;
+    try { localStorage.removeItem(WISH_KEY); } catch (e) {}
+
+    function resetWishState() {
+      savedWish = null;
+      isEditingWish = false;
+      try { localStorage.removeItem(WISH_KEY); } catch (e) {}
+      renderWishBox();
+    }
+
+    window.addEventListener('pagehide', () => {
+      savedWish = null;
+      try { localStorage.removeItem(WISH_KEY); } catch (e) {}
+    });
 
     function escapeHtml(str) {
       return str.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -1835,11 +2106,7 @@ Be happy, be awesome. May peace be upon u!!!🤲✌☺️✌</p>
       const editBtn = document.getElementById('btnEditWish');
       if (!body || !editBtn) return;
 
-      let saved = null;
-      try {
-        const raw = localStorage.getItem(WISH_KEY);
-        if (raw) saved = JSON.parse(raw);
-      } catch (e) {}
+      const saved = savedWish;
 
       if (saved && saved.text && !isEditingWish) {
         editBtn.style.display = 'inline-block';
@@ -1871,9 +2138,7 @@ Be happy, be awesome. May peace be upon u!!!🤲✌☺️✌</p>
             errEl.style.display = 'block';
             return;
           }
-          try {
-            localStorage.setItem(WISH_KEY, JSON.stringify({ text: txt, savedAt: Date.now() }));
-          } catch (e) {}
+          savedWish = { text: txt, savedAt: Date.now() };
           isEditingWish = false;
           sound.playChime();
           renderWishBox();
@@ -1898,13 +2163,14 @@ Be happy, be awesome. May peace be upon u!!!🤲✌☺️✌</p>
       sound.playChime();
     });
 
-    // Close Modal
+    // Close Modal and reset Make-a-Wish
     function closeModal() {
       if (blowTimer) { clearTimeout(blowTimer); blowTimer = null; }
       stopMicrophone();
       isBlowing = false;
       surpriseModal.classList.remove('active');
       document.getElementById('pixelMascotsLayer').style.display = 'flex';
+      resetWishState();
     }
     btnModalClose.addEventListener('click', closeModal);
     btnModalCloseX.addEventListener('click', closeModal);

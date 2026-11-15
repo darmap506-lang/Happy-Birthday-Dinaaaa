@@ -125,3 +125,43 @@ export function getPrevSlideIndex(currentIndex: number, totalSlides: number): nu
   return (currentIndex - 1 + totalSlides) % totalSlides;
 }
 
+export const MAIN_GREETING_MESSAGE = `Happy birthday!!!Dinaaaa.  I hope this year brings u new opportunities and plenty of happiness. Sehat terus yaa dan sukses selaluuuu, semoga segala harapan yang belum tercapai segera tercapaii.\nBe happy, be awesome. May peace be upon u!!!🤲✌☺️✌`;
+
+export const TYPEWRITER_START_DELAY_MS = 320;
+export const TYPEWRITER_MS_PER_UNIT = 40;
+
+type SegmenterLike = {
+  segment(input: string): Iterable<{ segment: string }>;
+};
+
+export function splitGraphemes(text: string): string[] {
+  if (!text) return [];
+  const IntlWithSegmenter = Intl as typeof Intl & {
+    Segmenter?: new (locale?: string, options?: { granularity: 'grapheme' }) => SegmenterLike;
+  };
+  if (typeof IntlWithSegmenter.Segmenter === 'function') {
+    const segmenter = new IntlWithSegmenter.Segmenter(undefined, { granularity: 'grapheme' });
+    return Array.from(segmenter.segment(text), (part) => part.segment);
+  }
+  return Array.from(text);
+}
+
+export function getTypewriterVisibleCount(
+  elapsedMs: number,
+  totalUnits: number,
+  options?: { startDelayMs?: number; msPerUnit?: number }
+): number {
+  if (totalUnits <= 0) return 0;
+  const startDelayMs = options?.startDelayMs ?? TYPEWRITER_START_DELAY_MS;
+  const msPerUnit = options?.msPerUnit ?? TYPEWRITER_MS_PER_UNIT;
+  if (elapsedMs <= startDelayMs) return 0;
+  const activeMs = elapsedMs - startDelayMs;
+  if (msPerUnit <= 0) return totalUnits;
+  return Math.min(totalUnits, Math.floor(activeMs / msPerUnit) + 1);
+}
+
+export function getTypewriterSlice(graphemes: readonly string[], visibleCount: number): string {
+  if (graphemes.length === 0 || visibleCount <= 0) return '';
+  if (visibleCount >= graphemes.length) return graphemes.join('');
+  return graphemes.slice(0, visibleCount).join('');
+}

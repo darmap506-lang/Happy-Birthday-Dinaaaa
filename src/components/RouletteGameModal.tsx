@@ -154,7 +154,7 @@ export const RouletteGameModal: React.FC<RouletteGameModalProps> = ({
         if (e.target === e.currentTarget && !isSpinning) onClose();
       }}
     >
-      <div className="relative z-10 bg-white border-2 border-pink-200 rounded-[24px] sm:rounded-3xl p-4 min-[390px]:p-5 sm:p-6 max-w-md w-full max-h-[92dvh] overflow-y-auto overflow-x-hidden overscroll-contain text-center shadow-2xl">
+      <div className="relative z-10 bg-white border-2 border-pink-200 rounded-[22px] sm:rounded-3xl p-3.5 min-[360px]:p-4 min-[390px]:p-5 sm:p-6 max-w-md w-full max-h-[92dvh] overflow-y-auto overflow-x-clip overscroll-contain text-center shadow-2xl">
         <button
           type="button"
           onClick={onClose}
@@ -167,7 +167,7 @@ export const RouletteGameModal: React.FC<RouletteGameModalProps> = ({
 
         <h2
           data-testid="roulette-modal-heading"
-          className="font-serif-display text-lg min-[390px]:text-xl sm:text-2xl font-bold text-[#880e4f] mb-3.5 sm:mb-4 px-8"
+          className="font-serif-display text-lg min-[390px]:text-xl sm:text-2xl font-bold text-[#880e4f] mb-3.5 sm:mb-4 px-9"
         >
           {headingText}
         </h2>
@@ -175,7 +175,7 @@ export const RouletteGameModal: React.FC<RouletteGameModalProps> = ({
         {!showPrizeStage ? (
           <>
             {/* Roulette Wheel Stage */}
-            <div className="relative mx-auto w-[min(70vw,268px)] h-[min(70vw,268px)] sm:w-[308px] sm:h-[308px] flex items-center justify-center">
+            <div className="relative mx-auto w-[min(75vw,268px)] h-[min(75vw,268px)] sm:w-[308px] sm:h-[308px] flex items-center justify-center">
               {/* Top Pointer Needle (12 o'clock) */}
               <div
                 aria-hidden="true"
@@ -306,7 +306,7 @@ export const RouletteGameModal: React.FC<RouletteGameModalProps> = ({
               </div>
 
               {/* Sepatu Image drops from top */}
-              <div className="flex-1 min-w-0 max-w-[168px] min-[390px]:max-w-[192px] sm:max-w-[218px] animate-shoe-drop-from-top">
+              <div className="flex-1 min-w-0 max-w-[152px] min-[360px]:max-w-[172px] min-[390px]:max-w-[192px] sm:max-w-[218px] animate-shoe-drop-from-top">
                 <div className="rounded-2xl overflow-hidden border-2 border-pink-200 bg-pink-50 shadow-lg aspect-[4/3]">
                   <img
                     src={winningPrize.imageSrc}

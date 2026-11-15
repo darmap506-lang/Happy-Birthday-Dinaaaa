@@ -5,13 +5,14 @@
 
 import { Suspense, lazy, useEffect, useState } from 'react';
 import { FallingPetals } from './components/FallingPetals';
-import { OpeningEnvelope } from './components/OpeningEnvelope';
+import { OpeningConfetti } from './components/OpeningConfetti';
 import { MainCard } from './components/MainCard';
 import { SparkleTrail } from './components/SparkleTrail';
 import { MusicToggle } from './components/MusicToggle';
 import { PixelMascots } from './components/PixelMascots';
 import { formatRecipientName } from './utils/greeting';
 import { sound } from './utils/audio';
+import { clearSavedWish } from './utils/birthdayWish';
 
 const SurpriseModal = lazy(() =>
   import('./components/SurpriseModal').then((m) => ({ default: m.SurpriseModal }))
@@ -19,11 +20,12 @@ const SurpriseModal = lazy(() =>
 
 export default function App() {
   const [recipientName, setRecipientName] = useState('Dina Perwitasari');
-  const [stage, setStage] = useState<'envelope' | 'card'>('envelope');
+  const [stage, setStage] = useState<'opening' | 'card'>('opening');
   const [isSurpriseOpen, setIsSurpriseOpen] = useState(false);
 
-  // Initialize query parameters and start background music autoplay
+  // Initialize query parameters, reset Make-a-Wish on fresh app open/close, and start background music autoplay
   useEffect(() => {
+    clearSavedWish();
     sound.startAutoplay();
 
     if (typeof window !== 'undefined') {
@@ -35,6 +37,14 @@ export default function App() {
       if (params.get('autostart') === '1') {
         setStage('card');
       }
+
+      const handlePageHide = () => {
+        clearSavedWish();
+      };
+      window.addEventListener('pagehide', handlePageHide);
+      return () => {
+        window.removeEventListener('pagehide', handlePageHide);
+      };
     }
   }, []);
 
@@ -56,6 +66,17 @@ export default function App() {
     return () => window.clearTimeout(timer);
   }, [stage]);
 
+  const handleCloseSurprise = () => {
+    clearSavedWish();
+    setIsSurpriseOpen(false);
+  };
+
+  const handleCloseCard = () => {
+    clearSavedWish();
+    setIsSurpriseOpen(false);
+    setStage('opening');
+  };
+
   return (
     <main className="relative min-h-dvh w-full flex flex-col justify-center items-center px-3 pt-16 pb-24 sm:px-6 sm:py-8 overflow-x-hidden selection:bg-pink-300 selection:text-pink-900">
       {/* Background Music Toggle Button */}
@@ -70,12 +91,9 @@ export default function App() {
       {/* Magical Mouse & Touch Sparkle Trail */}
       <SparkleTrail globalTrack={true} />
 
-      {/* Opening Envelope Screen (4-Sided Luxury Unfolding) */}
-      {stage === 'envelope' && (
-        <OpeningEnvelope
-          recipientName={recipientName}
-          onOpenComplete={() => setStage('card')}
-        />
+      {/* Opening Pull-String Confetti Screen */}
+      {stage === 'opening' && (
+        <OpeningConfetti onOpenComplete={() => setStage('card')} />
       )}
 
       {/* Main Greeting Card */}
@@ -83,7 +101,7 @@ export default function App() {
         <MainCard
           recipientName={recipientName}
           onOpenSurprise={() => setIsSurpriseOpen(true)}
-          onCloseEnvelope={() => setStage('envelope')}
+          onCloseEnvelope={handleCloseCard}
         />
       )}
 
@@ -92,7 +110,7 @@ export default function App() {
         <Suspense fallback={null}>
           <SurpriseModal
             isOpen={isSurpriseOpen}
-            onClose={() => setIsSurpriseOpen(false)}
+            onClose={handleCloseSurprise}
             recipientName={recipientName}
           />
         </Suspense>

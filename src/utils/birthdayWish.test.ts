@@ -58,3 +58,15 @@ test('saveBirthdayWish, loadSavedWish, and clearSavedWish round-trip cleanly', (
   clearSavedWish(storage);
   assert.equal(loadSavedWish(storage), null);
 });
+
+test('default ephemeral Make-a-Wish storage does not require localStorage and resets cleanly', () => {
+  clearSavedWish();
+  assert.equal(loadSavedWish(), null);
+
+  const saved = saveBirthdayWish('Semoga sehat & bahagia selalu');
+  assert.ok(saved);
+  assert.equal(loadSavedWish()?.text, 'Semoga sehat & bahagia selalu');
+
+  clearSavedWish();
+  assert.equal(loadSavedWish(), null);
+});

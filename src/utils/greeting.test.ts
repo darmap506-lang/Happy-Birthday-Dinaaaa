@@ -8,6 +8,10 @@ import {
   getNextSlideIndex,
   getPrevSlideIndex,
   PETAL_COLORS,
+  MAIN_GREETING_MESSAGE,
+  splitGraphemes,
+  getTypewriterVisibleCount,
+  getTypewriterSlice,
 } from './greeting';
 
 test('formatRecipientName defaults to Dina when input is null, undefined, or empty', () => {
@@ -82,3 +86,31 @@ test('getNextSlideIndex and getPrevSlideIndex wrap correctly', () => {
   assert.equal(getPrevSlideIndex(0, 0), 0);
 });
 
+test('splitGraphemes keeps multi-codepoint emojis intact', () => {
+  const units = splitGraphemes(MAIN_GREETING_MESSAGE);
+  assert.ok(units.length > 0);
+  // Last 4 units should be the 4 emojis without splitting variation selector U+FE0F
+  assert.deepEqual(units.slice(-4), ['🤲', '✌', '☺️', '✌']);
+  assert.equal(units.join(''), MAIN_GREETING_MESSAGE);
+});
+
+test('getTypewriterVisibleCount progresses smoothly after delay and clamps at total', () => {
+  assert.equal(getTypewriterVisibleCount(0, 50, { startDelayMs: 200, msPerUnit: 20 }), 0);
+  assert.equal(getTypewriterVisibleCount(200, 50, { startDelayMs: 200, msPerUnit: 20 }), 0);
+  assert.equal(getTypewriterVisibleCount(205, 50, { startDelayMs: 200, msPerUnit: 20 }), 1);
+  assert.equal(getTypewriterVisibleCount(240, 50, { startDelayMs: 200, msPerUnit: 20 }), 3);
+  assert.equal(getTypewriterVisibleCount(5000, 50, { startDelayMs: 200, msPerUnit: 20 }), 50);
+  assert.equal(getTypewriterVisibleCount(500, 0), 0);
+
+  // Default relaxed typing cadence (~40ms/unit after 320ms delay)
+  assert.equal(getTypewriterVisibleCount(300, 100), 0);
+  assert.equal(getTypewriterVisibleCount(720, 100), 11);
+});
+
+test('getTypewriterSlice returns clean slices without bounds errors', () => {
+  const units = splitGraphemes('Hi ☺️!');
+  assert.equal(getTypewriterSlice(units, 0), '');
+  assert.equal(getTypewriterSlice(units, 3), 'Hi ');
+  assert.equal(getTypewriterSlice(units, 4), 'Hi ☺️');
+  assert.equal(getTypewriterSlice(units, 99), 'Hi ☺️!');
+});

@@ -147,6 +147,65 @@ class SoundManager {
   }
 
   /**
+   * Festive confetti popper snap + celebratory chime arpeggio
+   */
+  public playConfettiPop() {
+    if (this.isMuted) return;
+    const ctx = this.initCtx();
+    if (!ctx) return;
+
+    const now = ctx.currentTime;
+
+    // 1. Crisp popper snap / paper burst noise
+    const dur = 0.22;
+    const bufSize = Math.floor(ctx.sampleRate * dur);
+    const buf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
+    const data = buf.getChannelData(0);
+    for (let i = 0; i < bufSize; i++) {
+      const decay = Math.pow(1 - i / bufSize, 2.4);
+      data[i] = (Math.random() * 2 - 1) * decay;
+    }
+
+    const noise = ctx.createBufferSource();
+    noise.buffer = buf;
+
+    const bp = ctx.createBiquadFilter();
+    bp.type = 'bandpass';
+    bp.frequency.setValueAtTime(1100, now);
+    bp.frequency.exponentialRampToValueAtTime(420, now + dur);
+    bp.Q.value = 0.9;
+
+    const noiseGain = ctx.createGain();
+    noiseGain.gain.setValueAtTime(0.55, now);
+    noiseGain.gain.exponentialRampToValueAtTime(0.001, now + dur);
+
+    noise.connect(bp);
+    bp.connect(noiseGain);
+    noiseGain.connect(ctx.destination);
+
+    // 2. Punchy cork pop thump
+    const popOsc = ctx.createOscillator();
+    const popGain = ctx.createGain();
+    popOsc.type = 'sine';
+    popOsc.frequency.setValueAtTime(280, now);
+    popOsc.frequency.exponentialRampToValueAtTime(68, now + 0.11);
+
+    popGain.gain.setValueAtTime(0.36, now);
+    popGain.gain.exponentialRampToValueAtTime(0.001, now + 0.13);
+
+    popOsc.connect(popGain);
+    popGain.connect(ctx.destination);
+
+    noise.start(now);
+    noise.stop(now + dur);
+    popOsc.start(now);
+    popOsc.stop(now + 0.14);
+
+    // 3. Bright celebratory chime immediately following the pop
+    this.playEnvelopeOpen();
+  }
+
+  /**
    * Sparkle sound effect for pop-up or confetti
    */
   public playSparkle() {
