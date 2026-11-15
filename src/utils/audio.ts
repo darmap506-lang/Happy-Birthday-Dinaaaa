@@ -8,8 +8,11 @@ import {
   HAPPY_BIRTHDAY_NOTES,
   LOOKAHEAD_SEC,
   SCHEDULER_INTERVAL_MS,
+  canStartImmediateAutoplay,
   collectNotesInWindow,
+  resolveAutoplayGestureAction,
   resyncNoteTime,
+  shouldResumeOnLoad,
 } from './audioSchedule';
 
 // Web Audio API helper for sound effects and sample-accurate music box melody
@@ -28,6 +31,7 @@ class SoundManager {
   private activeOscillators: Set<OscillatorNode> = new Set();
   private listeners: Set<(playing: boolean) => void> = new Set();
   private visibilityBound: boolean = false;
+  private autoplayCleanup: (() => void) | null = null;
 
   public subscribe(listener: (playing: boolean) => void): () => void {
     this.listeners.add(listener);
@@ -65,7 +69,7 @@ class SoundManager {
     });
   }
 
-  private initCtx(): AudioContext | null {
+  private initCtx(allowUnactivatedResume = true): AudioContext | null {
     if (typeof window === 'undefined') return null;
     this.ensureVisibilityHandler();
 
@@ -75,6 +79,20 @@ class SoundManager {
         (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
       if (AudioCtx) {
         this.ctx = new AudioCtx();
+        this.ctx.onstatechange = () => {
+          if (
+            this.ctx &&
+            this.ctx.state === 'running' &&
+            this.pendingAutoplay &&
+            !this.userPaused &&
+            !this.isMuted &&
+            !this.isMusicPlaying
+          ) {
+            this.pendingAutoplay = false;
+            this.cleanupAutoplayListeners();
+            this.beginLookAheadLoop(0.05);
+          }
+        };
       }
     }
 
@@ -86,7 +104,12 @@ class SoundManager {
     }
 
     if (this.ctx && this.ctx.state === 'suspended') {
-      this.ctx.resume().catch(() => {});
+      const navActivation = (
+        navigator as Navigator & { userActivation?: { hasBeenActive?: boolean; isActive?: boolean } }
+      ).userActivation;
+      if (allowUnactivatedResume || shouldResumeOnLoad(this.ctx.state, navActivation ?? null)) {
+        this.ctx.resume().catch(() => {});
+      }
     }
     return this.ctx;
   }
@@ -95,6 +118,8 @@ class SoundManager {
     this.isMuted = muted;
     if (muted) {
       this.userPaused = true;
+      this.pendingAutoplay = false;
+      this.cleanupAutoplayListeners();
       if (this.isMusicPlaying) {
         this.stopMusic();
       }
@@ -103,6 +128,10 @@ class SoundManager {
 
   public getMuted() {
     return this.isMuted;
+  }
+
+  public getUserPaused() {
+    return this.userPaused;
   }
 
   public getIsMusicPlaying() {
@@ -308,11 +337,13 @@ class SoundManager {
     if (this.isMusicPlaying) {
       this.userPaused = true;
       this.pendingAutoplay = false;
+      this.cleanupAutoplayListeners();
       this.stopMusic();
       if (onStateChange) onStateChange(false);
     } else {
       this.userPaused = false;
       this.pendingAutoplay = false;
+      this.cleanupAutoplayListeners();
       this.startMusic({ delaySec: 0, restartFromBeginning: true });
       if (onStateChange) onStateChange(true);
     }
@@ -418,6 +449,9 @@ class SoundManager {
       this.schedulerInterval = null;
     }
 
+    this.pendingAutoplay = false;
+    this.cleanupAutoplayListeners();
+
     if (this.musicMasterGain) {
       const now = this.ctx.currentTime;
       this.musicMasterGain.gain.cancelScheduledValues(now);
@@ -465,6 +499,7 @@ class SoundManager {
   public stopMusic() {
     this.isMusicPlaying = false;
     this.pendingAutoplay = false;
+    this.cleanupAutoplayListeners();
 
     if (this.schedulerInterval !== null) {
       window.clearInterval(this.schedulerInterval);
@@ -489,29 +524,84 @@ class SoundManager {
     this.notify();
   }
 
-  /**
-   * Unlocks AudioContext cleanly on the very first user gesture so backsound
-   * never starts out-of-sync or triggers blocked-AudioContext warnings on load.
-   */
-  public startAutoplay() {
-    if (typeof window === 'undefined') return;
-    if (this.isMusicPlaying || this.userPaused) return;
+  private cleanupAutoplayListeners() {
+    if (this.autoplayCleanup) {
+      this.autoplayCleanup();
+      this.autoplayCleanup = null;
+    }
+  }
 
-    this.pendingAutoplay = true;
+  private attachAutoplayListeners() {
+    if (this.autoplayCleanup || typeof window === 'undefined') return;
 
-    const gestureEvents = ['pointerdown', 'touchstart', 'click', 'keydown'];
-    const onFirstGesture = () => {
-      gestureEvents.forEach((evt) => {
-        window.removeEventListener(evt, onFirstGesture);
+    const gestureEvents: Array<keyof WindowEventMap> = [
+      'pointerdown',
+      'touchstart',
+      'touchend',
+      'mousedown',
+      'click',
+      'keydown',
+    ];
+
+    const onFirstGesture = (event: Event) => {
+      const target = event.target as Element | null;
+      const isToggleTarget = Boolean(target?.closest?.('[data-music-toggle="true"]'));
+
+      const decision = resolveAutoplayGestureAction({
+        pendingAutoplay: this.pendingAutoplay,
+        userPaused: this.userPaused,
+        isMuted: this.isMuted,
+        isMusicPlaying: this.isMusicPlaying,
+        isToggleTarget,
       });
-      if (!this.pendingAutoplay || this.userPaused || this.isMusicPlaying) return;
-      this.pendingAutoplay = false;
+
+      if (decision === 'noop') {
+        this.cleanupAutoplayListeners();
+        return;
+      }
+
+      if (decision === 'defer-to-toggle') {
+        return;
+      }
+
       this.startMusic({ delaySec: 0.05 });
     };
 
     gestureEvents.forEach((evt) => {
-      window.addEventListener(evt, onFirstGesture, { passive: true, once: true });
+      window.addEventListener(evt, onFirstGesture, { capture: true, passive: true });
     });
+
+    this.autoplayCleanup = () => {
+      gestureEvents.forEach((evt) => {
+        window.removeEventListener(evt, onFirstGesture, { capture: true });
+      });
+    };
+  }
+
+  /**
+   * Attempts immediate background music playback on load when permitted by the
+   * browser, and unlocks AudioContext automatically on the very first user
+   * gesture anywhere on the page if autoplay was initially suspended.
+   */
+  public startAutoplay() {
+    if (typeof window === 'undefined') return;
+    if (this.isMusicPlaying || this.userPaused || this.isMuted) return;
+
+    this.pendingAutoplay = true;
+    this.attachAutoplayListeners();
+
+    const ctx = this.initCtx(false);
+    if (!ctx) return;
+
+    if (
+      canStartImmediateAutoplay(ctx.state, {
+        userPaused: this.userPaused,
+        isMuted: this.isMuted,
+        isMusicPlaying: this.isMusicPlaying,
+      })
+    ) {
+      this.beginLookAheadLoop(0.05);
+    }
   }
 }
 

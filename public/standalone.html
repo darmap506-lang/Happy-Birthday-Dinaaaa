@@ -1339,6 +1339,9 @@ Be happy, be awesome. May peace be upon u!!!🤲✌☺️✌</span><span class="
         this.noteIndex = 0;
         this.nextNoteTime = 0;
         this.muted = false;
+        this.userPaused = false;
+        this.pendingAutoplay = false;
+        this._autoplayCleanup = null;
         this.ducked = false;
         this.activeMusicNodes = new Set();
         this.listeners = new Set();
@@ -1369,7 +1372,22 @@ Be happy, be awesome. May peace be upon u!!!🤲✌☺️✌</span><span class="
           const AudioContextClass = window.AudioContext || window.webkitAudioContext;
           if (!AudioContextClass) return null;
           this.ctx = new AudioContextClass();
-          this.ctx.onstatechange = () => this.notify();
+          this.ctx.onstatechange = () => {
+            if (
+              this.ctx &&
+              this.ctx.state === 'running' &&
+              this.pendingAutoplay &&
+              !this.userPaused &&
+              !this.muted &&
+              !this.musicPlaying
+            ) {
+              this.pendingAutoplay = false;
+              this.cleanupAutoplayListeners();
+              this.startMelody({ delaySec: 0.05 });
+            } else {
+              this.notify();
+            }
+          };
         }
         if (!this.musicMasterGain) {
           this.musicMasterGain = this.ctx.createGain();
@@ -1533,9 +1551,13 @@ Be happy, be awesome. May peace be upon u!!!🤲✌☺️✌</span><span class="
           return false;
         }
         if (this.musicPlaying) {
+          this.pendingAutoplay = false;
+          this.cleanupAutoplayListeners();
           this.notify();
           return true;
         }
+        this.pendingAutoplay = false;
+        this.cleanupAutoplayListeners();
         this.musicPlaying = true;
         if (restart) this.noteIndex = 0;
 
@@ -1555,6 +1577,8 @@ Be happy, be awesome. May peace be upon u!!!🤲✌☺️✌</span><span class="
 
       stopMelody() {
         this.musicPlaying = false;
+        this.pendingAutoplay = false;
+        this.cleanupAutoplayListeners();
         if (this.schedulerTimer) {
           clearInterval(this.schedulerTimer);
           this.schedulerTimer = null;
@@ -1574,15 +1598,71 @@ Be happy, be awesome. May peace be upon u!!!🤲✌☺️✌</span><span class="
       async toggleMute() {
         if (this.isPlaying()) {
           this.muted = true;
+          this.userPaused = true;
+          this.pendingAutoplay = false;
+          this.cleanupAutoplayListeners();
           this.stopMelody();
           return false;
         }
         this.muted = false;
+        this.userPaused = false;
+        this.pendingAutoplay = false;
+        this.cleanupAutoplayListeners();
         return this.startMelody({ delaySec: 0.03 });
+      }
+
+      cleanupAutoplayListeners() {
+        if (this._autoplayCleanup) {
+          this._autoplayCleanup();
+          this._autoplayCleanup = null;
+        }
+      }
+
+      attachAutoplayListeners() {
+        if (this._autoplayCleanup || typeof window === 'undefined') return;
+        const gestureEvents = ['pointerdown', 'touchstart', 'touchend', 'mousedown', 'click', 'keydown'];
+        const onFirstGesture = (event) => {
+          const target = event.target;
+          const isToggle = Boolean(target && typeof target.closest === 'function' && target.closest('#musicToggleBtn'));
+          if (!this.pendingAutoplay || this.userPaused || this.muted || this.musicPlaying) {
+            this.cleanupAutoplayListeners();
+            return;
+          }
+          if (isToggle) return;
+          this.startMelody({ delaySec: 0.05 });
+        };
+        gestureEvents.forEach((evt) => {
+          window.addEventListener(evt, onFirstGesture, { capture: true, passive: true });
+        });
+        this._autoplayCleanup = () => {
+          gestureEvents.forEach((evt) => {
+            window.removeEventListener(evt, onFirstGesture, { capture: true });
+          });
+        };
+      }
+
+      async startAutoplay() {
+        if (typeof window === 'undefined') return;
+        if (this.musicPlaying || this.userPaused || this.muted) return;
+        this.pendingAutoplay = true;
+        this.attachAutoplayListeners();
+        const ctx = this.ensureNodes();
+        if (!ctx) return;
+        const ua = navigator.userActivation;
+        const canTryResume = !ua || ua.isActive || ua.hasBeenActive;
+        const running = ctx.state === 'running'
+          ? true
+          : canTryResume
+            ? await this.resumeContext()
+            : false;
+        if (running && this.pendingAutoplay && !this.userPaused && !this.muted && !this.musicPlaying) {
+          this.startMelody({ delaySec: 0.05 });
+        }
       }
     }
 
     const sound = new BirthdayAudio();
+    sound.startAutoplay();
 
     /* ========================================================
        2. SAKURA PETALS BACKGROUND GENERATOR
@@ -1716,6 +1796,7 @@ Be happy, be awesome. May peace be upon u!!!🤲✌☺️✌</span><span class="
     sound.onStatusChange((playing) => {
       musicStatusText.textContent = playing ? 'Musik: On' : 'Musik: Off';
     });
+    musicStatusText.textContent = sound.isPlaying() ? 'Musik: On' : 'Musik: Off';
 
     musicBtn.addEventListener('click', async () => {
       const isOn = await sound.toggleMute();
@@ -1795,7 +1876,7 @@ Be happy, be awesome. May peace be upon u!!!🤲✌☺️✌</span><span class="
       spawnPopperStreamers();
       launchConfetti(140);
       sound.playChime();
-      if (!sound.isMuted() && !sound.isPlaying()) {
+      if (!sound.isMuted() && !sound.userPaused && !sound.isPlaying()) {
         sound.startMelody({ delaySec: ENVELOPE_CHIME_SYNC_DELAY_SEC });
       }
 

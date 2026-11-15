@@ -3,8 +3,11 @@ import assert from 'node:assert/strict';
 import {
   BEAT_SEC,
   HAPPY_BIRTHDAY_NOTES,
+  canStartImmediateAutoplay,
   collectNotesInWindow,
+  resolveAutoplayGestureAction,
   resyncNoteTime,
+  shouldResumeOnLoad,
 } from './audioSchedule';
 
 test('HAPPY_BIRTHDAY_NOTES has all 25 notes with positive beats and phrase downbeat bass notes', () => {
@@ -50,3 +53,79 @@ test('resyncNoteTime snaps forward when tab backgrounding causes lag', () => {
   assert.equal(resyncNoteTime(12.0, 11.9, 0.25, 0.04), 11.9);
   assert.equal(resyncNoteTime(12.0, 12.1, 0.25, 0.04), 12.1);
 });
+
+test('canStartImmediateAutoplay only starts when context is running and playback is allowed', () => {
+  assert.equal(
+    canStartImmediateAutoplay('running', { userPaused: false, isMuted: false, isMusicPlaying: false }),
+    true
+  );
+  assert.equal(
+    canStartImmediateAutoplay('suspended', { userPaused: false, isMuted: false, isMusicPlaying: false }),
+    false
+  );
+  assert.equal(
+    canStartImmediateAutoplay('running', { userPaused: true, isMuted: false, isMusicPlaying: false }),
+    false
+  );
+  assert.equal(
+    canStartImmediateAutoplay('running', { userPaused: false, isMuted: true, isMusicPlaying: false }),
+    false
+  );
+  assert.equal(
+    canStartImmediateAutoplay('running', { userPaused: false, isMuted: false, isMusicPlaying: true }),
+    false
+  );
+});
+
+test('resolveAutoplayGestureAction prevents double-toggle on music toggle button and respects user pause', () => {
+  assert.equal(
+    resolveAutoplayGestureAction({
+      pendingAutoplay: true,
+      userPaused: false,
+      isMuted: false,
+      isMusicPlaying: false,
+      isToggleTarget: false,
+    }),
+    'start'
+  );
+  assert.equal(
+    resolveAutoplayGestureAction({
+      pendingAutoplay: true,
+      userPaused: false,
+      isMuted: false,
+      isMusicPlaying: false,
+      isToggleTarget: true,
+    }),
+    'defer-to-toggle'
+  );
+  assert.equal(
+    resolveAutoplayGestureAction({
+      pendingAutoplay: true,
+      userPaused: true,
+      isMuted: false,
+      isMusicPlaying: false,
+      isToggleTarget: false,
+    }),
+    'noop'
+  );
+  assert.equal(
+    resolveAutoplayGestureAction({
+      pendingAutoplay: false,
+      userPaused: false,
+      isMuted: false,
+      isMusicPlaying: false,
+      isToggleTarget: false,
+    }),
+    'noop'
+  );
+});
+
+test('shouldResumeOnLoad only resumes suspended context on load when user activation exists or API is absent', () => {
+  assert.equal(shouldResumeOnLoad('running', { hasBeenActive: false, isActive: false }), false);
+  assert.equal(shouldResumeOnLoad('suspended', { hasBeenActive: false, isActive: false }), false);
+  assert.equal(shouldResumeOnLoad('suspended', { hasBeenActive: true, isActive: false }), true);
+  assert.equal(shouldResumeOnLoad('suspended', { hasBeenActive: false, isActive: true }), true);
+  assert.equal(shouldResumeOnLoad('suspended', null), true);
+});
+
+

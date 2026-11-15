@@ -107,3 +107,53 @@ export function collectNotesInWindow(
     nextNoteTime: noteTime,
   };
 }
+
+export interface AutoplayStateSnapshot {
+  pendingAutoplay: boolean;
+  userPaused: boolean;
+  isMuted: boolean;
+  isMusicPlaying: boolean;
+}
+
+export type AutoplayGestureDecision = 'start' | 'defer-to-toggle' | 'noop';
+
+/**
+ * Returns true when an AudioContext can begin playback immediately on mount
+ * without waiting for a user gesture.
+ */
+export function canStartImmediateAutoplay(
+  ctxState: AudioContextState | string | null | undefined,
+  state: Pick<AutoplayStateSnapshot, 'userPaused' | 'isMuted' | 'isMusicPlaying'>
+): boolean {
+  if (state.userPaused || state.isMuted || state.isMusicPlaying) {
+    return false;
+  }
+  return ctxState === 'running';
+}
+
+/**
+ * Decides how a global first-gesture listener should react when unlocking Web Audio.
+ * Clicking directly on the MusicToggle control delegates to toggleMusic() so we never
+ * double-toggle Off -> On -> Off in the same event dispatch.
+ */
+export function resolveAutoplayGestureAction(
+  state: AutoplayStateSnapshot & { isToggleTarget: boolean }
+): AutoplayGestureDecision {
+  if (!state.pendingAutoplay || state.userPaused || state.isMuted || state.isMusicPlaying) {
+    return 'noop';
+  }
+  if (state.isToggleTarget) {
+    return 'defer-to-toggle';
+  }
+  return 'start';
+}
+
+export function shouldResumeOnLoad(
+  ctxState: AudioContextState | string | null | undefined,
+  userActivation?: { hasBeenActive?: boolean; isActive?: boolean } | null
+): boolean {
+  if (ctxState !== 'suspended') return false;
+  if (!userActivation) return true;
+  return Boolean(userActivation.isActive || userActivation.hasBeenActive);
+}
+

@@ -54,7 +54,7 @@ export const OpeningConfetti: React.FC<OpeningConfettiProps> = ({ onOpenComplete
     setConfettiKey((k) => k + 1);
     sound.playConfettiPop();
 
-    if (!sound.getMuted() && !sound.getIsMusicPlaying()) {
+    if (!sound.getMuted() && !sound.getUserPaused() && !sound.getIsMusicPlaying()) {
       sound.startMusic({ delaySec: ENVELOPE_CHIME_SYNC_DELAY_SEC });
     }
 

@@ -19,6 +19,7 @@ export const MusicToggle: React.FC = () => {
   return (
     <button
       type="button"
+      data-music-toggle="true"
       onClick={handleToggle}
       aria-label={isPlaying ? 'Matikan background musik' : 'Nyalakan background musik'}
       title={isPlaying ? 'Matikan Background Musik' : 'Nyalakan Background Musik'}
