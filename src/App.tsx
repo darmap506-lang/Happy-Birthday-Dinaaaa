@@ -10,6 +10,8 @@ import { MainCard } from './components/MainCard';
 import { SparkleTrail } from './components/SparkleTrail';
 import { MusicToggle } from './components/MusicToggle';
 import { PixelMascots } from './components/PixelMascots';
+import { BloomingFlowerLayer } from './components/BloomingFlowerLayer';
+import { FlyingBalloons } from './components/FlyingBalloons';
 import { formatRecipientName } from './utils/greeting';
 import { sound } from './utils/audio';
 import { clearSavedWish } from './utils/birthdayWish';
@@ -22,6 +24,11 @@ export default function App() {
   const [recipientName, setRecipientName] = useState('Dina Perwitasari');
   const [stage, setStage] = useState<'opening' | 'card'>('opening');
   const [isSurpriseOpen, setIsSurpriseOpen] = useState(false);
+  const [bouquetTrigger, setBouquetTrigger] = useState<{
+    seq: number;
+    x?: number;
+    y?: number;
+  } | null>(null);
 
   // Initialize query parameters, reset Make-a-Wish on fresh app open/close, and start background music autoplay
   useEffect(() => {
@@ -85,6 +92,14 @@ export default function App() {
       {/* Falling Sakura Petals Background */}
       <FallingPetals count={26} />
 
+      {/* Interactive Click-to-Bloom Sakura Flowers Layer */}
+      <BloomingFlowerLayer bouquetTrigger={bouquetTrigger} />
+
+      {/* Poppable Floating Balloons on Main Greeting View */}
+      {stage === 'card' && !isSurpriseOpen && (
+        <FlyingBalloons runKey={1} count={6} zIndexClass="z-[5]" />
+      )}
+
       {/* Pixel Panda (bottom-left) & Orange Cat (bottom-right) Shooting Confetti */}
       {!isSurpriseOpen && <PixelMascots />}
 
@@ -102,6 +117,9 @@ export default function App() {
           recipientName={recipientName}
           onOpenSurprise={() => setIsSurpriseOpen(true)}
           onCloseEnvelope={handleCloseCard}
+          onBloomBouquet={({ x, y }) =>
+            setBouquetTrigger((prev) => ({ seq: (prev?.seq ?? 0) + 1, x, y }))
+          }
         />
       )}
 

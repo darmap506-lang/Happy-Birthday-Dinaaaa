@@ -1132,3 +1132,110 @@
 .animate-confetti-banner-in {
   animation: confettiBannerIn 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
+
+/* ================= INTERACTIVE BLOOMING FLOWERS & BALLOON POP ================= */
+@keyframes flowerBloomUnfurl {
+  0% {
+    opacity: 0;
+    transform: translate3d(-50%, -50%, 0) scale(0.16) rotate(calc(var(--bloom-rot, 0deg) - 26deg));
+  }
+  18% {
+    opacity: 1;
+  }
+  42% {
+    opacity: 1;
+    transform: translate3d(-50%, -50%, 0) scale(1.06) rotate(var(--bloom-rot, 0deg));
+  }
+  75% {
+    opacity: 0.96;
+    transform: translate3d(-50%, -54%, 0) scale(1) rotate(calc(var(--bloom-rot, 0deg) + 6deg));
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(-50%, -62%, 0) scale(0.92) rotate(calc(var(--bloom-rot, 0deg) + 12deg));
+  }
+}
+
+.animate-flower-bloom {
+  will-change: transform, opacity;
+  animation: flowerBloomUnfurl 2.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes flowerPetalSpread {
+  0% {
+    transform: scale(0.35);
+    opacity: 0.4;
+  }
+  32% {
+    transform: scale(1.04);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-flower-inner {
+  transform-origin: 50px 50px;
+  animation: flowerPetalSpread 0.72s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes flowerHaloPulse {
+  0% {
+    transform: scale(0.35);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1.7);
+    opacity: 0;
+  }
+}
+
+.animate-flower-halo {
+  transform-origin: center;
+  animation: flowerHaloPulse 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes balloonPopRing {
+  0% {
+    transform: scale(0.45);
+    opacity: 0.95;
+  }
+  100% {
+    transform: scale(1.95);
+    opacity: 0;
+  }
+}
+
+.animate-balloon-pop-ring {
+  animation: balloonPopRing 0.48s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes balloonFragmentBurst {
+  0% {
+    transform: translate3d(0, 0, 0) scale(0.6) rotate(0deg);
+    opacity: 1;
+  }
+  65% {
+    opacity: 0.95;
+  }
+  100% {
+    transform: translate3d(var(--fx, 0px), var(--fy, -30px), 0) scale(0.25) rotate(160deg);
+    opacity: 0;
+  }
+}
+
+.animate-balloon-fragment {
+  will-change: transform, opacity;
+  animation: balloonFragmentBurst 0.56s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-flower-bloom,
+  .animate-balloon-pop-ring,
+  .animate-balloon-fragment {
+    animation-duration: 0.4s !important;
+  }
+}
+

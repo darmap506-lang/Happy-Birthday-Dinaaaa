@@ -690,7 +690,7 @@
       inset: 0;
       pointer-events: none;
       overflow: hidden;
-      z-index: 1;
+      z-index: 5;
     }
     .flying-balloon {
       position: absolute;
@@ -699,11 +699,80 @@
       will-change: transform, opacity;
       animation: balloonRise linear infinite;
     }
+    .balloon-pop-btn {
+      display: block;
+      width: 100%;
+      min-width: 44px;
+      min-height: 64px;
+      padding: 0;
+      background: transparent;
+      border: 0;
+      pointer-events: auto;
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+    .balloon-pop-btn:hover svg {
+      transform: scale(1.06);
+      transition: transform 0.15s ease;
+    }
     @keyframes balloonRise {
       0% { transform: translate3d(0, 0, 0) rotate(0deg); opacity: 0; }
       10% { opacity: 0.95; }
       70% { opacity: 0.92; }
       100% { transform: translate3d(var(--sway, 16px), -135vh, 0) rotate(var(--tilt, 5deg)); opacity: 0; }
+    }
+    @keyframes balloonPopRing {
+      0% { transform: scale(0.45); opacity: 0.95; }
+      100% { transform: scale(1.95); opacity: 0; }
+    }
+    .balloon-pop-ring {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      border-radius: 9999px;
+      border: 2px solid #ec4899;
+      animation: balloonPopRing 0.48s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @keyframes balloonFragBurst {
+      0% { transform: translate3d(0, 0, 0) scale(0.6) rotate(0deg); opacity: 1; }
+      65% { opacity: 0.95; }
+      100% { transform: translate3d(var(--fx, 0px), var(--fy, -30px), 0) scale(0.25) rotate(160deg); opacity: 0; }
+    }
+    .balloon-pop-frag {
+      position: absolute;
+      will-change: transform, opacity;
+      animation: balloonFragBurst 0.56s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    /* Interactive Blooming Sakura Flowers */
+    .bloom-layer {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 15;
+    }
+    .blooming-flower {
+      position: absolute;
+      will-change: transform, opacity;
+      animation: flowerBloomUnfurl 2.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @keyframes flowerBloomUnfurl {
+      0% { opacity: 0; transform: translate3d(-50%, -50%, 0) scale(0.16) rotate(calc(var(--bloom-rot, 0deg) - 26deg)); }
+      18% { opacity: 1; }
+      42% { opacity: 1; transform: translate3d(-50%, -50%, 0) scale(1.06) rotate(var(--bloom-rot, 0deg)); }
+      75% { opacity: 0.96; transform: translate3d(-50%, -54%, 0) scale(1) rotate(calc(var(--bloom-rot, 0deg) + 6deg)); }
+      100% { opacity: 0; transform: translate3d(-50%, -62%, 0) scale(0.92) rotate(calc(var(--bloom-rot, 0deg) + 12deg)); }
+    }
+    @keyframes flowerHaloPulse {
+      0% { transform: scale(0.35); opacity: 0.8; }
+      100% { transform: scale(1.7); opacity: 0; }
+    }
+    .bloom-halo {
+      position: absolute;
+      inset: 4px;
+      border-radius: 9999px;
+      border: 1px solid rgba(230, 190, 126, 0.78);
+      animation: flowerHaloPulse 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
 
     /* Pixel Panda & Orange Cat with Party Hats & Confetti Cannons (Pages 1 & 2 Corners) */
@@ -1071,12 +1140,18 @@
     🎵 <span id="musicStatusText">Musik: Off</span>
   </button>
 
+  <!-- Interactive Blooming Sakura Flowers Layer -->
+  <div id="bloomLayer" class="bloom-layer" aria-hidden="true"></div>
+
+  <!-- Poppable Balloons Layer on Main Card Stage -->
+  <div id="pageBalloonLayer" class="balloon-layer" style="display:none;"></div>
+
   <!-- Pixel Panda (bottom-left) & Orange Cat (bottom-right) Carrying Balloons -->
   <div id="pixelMascotsLayer" class="pixel-mascots-layer" aria-hidden="true"></div>
 
   <!-- Interactive Pull-String Confetti Popper Opening -->
   <div id="confettiOpeningScreen" class="confetti-opening-screen">
-    <div class="popper-stage">
+    <div class="popper-stage" data-bloom-ignore="true">
       <div id="popperCaption" class="popper-caption">
         <p id="popperCaptionSub" class="popper-caption-sub">Tarik tali di bawah untuk membuka</p>
       </div>
@@ -1155,7 +1230,7 @@
   </div>
 
   <!-- Main Greeting Card -->
-  <main id="mainCard" class="card-container">
+  <main id="mainCard" class="card-container" data-bloom-ignore="true">
     <div class="card-subtitle">✨ Selamat Ulang Tahun ✨</div>
     <h1 class="card-title">Dina Perwitasari</h1>
     <p id="cardGreetingMessage" class="card-message"><span class="card-message-spacer" aria-hidden="true">Happy birthday!!!Dinaaaa.  I hope this year brings u new opportunities and plenty of happiness. Sehat terus yaa dan sukses selaluuuu, semoga segala harapan yang belum tercapai segera tercapaii.
@@ -1542,6 +1617,55 @@ Be happy, be awesome. May peace be upon u!!!🤲✌☺️✌</span><span class="
         });
       }
 
+      playFlowerBloom() {
+        if (this.muted) return;
+        this.resumeContext().then((running) => {
+          if (!running || !this.ctx) return;
+          const now = this.ctx.currentTime + 0.01;
+          [659.25, 880, 1174.66, 1318.51].forEach((f, i) => {
+            this.scheduleSfxTone(f, now + i * 0.045, 0.45, 0.1);
+          });
+        });
+      }
+
+      playBalloonPop() {
+        if (this.muted) return;
+        this.resumeContext().then((running) => {
+          if (!running || !this.ctx || !this.sfxMasterGain) return;
+          const now = this.ctx.currentTime;
+          const dur = 0.14;
+          const bufSize = Math.floor(this.ctx.sampleRate * dur);
+          const buf = this.ctx.createBuffer(1, bufSize, this.ctx.sampleRate);
+          const data = buf.getChannelData(0);
+          for (let i = 0; i < bufSize; i++) {
+            data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / bufSize, 3.1);
+          }
+          const noise = this.ctx.createBufferSource();
+          noise.buffer = buf;
+          const bp = this.ctx.createBiquadFilter();
+          bp.type = 'bandpass';
+          bp.frequency.setValueAtTime(1600, now);
+          bp.frequency.exponentialRampToValueAtTime(340, now + dur);
+          bp.Q.value = 1.1;
+          const ng = this.ctx.createGain();
+          ng.gain.setValueAtTime(0.45, now);
+          ng.gain.exponentialRampToValueAtTime(0.001, now + dur);
+          noise.connect(bp); bp.connect(ng); ng.connect(this.sfxMasterGain);
+
+          const thump = this.ctx.createOscillator();
+          const tg = this.ctx.createGain();
+          thump.type = 'sine';
+          thump.frequency.setValueAtTime(420, now);
+          thump.frequency.exponentialRampToValueAtTime(90, now + 0.08);
+          tg.gain.setValueAtTime(0.28, now);
+          tg.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
+          thump.connect(tg); tg.connect(this.sfxMasterGain);
+
+          noise.start(now); noise.stop(now + dur);
+          thump.start(now); thump.stop(now + 0.1);
+        });
+      }
+
       async startMelody(options = {}) {
         const delaySec = options.delaySec || 0;
         const restart = options.restartFromBeginning || false;
@@ -1889,6 +2013,11 @@ Be happy, be awesome. May peace be upon u!!!🤲✌☺️✌</span><span class="
         confettiOpeningScreen.classList.add('hidden');
         openingTimers.push(setTimeout(() => {
           mainCard.style.display = 'block';
+          const pLayer = document.getElementById('pageBalloonLayer');
+          if (pLayer) {
+            pLayer.style.display = 'block';
+            spawnBalloons(pLayer, 6);
+          }
           startCardMessageTypewriter();
         }, 680));
       }, 3100));
@@ -2008,6 +2137,11 @@ Be happy, be awesome. May peace be upon u!!!🤲✌☺️✌</span><span class="
       isPoppedOpening = false;
       currentPullPx = 0;
       mainCard.style.display = 'none';
+      const pageBalloonLayerEl = document.getElementById('pageBalloonLayer');
+      if (pageBalloonLayerEl) {
+        pageBalloonLayerEl.style.display = 'none';
+        pageBalloonLayerEl.innerHTML = '';
+      }
       confettiOpeningScreen.classList.remove('hidden');
       popperCaption.style.display = 'block';
       popperCaptionSub.textContent = 'Tarik tali di bawah untuk membuka';
@@ -2023,26 +2157,134 @@ Be happy, be awesome. May peace be upon u!!!🤲✌☺️✌</span><span class="
       if (typeof resetWishState === 'function') resetWishState();
     });
 
-    function spawnBalloons() {
-      const layer = document.getElementById('balloonLayer');
+    function createBalloonElement(i, count, palette, targetLayer) {
+      const el = document.createElement('div');
+      el.className = 'flying-balloon';
+      const w = Math.round(42 + Math.random() * 18);
+      const color = palette[i % palette.length];
+      el.style.left = (4 + (i * 92) / count) + '%';
+      el.style.width = w + 'px';
+      el.style.animationDuration = (5.5 + Math.random() * 2.7).toFixed(2) + 's';
+      el.style.animationDelay = (i % 2 === 0 ? Math.random() * 1.0 : 1.2 + Math.random() * 2.4).toFixed(2) + 's';
+      el.style.setProperty('--sway', Math.round((Math.random() - 0.5) * 40) + 'px');
+      el.style.setProperty('--tilt', Math.round((Math.random() - 0.5) * 14) + 'deg');
+
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'balloon-pop-btn';
+      btn.setAttribute('data-interactive-balloon', 'true');
+      btn.setAttribute('data-popped', 'false');
+      btn.setAttribute('aria-label', 'Pecahkan balon');
+      btn.innerHTML = `<svg viewBox="0 0 64 110" style="width:100%;height:auto;" aria-hidden="true"><path d="M32 76 C27 84, 37 90, 31 98 C27 103, 34 106, 32 110" fill="none" stroke="rgba(255,255,255,0.78)" stroke-width="1.8" stroke-linecap="round"/><path d="M28 73 L36 73 L32 69 Z" fill="${color}"/><path d="M32 6 C14 6, 4 21, 4 38 C4 56, 20 69, 32 70 C44 69, 60 56, 60 38 C60 21, 50 6, 32 6 Z" fill="${color}"/><ellipse cx="20" cy="25" rx="6" ry="12" transform="rotate(-20 20 25)" fill="#fff" opacity="0.4"/></svg>`;
+
+      let popped = false;
+      const popHandler = (ev) => {
+        ev.stopPropagation();
+        if (popped) return;
+        popped = true;
+        btn.disabled = true;
+        btn.setAttribute('data-popped', 'true');
+        el.style.animationPlayState = 'paused';
+        sound.playBalloonPop();
+
+        let fragsHtml = `<span class="balloon-pop-ring" style="border-color:${color};"></span>`;
+        for (let f = 0; f < 8; f++) {
+          const ang = (360 / 8) * f + (Math.random() - 0.5) * 20;
+          const dist = 34 + Math.random() * 30;
+          const fx = (Math.cos((ang * Math.PI) / 180) * dist).toFixed(1);
+          const fy = (Math.sin((ang * Math.PI) / 180) * dist).toFixed(1);
+          const sz = Math.round(6 + Math.random() * 4);
+          const fc = f % 3 === 0 ? '#f9ebc7' : color;
+          fragsHtml += `<span class="balloon-pop-frag" style="width:${sz}px;height:${f % 2 === 0 ? sz * 1.4 : sz}px;background:${fc};border-radius:${f % 2 === 0 ? '2px' : '9999px'};--fx:${fx}px;--fy:${fy}px;"></span>`;
+        }
+        btn.innerHTML = `<div style="position:relative;width:100%;aspect-ratio:64/76;display:flex;align-items:center;justify-content:center;pointer-events:none;">${fragsHtml}</div>`;
+
+        setTimeout(() => {
+          if (el.parentNode) el.parentNode.removeChild(el);
+          setTimeout(() => {
+            if (targetLayer && targetLayer.isConnected) {
+              const replacement = createBalloonElement(i, count, palette, targetLayer);
+              replacement.style.animationDelay = '0.05s';
+              targetLayer.appendChild(replacement);
+            }
+          }, 1400);
+        }, 580);
+      };
+
+      btn.addEventListener('pointerdown', popHandler);
+      btn.addEventListener('click', (ev) => ev.stopPropagation());
+      btn.addEventListener('keydown', (ev) => {
+        if (ev.key === 'Enter' || ev.key === ' ') {
+          ev.preventDefault();
+          popHandler(ev);
+        }
+      });
+
+      el.appendChild(btn);
+      return el;
+    }
+
+    function spawnBalloons(layerOverride, countOverride) {
+      const layer = layerOverride || document.getElementById('balloonLayer');
       if (!layer) return;
+      const count = countOverride || 12;
       layer.innerHTML = '';
       const palette = ['#ec4899', '#f43f5e', '#a855f7', '#fbbf24', '#38bdf8', '#34d399', '#fb7185'];
-      for (let i = 0; i < 16; i++) {
-        const el = document.createElement('div');
-        el.className = 'flying-balloon';
-        const w = Math.round(38 + Math.random() * 18);
-        const color = palette[i % palette.length];
-        el.style.left = (4 + (i * 92) / 16) + '%';
-        el.style.width = w + 'px';
-        el.style.animationDuration = (5.5 + Math.random() * 2.7).toFixed(2) + 's';
-        el.style.animationDelay = (i % 2 === 0 ? Math.random() * 1.0 : 1.2 + Math.random() * 2.4).toFixed(2) + 's';
-        el.style.setProperty('--sway', Math.round((Math.random() - 0.5) * 40) + 'px');
-        el.style.setProperty('--tilt', Math.round((Math.random() - 0.5) * 14) + 'deg');
-        el.innerHTML = `<svg viewBox="0 0 64 110" style="width:100%;height:auto;"><path d="M32 76 C27 84, 37 90, 31 98 C27 103, 34 106, 32 110" fill="none" stroke="rgba(255,255,255,0.78)" stroke-width="1.8" stroke-linecap="round"/><path d="M28 73 L36 73 L32 69 Z" fill="${color}"/><path d="M32 6 C14 6, 4 21, 4 38 C4 56, 20 69, 32 70 C44 69, 60 56, 60 38 C60 21, 50 6, 32 6 Z" fill="${color}"/><ellipse cx="20" cy="25" rx="6" ry="12" transform="rotate(-20 20 25)" fill="#fff" opacity="0.4"/></svg>`;
-        layer.appendChild(el);
+      for (let i = 0; i < count; i++) {
+        layer.appendChild(createBalloonElement(i, count, palette, layer));
       }
     }
+
+    /* Interactive Blooming Sakura Flowers on Background Click */
+    (function initBloomingFlowers() {
+      const bloomLayer = document.getElementById('bloomLayer');
+      if (!bloomLayer) return;
+      const palettes = [
+        { outer: '#f9a8d4', inner: '#fdf2f8', core: '#fde68a', stamen: '#d4a373' },
+        { outer: '#f472b6', inner: '#fce7f3', core: '#fef3c7', stamen: '#c9935b' },
+        { outer: '#fda4af', inner: '#fff1f2', core: '#fde68a', stamen: '#be185d' },
+        { outer: '#fbcfe8', inner: '#fffdf9', core: '#f9ebc7', stamen: '#d4a373' }
+      ];
+      let seed = 1;
+
+      function spawnBloomAt(x, y) {
+        const pal = palettes[seed++ % palettes.length];
+        const size = Math.round(58 + Math.random() * 24);
+        const rot = Math.round(Math.random() * 68 - 34);
+        const wrap = document.createElement('div');
+        wrap.className = 'blooming-flower';
+        wrap.setAttribute('data-testid', 'blooming-flower');
+        wrap.style.left = x + 'px';
+        wrap.style.top = y + 'px';
+        wrap.style.width = size + 'px';
+        wrap.style.height = size + 'px';
+        wrap.style.setProperty('--bloom-rot', rot + 'deg');
+
+        const angles = [0, 72, 144, 216, 288];
+        const outerPaths = angles.map((a) => `<g transform="rotate(${a} 50 50)"><path d="M50 48 C39 36, 36 16, 46 8 C48.5 11, 50 13, 50 13 C50 13, 51.5 11, 54 8 C64 16, 61 36, 50 48 Z" fill="${pal.outer}" stroke="#ffffff" stroke-width="0.9" stroke-opacity="0.7"/></g>`).join('');
+        const innerPaths = angles.map((a) => `<g transform="rotate(${a + 36} 50 50)"><path d="M50 49 C42 40, 41 25, 50 19 C59 25, 58 40, 50 49 Z" fill="${pal.inner}" fill-opacity="0.92"/></g>`).join('');
+        const stamens = angles.map((a) => `<g transform="rotate(${a + 18} 50 50)"><line x1="50" y1="50" x2="50" y2="37" stroke="${pal.stamen}" stroke-width="1.2" stroke-linecap="round"/><circle cx="50" cy="36" r="1.7" fill="${pal.core}"/></g>`).join('');
+
+        wrap.innerHTML = `<span class="bloom-halo"></span><svg viewBox="0 0 100 100" style="width:100%;height:100%;overflow:visible;filter:drop-shadow(0 6px 14px rgba(190,24,93,0.22));">${outerPaths}${innerPaths}${stamens}<circle cx="50" cy="50" r="6" fill="${pal.core}"/><circle cx="50" cy="50" r="3" fill="${pal.stamen}" opacity="0.85"/></svg>`;
+        bloomLayer.appendChild(wrap);
+        while (bloomLayer.children.length > 14) {
+          bloomLayer.removeChild(bloomLayer.firstChild);
+        }
+        setTimeout(() => {
+          if (wrap.parentNode) wrap.parentNode.removeChild(wrap);
+        }, 2600);
+      }
+
+      window.addEventListener('click', (e) => {
+        const target = e.target;
+        if (!target || typeof target.closest !== 'function') return;
+        if (target.closest('button, a, input, textarea, select, label, [role="button"], [data-interactive-balloon="true"], [data-bloom-ignore="true"], .modal-content, .modal-backdrop.active')) {
+          return;
+        }
+        spawnBloomAt(e.clientX, e.clientY);
+        sound.playFlowerBloom();
+      });
+    })();
 
     let isBlowing = false;
     let blowTimer = null;
@@ -2257,6 +2499,8 @@ Be happy, be awesome. May peace be upon u!!!🤲✌☺️✌</span><span class="
       isEditingWish = false;
       renderWishBox();
       spawnBalloons();
+      const pageBL = document.getElementById('pageBalloonLayer');
+      if (pageBL) pageBL.style.display = 'none';
       document.getElementById('pixelMascotsLayer').style.display = 'none';
       surpriseModal.classList.add('active');
       sound.playChime();
@@ -2268,6 +2512,11 @@ Be happy, be awesome. May peace be upon u!!!🤲✌☺️✌</span><span class="
       stopMicrophone();
       isBlowing = false;
       surpriseModal.classList.remove('active');
+      const pageBL = document.getElementById('pageBalloonLayer');
+      if (pageBL) {
+        pageBL.style.display = 'block';
+        spawnBalloons(pageBL, 6);
+      }
       document.getElementById('pixelMascotsLayer').style.display = 'flex';
       resetWishState();
     }

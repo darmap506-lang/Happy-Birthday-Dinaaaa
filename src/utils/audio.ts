@@ -264,6 +264,88 @@ class SoundManager {
   }
 
   /**
+   * Soft harp-like sakura bloom chime when a flower unfurls
+   */
+  public playFlowerBloom() {
+    if (this.isMuted) return;
+    const ctx = this.initCtx();
+    if (!ctx) return;
+
+    const freqs = [659.25, 880, 1174.66, 1318.51];
+    freqs.forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      const startTime = ctx.currentTime + i * 0.045;
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, startTime);
+
+      gain.gain.setValueAtTime(0.001, startTime);
+      gain.gain.exponentialRampToValueAtTime(0.11, startTime + 0.025);
+      gain.gain.exponentialRampToValueAtTime(0.0001, startTime + 0.55);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(startTime);
+      osc.stop(startTime + 0.58);
+    });
+  }
+
+  /**
+   * Crisp rubber balloon pop sound effect
+   */
+  public playBalloonPop() {
+    if (this.isMuted) return;
+    const ctx = this.initCtx();
+    if (!ctx) return;
+
+    const now = ctx.currentTime;
+    const dur = 0.14;
+    const bufSize = Math.floor(ctx.sampleRate * dur);
+    const buf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
+    const data = buf.getChannelData(0);
+    for (let i = 0; i < bufSize; i++) {
+      const decay = Math.pow(1 - i / bufSize, 3.1);
+      data[i] = (Math.random() * 2 - 1) * decay;
+    }
+
+    const noise = ctx.createBufferSource();
+    noise.buffer = buf;
+
+    const bp = ctx.createBiquadFilter();
+    bp.type = 'bandpass';
+    bp.frequency.setValueAtTime(1600, now);
+    bp.frequency.exponentialRampToValueAtTime(340, now + dur);
+    bp.Q.value = 1.1;
+
+    const noiseGain = ctx.createGain();
+    noiseGain.gain.setValueAtTime(0.55, now);
+    noiseGain.gain.exponentialRampToValueAtTime(0.001, now + dur);
+
+    noise.connect(bp);
+    bp.connect(noiseGain);
+    noiseGain.connect(ctx.destination);
+
+    const thumpOsc = ctx.createOscillator();
+    const thumpGain = ctx.createGain();
+    thumpOsc.type = 'sine';
+    thumpOsc.frequency.setValueAtTime(420, now);
+    thumpOsc.frequency.exponentialRampToValueAtTime(90, now + 0.08);
+
+    thumpGain.gain.setValueAtTime(0.32, now);
+    thumpGain.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
+
+    thumpOsc.connect(thumpGain);
+    thumpGain.connect(ctx.destination);
+
+    noise.start(now);
+    noise.stop(now + dur);
+    thumpOsc.start(now);
+    thumpOsc.stop(now + 0.1);
+  }
+
+  /**
    * Candle blow out whoosh, wind gust & magic sparkle
    */
   public playBlowCandle() {

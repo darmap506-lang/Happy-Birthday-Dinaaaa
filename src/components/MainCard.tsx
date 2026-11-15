@@ -12,12 +12,14 @@ interface MainCardProps {
   recipientName: string;
   onOpenSurprise: () => void;
   onCloseEnvelope: () => void;
+  onBloomBouquet?: (coords: { x: number; y: number }) => void;
 }
 
 export const MainCard: React.FC<MainCardProps> = ({
   recipientName,
   onOpenSurprise,
   onCloseEnvelope,
+  onBloomBouquet,
 }) => {
   const graphemes = useMemo(() => splitGraphemes(MAIN_GREETING_MESSAGE), []);
   const totalUnits = graphemes.length;
@@ -80,12 +82,27 @@ export const MainCard: React.FC<MainCardProps> = ({
   return (
     <div className="relative z-10 main-card-wrapper animate-card-enter">
       <div
+        data-bloom-ignore="true"
         className="main-card-surface bg-white/92 backdrop-blur-xl shadow-[0_15px_35px_rgba(136,14,79,0.15)] border-2 border-white/80 transition-all hover:shadow-[0_20px_45px_rgba(136,14,79,0.22)]"
       >
-        {/* Decorative corner blossom */}
-        <div className="absolute -top-3 -right-2.5 sm:-top-3.5 sm:-right-3.5 text-xl sm:text-2xl select-none animate-bounce pointer-events-none" style={{ animationDuration: '3s' }}>
+        {/* Interactive corner sakura blossom (tap to bloom flower cluster) */}
+        <button
+          type="button"
+          onClick={(e) => {
+            const rect = e.currentTarget.getBoundingClientRect();
+            sound.playFlowerBloom();
+            onBloomBouquet?.({
+              x: rect.left + rect.width / 2,
+              y: rect.top + rect.height / 2,
+            });
+          }}
+          aria-label="Mekarkan bunga sakura"
+          title="Klik untuk memekarkan bunga"
+          className="absolute -top-3.5 -right-3 sm:-top-4 sm:-right-4 min-w-[44px] min-h-[44px] flex items-center justify-center text-xl sm:text-2xl select-none animate-bounce cursor-pointer touch-manipulation rounded-full hover:scale-125 active:scale-90 transition-transform focus:outline-none focus-visible:ring-2 focus-visible:ring-pink-300"
+          style={{ animationDuration: '3s' }}
+        >
           🌸
-        </div>
+        </button>
         <div className="absolute -bottom-2.5 -left-2.5 sm:-bottom-3 sm:-left-3 text-xl sm:text-2xl select-none animate-pulse pointer-events-none">
           ✨
         </div>

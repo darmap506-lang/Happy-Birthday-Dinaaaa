@@ -171,7 +171,7 @@ export const OpeningConfetti: React.FC<OpeningConfettiProps> = ({ onOpenComplete
       {/* Fullscreen celebratory confetti canvas triggered when string is pulled */}
       <ConfettiCanvas triggerKey={confettiKey} />
 
-      <div className="relative flex flex-col items-center justify-center w-full max-w-[360px]">
+      <div data-bloom-ignore="true" className="relative flex flex-col items-center justify-center w-full max-w-[360px]">
         {/* Ambient Pearl-Blush & Champagne Halo */}
         <div
           aria-hidden="true"
